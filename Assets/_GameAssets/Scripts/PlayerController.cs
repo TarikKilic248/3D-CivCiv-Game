@@ -78,6 +78,25 @@ public class PlayerController : MonoBehaviour
     private Vector3 _origBoxSize;
     private Vector3 _origBoxCenter;
 
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (_playerCollider == null) _playerCollider = GetComponent<Collider>();
+        if (_playerOrientationTransform == null)
+        {
+            var orient = transform.Find("Orientation");
+            if (orient != null) _playerOrientationTransform = orient;
+        }
+    }
+
+    private void Reset()
+    {
+        _playerCollider = GetComponent<Collider>();
+        var orient = transform.Find("Orientation");
+        if (orient != null) _playerOrientationTransform = orient;
+    }
+#endif
+
     private void Awake()
     {
         // 1. Rigidbody Kurulumu
@@ -220,9 +239,9 @@ public class PlayerController : MonoBehaviour
 
     private void MovePlayer()
     {
-        if (_playerOrientationTransform == null) _playerOrientationTransform = transform;
+        Transform moveRef = _playerOrientationTransform != null ? _playerOrientationTransform : transform;
 
-        _moveDirection = _playerOrientationTransform.forward * _verticalInput + _playerOrientationTransform.right * _horizontalInput;
+        _moveDirection = moveRef.forward * _verticalInput + moveRef.right * _horizontalInput;
 
         if (_isSliding)
         {
@@ -302,7 +321,8 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            _slideDirection = _playerOrientationTransform.forward;
+            Transform moveRef = _playerOrientationTransform != null ? _playerOrientationTransform : transform;
+            _slideDirection = moveRef.forward;
         }
 
         // Anlık itiş kuvveti (Impulse)
