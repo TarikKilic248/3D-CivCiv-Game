@@ -29,13 +29,25 @@ public class ThirdPersonCameraController : MonoBehaviour
     [Header("--- Mouse Rotation (Fare ile Dönüş) ---")]
     [Tooltip("Karakter fare / kamera yönüne doğru dönsün mü? (Orientation gerektirmez)")]
     [SerializeField] private bool _rotateWithMouse = true;
-    [Tooltip("TPS modunda karakterin fare/kamera yönüne dönme hızı")]
+    [Tooltip("TPS modunda karakterin dönüş yumuşaklık hızı")]
     [SerializeField] private float _tpsRotationSpeed = 15f;
     [Tooltip("FPS modunda anlık dönüş (FPS oyunlarındaki gibi gecikmesiz)")]
     [SerializeField] private bool _instantTurnInFPS = true;
     [Tooltip("Doğrudan fare (Mouse X) hassasiyeti ile dönüş ekle")]
     [SerializeField] private bool _useDirectMouseX = false;
     [SerializeField] private float _mouseSensitivity = 3f;
+    [SerializeField] private float _mouseVerticalSensitivity = 2f;
+    [SerializeField] private float _minPitch = -30f;
+    [SerializeField] private float _maxPitch = 60f;
+    [SerializeField] private float _orbitHeight = 1.4f;
+
+    [Header("--- Camera Follows Character (Kamera Karakterle Beraber Dönsün) ---")]
+    [Tooltip("Karakter hareket ederken kamera da karakterin arkasına doğru dönsün")]
+    [SerializeField] private bool _cameraFollowsCharacterOnMove = true;
+    [Tooltip("Kameranın hareket esnasında karakterin arkasına dönme hızı")]
+    [SerializeField] private float _cameraFollowSpeed = 4f;
+    [Tooltip("Karakter hareket ederken koştuğu yöne doğru dönsün")]
+    [SerializeField] private bool _turnCharacterToMovement = true;
 
     [Header("--- Perspective Settings ---")]
     [Tooltip("Başlangıçtaki kamera modu")]
@@ -54,6 +66,13 @@ public class ThirdPersonCameraController : MonoBehaviour
     private const int LOW_PRIORITY = 10;
 
     private Camera _mainCamera;
+    private Transform _orbitTarget;
+    private Transform _movementReference;
+    private Transform _fpsLookTarget;
+    private PlayerController _playerController;
+    private float _cameraYaw;
+    private float _cameraPitch;
+    private float _lastMouseInputTime = float.NegativeInfinity;
 
     private void Awake()
     {
@@ -62,6 +81,16 @@ public class ThirdPersonCameraController : MonoBehaviour
         // Eksik referansları otomatik toparla
         AutoFindReferences();
         EnsureCamerasRuntime();
+
+        if (_tpsCamera != null)
+        {
+            _cameraYaw = _playerTransform != null ? _playerTransform.eulerAngles.y : _tpsCamera.transform.eulerAngles.y;
+            _cameraPitch = NormalizeAngle(_tpsCamera.transform.eulerAngles.x);
+        }
+
+        EnsureOrbitTarget();
+        EnsureFpsLookTarget();
+        EnsureMovementReference();
     }
 
     private void Start()
@@ -77,53 +106,229 @@ public class ThirdPersonCameraController : MonoBehaviour
     private void Update()
     {
         HandleInputs();
-        RotateCharacterWithMouse();
+        HandleMouseLook();
+        HandleMovementAndCameraRotation();
     }
 
     private void LateUpdate()
     {
-        // LateUpdate'te de kamera güncellemelerine karşı hizalama tazelenir
-        if (_rotateWithMouse && _currentPerspective == CameraPerspective.FirstPerson)
-        {
-            AlignPlayerWithCameraForward(true);
-        }
+        UpdateOrbitTargetPosition();
+        ApplyOrbitRotation();
     }
 
-    /// <summary>
-    /// Karakterin farenin baktığı yatay yöne dönmesini sağlar (Orientation transformuna ihtiyaç kalmaz!)
-    /// </summary>
-    private void RotateCharacterWithMouse()
+    private void HandleMovementAndCameraRotation()
     {
         if (_playerTransform == null) return;
 
-        // 1. Doğrudan fare X hareketiyle çevirme seçeneği
-        if (_useDirectMouseX)
+        // --- FPS MODU ---
+        if (_currentPerspective == CameraPerspective.FirstPerson)
         {
-            float mouseX = GetMouseXInput();
-            if (Mathf.Abs(mouseX) > 0.001f)
+            return;
+        }
+
+        // --- TPS MODU ---
+        float h = 0f;
+        float v = 0f;
+
+#if ENABLE_INPUT_SYSTEM
+        var kb = Keyboard.current;
+        if (kb != null)
+        {
+            if (kb.wKey.isPressed || kb.upArrowKey.isPressed) v += 1f;
+            if (kb.sKey.isPressed || kb.downArrowKey.isPressed) v -= 1f;
+            if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) h += 1f;
+            if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) h -= 1f;
+        }
+#endif
+        try
+        {
+            if (Mathf.Approximately(h, 0f) && Mathf.Approximately(v, 0f))
             {
-                _playerTransform.Rotate(Vector3.up, mouseX * _mouseSensitivity);
+                h = Input.GetAxisRaw("Horizontal");
+                v = Input.GetAxisRaw("Vertical");
             }
         }
+        catch { }
 
-        // 2. Kameranın baktığı yatay açıya göre karakteri döndürme
-        if (_rotateWithMouse)
+        Vector3 camForward = Vector3.forward;
+        Vector3 camRight = Vector3.right;
+        if (_mainCamera != null)
         {
-            bool instant = (_currentPerspective == CameraPerspective.FirstPerson && _instantTurnInFPS);
-            AlignPlayerWithCameraForward(instant);
+            camForward = _mainCamera.transform.forward;
+            camForward.y = 0f;
+            camForward.Normalize();
+
+            camRight = _mainCamera.transform.right;
+            camRight.y = 0f;
+            camRight.Normalize();
         }
 
-        // 3. Karakter modelini gövdeyle senkronize tut
-        if (_playerVisualTransform != null)
+        Vector3 moveInput = camForward * v + camRight * h;
+        bool isMoving = (moveInput.sqrMagnitude > 0.01f);
+
+        // 1. Karakter Dönüşü: Hareket ediyorsa hareket yönüne, duruyorsa fare yönüne baksın
+        if (isMoving && _turnCharacterToMovement)
+        {
+            Quaternion targetCharRot = Quaternion.LookRotation(moveInput);
+            _playerTransform.rotation = Quaternion.Slerp(_playerTransform.rotation, targetCharRot, Time.deltaTime * _tpsRotationSpeed);
+        }
+
+        // 2. Kamera Dönüşü: Hareket ederken kamera da karakterin arkasına doğru dönsün
+        if (isMoving && _cameraFollowsCharacterOnMove && !IsMouseLookActive())
+        {
+            RotateCameraBehindCharacter();
+        }
+
+        // 3. Model ve Orientation Senkronizasyonu
+        if (_playerVisualTransform != null &&
+            _playerVisualTransform != _playerTransform &&
+            _playerVisualTransform.IsChildOf(_playerTransform))
         {
             _playerVisualTransform.localRotation = Quaternion.identity;
         }
-
-        // 4. Eğer eski Orientation transformu hala sahnede bağlıysa onu da senkronize et
         if (_orientationTransform != null)
         {
             _orientationTransform.rotation = _playerTransform.rotation;
         }
+    }
+
+    private void HandleMouseLook()
+    {
+        if (!_rotateWithMouse || Cursor.lockState != CursorLockMode.Locked || _playerTransform == null)
+        {
+            return;
+        }
+
+        Vector2 mouseDelta = GetMouseDelta();
+        if (mouseDelta.sqrMagnitude < 0.0001f)
+        {
+            return;
+        }
+
+        _lastMouseInputTime = Time.unscaledTime;
+        _cameraPitch = Mathf.Clamp(
+            _cameraPitch - mouseDelta.y * _mouseVerticalSensitivity,
+            _minPitch,
+            _maxPitch);
+
+        float yaw = mouseDelta.x * _mouseSensitivity;
+        _cameraYaw += yaw;
+
+        if (_currentPerspective == CameraPerspective.ThirdPerson && _orbitTarget != null)
+        {
+            ApplyOrbitRotation();
+        }
+        else if (_currentPerspective == CameraPerspective.FirstPerson)
+        {
+            _playerTransform.rotation = Quaternion.Euler(0f, _cameraYaw, 0f);
+            if (_fpsLookTarget != null)
+            {
+                _fpsLookTarget.localRotation = Quaternion.Euler(_cameraPitch, 0f, 0f);
+            }
+        }
+    }
+
+    private void EnsureOrbitTarget()
+    {
+        if (_playerTransform == null || _tpsCamera == null)
+        {
+            return;
+        }
+
+        GameObject orbitObject = new GameObject("Runtime_CameraOrbitTarget");
+        _orbitTarget = orbitObject.transform;
+        _orbitTarget.position = _playerTransform.position + Vector3.up * _orbitHeight;
+        _orbitTarget.rotation = Quaternion.Euler(_cameraPitch, _cameraYaw, 0f);
+
+        _tpsCamera.Target.TrackingTarget = _orbitTarget;
+    }
+
+    private void EnsureFpsLookTarget()
+    {
+        if (_playerTransform == null || _fpsCamera == null)
+        {
+            return;
+        }
+
+        GameObject lookObject = new GameObject("Runtime_FPSLookTarget");
+        _fpsLookTarget = lookObject.transform;
+        _fpsLookTarget.SetParent(_playerTransform);
+        _fpsLookTarget.localPosition = new Vector3(0f, 1.6f, 0.15f);
+        _fpsLookTarget.localRotation = Quaternion.Euler(_cameraPitch, 0f, 0f);
+        _fpsCamera.Target.TrackingTarget = _fpsLookTarget;
+    }
+
+    private void EnsureMovementReference()
+    {
+        if (_playerTransform == null)
+        {
+            return;
+        }
+
+        _playerController = _playerTransform.GetComponent<PlayerController>();
+        if (_playerController == null)
+        {
+            return;
+        }
+
+        if (_orientationTransform != null)
+        {
+            _movementReference = _orientationTransform;
+        }
+        else
+        {
+            GameObject referenceObject = new GameObject("Runtime_MovementReference");
+            _movementReference = referenceObject.transform;
+        }
+
+        _movementReference.position = _playerTransform.position;
+        _movementReference.rotation = Quaternion.Euler(0f, _cameraYaw, 0f);
+        _playerController.SetMovementReference(_movementReference);
+    }
+
+    private void UpdateOrbitTargetPosition()
+    {
+        if (_orbitTarget == null || _playerTransform == null)
+        {
+            return;
+        }
+
+        _orbitTarget.position = _playerTransform.position + Vector3.up * _orbitHeight;
+        if (_movementReference != null)
+        {
+            _movementReference.position = _playerTransform.position;
+            _movementReference.rotation = Quaternion.Euler(0f, _cameraYaw, 0f);
+        }
+    }
+
+    private void ApplyOrbitRotation()
+    {
+        if (_orbitTarget == null)
+        {
+            return;
+        }
+
+        _orbitTarget.rotation = Quaternion.Euler(_cameraPitch, _cameraYaw, 0f);
+    }
+
+    private bool IsMouseLookActive()
+    {
+        return _rotateWithMouse &&
+               Cursor.lockState == CursorLockMode.Locked &&
+               Time.unscaledTime - _lastMouseInputTime < 0.2f;
+    }
+
+    private static float NormalizeAngle(float angle)
+    {
+        angle %= 360f;
+        return angle > 180f ? angle - 360f : angle;
+    }
+
+    private void RotateCameraBehindCharacter()
+    {
+        float targetYaw = _playerTransform.eulerAngles.y;
+        _cameraYaw = Mathf.LerpAngle(_cameraYaw, targetYaw, Time.deltaTime * _cameraFollowSpeed);
+        ApplyOrbitRotation();
     }
 
     private void AlignPlayerWithCameraForward(bool instant)
@@ -173,6 +378,25 @@ public class ThirdPersonCameraController : MonoBehaviour
         return mx;
     }
 
+    private Vector2 GetMouseDelta()
+    {
+#if ENABLE_INPUT_SYSTEM
+        if (Mouse.current != null)
+        {
+            return Mouse.current.delta.ReadValue() * 0.1f;
+        }
+#endif
+
+        try
+        {
+            return new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+        }
+        catch
+        {
+            return Vector2.zero;
+        }
+    }
+
     [ContextMenu("Referansları Otomatik Bağla (Auto Find)")]
     public void AutoFindReferences()
     {
@@ -208,7 +432,7 @@ public class ThirdPersonCameraController : MonoBehaviour
             }
         }
 
-        // 3. Orientation Transform (İsteğe bağlı, artık zorunlu değil)
+        // 3. Orientation Transform (İsteğe bağlı)
         if (_orientationTransform == null && _playerTransform != null)
         {
             var orient = _playerTransform.Find("Orientation");
@@ -325,16 +549,28 @@ public class ThirdPersonCameraController : MonoBehaviour
         if (_tpsCamera != null)
         {
             _tpsCamera.Priority = isFPS ? LOW_PRIORITY : HIGH_PRIORITY;
+            if (!isFPS && _orbitTarget != null)
+            {
+                _tpsCamera.Target.TrackingTarget = _orbitTarget;
+            }
         }
 
         if (_fpsCamera != null)
         {
             _fpsCamera.Priority = isFPS ? HIGH_PRIORITY : LOW_PRIORITY;
+            if (isFPS && _fpsLookTarget != null)
+            {
+                _fpsCamera.Target.TrackingTarget = _fpsLookTarget;
+            }
         }
 
-        if (_playerVisualTransform != null && _hideVisualInFPS)
+        if (_hideVisualInFPS && _playerTransform != null)
         {
-            _playerVisualTransform.gameObject.SetActive(!isFPS);
+            Renderer[] renderers = _playerTransform.GetComponentsInChildren<Renderer>(true);
+            foreach (Renderer renderer in renderers)
+            {
+                renderer.enabled = !isFPS;
+            }
         }
     }
 
