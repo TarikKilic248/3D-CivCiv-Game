@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Slide sırasında collider boyutunu küçült (çömelme efekti)")]
     [SerializeField] private bool _adjustColliderOnSlide = true;
     [Tooltip("Slide esnasında collider yükseklik çarpanı")]
-    [SerializeField] [Range(0.2f, 1f)] private float _slideColliderMultiplier = 0.5f;
+    [SerializeField][Range(0.2f, 1f)] private float _slideColliderMultiplier = 0.5f;
 
     [Header("--- Ground Check & Collider ---")]
     [Tooltip("Arayüzde (Inspector) eklediğiniz Collider. Boş bırakırsanız otomatik tespit edilir.")]
@@ -60,6 +60,10 @@ public class PlayerController : MonoBehaviour
     [Header("--- Debug & Visuals ---")]
     [Tooltip("Scene görünümünde zemin algılama gizmosunu göster")]
     [SerializeField] private bool _showGroundGizmo = true;
+
+    [Header("--- State Machine ---")]
+    [Tooltip("Karakter durum yöneticisi (StateController)")]
+    [SerializeField] private StateController _stateController;
 
     // Özel Değişkenler
     private Rigidbody _playerRigidbody;
@@ -87,6 +91,7 @@ public class PlayerController : MonoBehaviour
             var orient = transform.Find("Orientation");
             if (orient != null) _playerOrientationTransform = orient;
         }
+        if (_stateController == null) _stateController = GetComponent<StateController>();
     }
 
     private void Reset()
@@ -94,6 +99,7 @@ public class PlayerController : MonoBehaviour
         _playerCollider = GetComponent<Collider>();
         var orient = transform.Find("Orientation");
         if (orient != null) _playerOrientationTransform = orient;
+        _stateController = GetComponent<StateController>();
     }
 #endif
 
@@ -122,6 +128,16 @@ public class PlayerController : MonoBehaviour
             _playerCollider = GetComponent<Collider>();
         }
 
+        // 4. StateController Kurulumu
+        if (_stateController == null)
+        {
+            _stateController = GetComponent<StateController>();
+            if (_stateController == null)
+            {
+                _stateController = gameObject.AddComponent<StateController>();
+            }
+        }
+
         CacheColliderProperties();
     }
 
@@ -146,6 +162,8 @@ public class PlayerController : MonoBehaviour
         _isGrounded = CheckGround();
 
         HandleInputs();
+
+        SetStates();
 
         // Slide süresi yönetimi
         if (_isSliding)
@@ -418,5 +436,34 @@ public class PlayerController : MonoBehaviour
         Vector3 endPoint = origin + Vector3.down * _groundCheckDistance;
         Gizmos.DrawWireSphere(endPoint, _groundCheckRadius);
         Gizmos.DrawLine(origin, endPoint);
+    }
+
+    private void SetStates()
+    {
+        if (_stateController == null) return;
+
+        var movementDirection = GetMovementDirection();
+        var currentState = _stateController.GetCurrentState();
+
+        var newStateToSet = currentState switch
+        {
+            _ when !_isGrounded || !_canJump => PlayerState.Jump,
+            _ when _isSliding && movementDirection != Vector3.zero => PlayerState.Slide,
+            _ when _isSliding && movementDirection == Vector3.zero => PlayerState.SlideIdle,
+            _ when _isGrounded && movementDirection != Vector3.zero => PlayerState.Move,
+            _ when _isGrounded && movementDirection == Vector3.zero => PlayerState.Idle,
+            _ => currentState
+        };
+
+        if (newStateToSet != currentState)
+        {
+            _stateController.ChangeState(newStateToSet);
+            Debug.Log($"[Player State] Durum Değişti: {currentState} -> {newStateToSet}");
+        }
+    }
+
+    private Vector3 GetMovementDirection()
+    {
+        return _moveDirection.normalized;
     }
 }
