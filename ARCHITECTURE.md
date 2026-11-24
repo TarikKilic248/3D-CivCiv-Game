@@ -23,6 +23,7 @@
 - `StateController.cs` : Karakterin anlık durumunu (`PlayerState`) tutan ve durum geçişlerini yöneten bileşen.
 - `TargetJump.cs` : Oyuncu (`PlayerController`) tetikleyici alana (`OnTriggerEnter`) girdiğinde karakterin `Rigidbody` bileşenine dikey zıplama kuvveti (`ForceMode.Impulse`) uygulayan zıplatma platformu.
 - `ICollectable.cs` : Toplanabilir nesneler için temel arayüz (`void Collect()`).
+- `Data/PlayerStatsSO.cs` : Karakterin hareket, zıplama, kayma (slide), ileri atılma (dash) ve stamina parametrelerini tutan `ScriptableObject` veri sınıfı.
 
 ### 2. Durum Tanımları (`Assets/_GameAssets/Scripts/Enums/`)
 - `PlayerState.cs` : Karakter hareket durumlarını tanımlayan enum (`Idle`, `Move`, `Jump`, `SlideIdle`, `Slide`).

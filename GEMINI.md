@@ -1,57 +1,25 @@
 # Unity Otonom Gece Vardiyası Kuralları
 
-## Temel Görev Akışı
-- Kök dizindeki `TASKS.md` dosyasını oku ve işaretlenmemiş (`[ ]`) görevleri sırayla uygula.
-- Tamamladığın her görevi (ve tüm alt maddeleri tamamlanan faz başlıklarını) `TASKS.md` dosyasından tamamen sil; sadece sıradaki bekleyen görevler kalsın.
-- Sildiğin ve tamamladığın her görevi, değişen dosya adlarıyla birlikte `NIGHT_REPORT.md` dosyasına madde olarak ekle.
-- Her çalışan özellikten sonra anlamlı bir mesajla `git add .` ve `git commit -m "..."` at.
-
-## Unity ve C# Kuralları
-- Unity 6 (6000.x) C# standartlarına ve SOLID prensiplerine uy.
-- `.unity` sahne veya `.prefab` dosyalarına doğrudan metin düzenlemesiyle müdahale etme; yeni sistemleri temiz C# scriptleri ve `ScriptableObject` yapılarıyla kur.
-
-## Derleme Testi ve Kota Koruma Kilidi (Kritik)
-- C# kodu yazdıktan veya değiştirdikten sonra mutlaka şu komutu çalıştırarak derleme kontrolü yap:
-  `"C:\Program Files\Unity\Hub\Editor\6000.6.8f1\Editor\Unity.exe" -batchmode -quit -projectPath . -logFile build.log`
-- `build.log` dosyasını kontrol et. Aynı derleme hatasını en fazla **3 kez** çözmeyi dene. 3 denemede çözemezsen o görevi atla, `NIGHT_REPORT.md` dosyasına hatayı yaz ve sıradaki göreve geç. Sonsuz döngüye girme.
-
-# Unity Otonom Gece Vardiyası Kuralları
-
-## Temel Görev Akışı
-- Kök dizindeki `TASKS.md` dosyasını oku ve işaretlenmemiş (`[ ]`) görevleri sırayla uygula.
-- Tamamladığın her görevden sonra `TASKS.md` içindeki `[ ]` kutusunu `[x]` yap.
-- Her çalışan özellikten sonra anlamlı bir mesajla `git add .` ve `git commit -m "..."` at.
-
-## Unity ve C# Kuralları
-- Unity 6 (6000.6.8f1) C# standartlarına ve SOLID prensiplerine uy.
-- `.unity` sahne veya `.prefab` dosyalarına doğrudan metin düzenlemesiyle müdahale etme; yeni sistemleri temiz C# scriptleri ve `ScriptableObject` yapılarıyla kur.
-
-## İki Aşamalı Derleme Testi ve Kota Koruma Kilidi (Kritik)
-1. **Hızlı Sözdizimi Kontrolü (Öncelikli):** C# kodu yazdıktan veya düzenledikten sonra ilk olarak hızlı kontrol için şu komutu çalıştır:
-   `dotnet build Assembly-CSharp.csproj`
-   (Eğer projede Editor scripti varsa `dotnet build Assembly-CSharp-Editor.csproj` komutunu da çalıştır.)
-2. **Tam Unity Doğrulaması (Görev Bitiminde):** Hızlı derleme hatasız geçtikten sonra, Unity'nin `.meta` dosyalarını üretmesi ve sahne/referans bütünlüğünü doğrulaması için görev sonunda şu komutu çalıştır:
-   `"C:\Program Files\Unity\Hub\Editor\6000.6.8f1\Editor\Unity.exe" -batchmode -quit -projectPath . -logFile build.log`
-   *(Not: Eğer Unity Editör masaüstünde zaten açıksa bu komutu çalıştırma, `build.log` veya `Logs\Editor.log` dosyasını kontrol et.)*
-3. **Sonsuz Döngü Koruması:** Aynı derleme hatasını en fazla **3 kez** çözmeyi dene. 3 denemede çözemezsen o görevi atla, `NIGHT_REPORT.md` dosyasına hatayı yaz ve sıradaki göreve geç.
-
-
-
-
-
-# Otonom Geliştirme Kuralları (Token Tasarruf Modu)
-
 ## Bağlam ve Arama Kuralları
-- Proje yapısını anlamak için klasör taraması (`Get-ChildItem`, `tree` vb.) YAPMA; sadece `ARCHITECTURE.md` dosyasını referans al.
-- `.unity`, `.prefab` ve binary asset dosyalarını OKUMA.
-- Komut çıktılarının tamamını ekrana basma; derleme ve log kontrollerinde sadece hata satırlarını filtrele (Örn: `dotnet build Assembly-CSharp.csproj | Select-String "error"`).
+- Klasör taraması (`Get-ChildItem`, `tree` vb.) YAPMA; proje yapısı ve mevcut sınıflar için sadece `ARCHITECTURE.md` dosyasını referans al.
+- `.unity`, `.prefab` ve binary asset dosyalarını OKUMA ve doğrudan metin düzenlemesiyle müdahale etme.
+- Derleme ve log kontrollerinde çıktının tamamını basma, sadece hata satırlarını filtrele: `dotnet build Assembly-CSharp.csproj | Select-String "error"`
 
-## Görev ve Kod Akışı
-- `TASKS.md` içindeki `[ ]` görevlerini sırayla yap. Biteni `[x]` yap ve `ARCHITECTURE.md` dosyasına yeni eklediğin scriptin adını 1 satır olarak ekle.
-- Unity 6 (6000.6.8f1) C# standartlarını ve SOLID prensiplerini kullan.
-- Kod yazdıktan sonra sadece `dotnet build Assembly-CSharp.csproj` ile hızlı derleme testi yap. Unity Batchmode'u SADECE tüm görevler bittiğinde en sonda 1 kez çalıştır.
-- Aynı hatayı en fazla 2 kez çözmeyi dene; çözemezsen atla ve `NIGHT_REPORT.md` dosyasına yaz.
-- Her biten görevde `git add . && git commit -m "feat: <kısa özet>"` çalıştır.
+## Görev Akışı ve Kota Sınırı (Kritik)
+- Her vardiyada `TASKS.md` içinden **en fazla 3 görev** tamamla ve oturumu sonlandır.
+- Tamamladığın her görevi (ve tüm maddeleri biten faz başlıklarını) `TASKS.md` dosyasından tamamen sil.
+- Tamamladığın görevi ve değişen dosya adlarını `NIGHT_REPORT.md` dosyasına 1 madde olarak ekle; yeni eklediğin scripti `ARCHITECTURE.md` dosyasına 1 satır olarak işle.
+
+## Unity ve C# Standartları
+- Unity 6 (`6000.6.8f1`) C# standartlarına ve SOLID prensiplerine uy; yeni sistemleri temiz C# scriptleri ve `ScriptableObject` yapılarıyla kur.
+
+## İki Aşamalı Derleme Testi ve Geri Sarma (Rollback) Kilidi
+1. **Hızlı Sözdizimi Kontrolü (Her Görevde):** C# kodu yazdıktan sonra önce `dotnet build Assembly-CSharp.csproj` (ve Editor scripti varsa `dotnet build Assembly-CSharp-Editor.csproj`) çalıştır.
+2. **Sıfır Hata ve Rollback Kuralı:** Hata çıkarsa en fazla **2 kez** düzeltmeyi dene. **2 denemede çözülmezse** `git checkout -- .` ve `git clean -fd` komutlarıyla son çalışan temiz commit'e geri dön! Bozuk kodu asla bırakma; görevi `TASKS.md` içinde tut, `NIGHT_REPORT.md` dosyasına "Atlandı (Derleme Hatası)" notu düş ve sıradaki göreve geç.
+3. **Temiz Commit:** Sadece **0 hata (0 errors)** alındığında `git add . && git commit -m "feat: <kısa özet>"` çalıştır.
+4. **Tam Unity Doğrulaması (Vardiya Sonunda 1 Kez):** Vardiyadaki görevler tamamlandığında `.meta` dosyalarının üretimi ve sahne/referans kontrolü için en sonda 1 kez şu komutu çalıştır:
+   `"C:\Program Files\Unity\Hub\Editor\6000.6.8f1\Editor\Unity.exe" -batchmode -quit -projectPath . -logFile build.log`
+   *(Not: Masaüstünde Unity Editör açıksa bu komutu çalıştırma.)*
 
 ## Çıktı Formatı
-- Sohbet ekranına uzun açıklamalar veya kod blokları yazma; sadece dosya düzenleme araçlarını kullan ve 1 cümlelik durum bildirimi ver.
+- Sohbet ekranına uzun açıklamalar veya kod blokları yazma; sadece araçları kullan ve 1 cümlelik durum bildirimi ver.
