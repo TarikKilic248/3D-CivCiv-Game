@@ -11,20 +11,6 @@
 
 ---
 
-## Faz 2: Çekirdek Oyun Döngüsü (GameManager, GameState ve Zamanlayıcı Entegrasyonu)
-
-- [ ] **Görev 2.3: `ClockUI` Süre Bitimi Eventi ve `CoinManager` HighScore Kaydı**
-  - **Dosya Yolu:** `Assets/_GameAssets/Scripts/UI/ClockUI.cs` ve `Assets/_GameAssets/Scripts/UI/CoinManager.cs`
-  - **Sınıf Adları:** `ClockUI : MonoBehaviour`, `CoinManager : MonoBehaviour`
-  - **Metodlar:**
-    - `ClockUI.cs` -> `public event System.Action OnTimerExpired;` ve `public float RemainingSeconds => remainingSeconds;` ekle.
-    - `ClockUI.cs` -> `public void AddBonusTime(float seconds)` : Dışarıdan süre eklemek için public metod.
-    - `ClockUI.cs` -> `Update()` içinde `remainingSeconds <= 0f` olduğunda bir kez `OnTimerExpired?.Invoke()` çağır ve `GameManager.Instance != null` ise `GameManager.Instance.TriggerGameOver()` tetikle.
-    - `CoinManager.cs` -> `public int HighScore { get; private set; }` alanı ekle.
-    - `CoinManager.cs` -> `public void LoadHighScore()` ve `public void SaveHighScore()` metodlarını `PlayerPrefs` (`"CivCiv_HighScore"`) kullanarak yaz; `AddCoins` içinde yeni rekor kırılırsa otomatik kaydet.
-
----
-
 ## Faz 3: Toplanabilir Öğeler, Seviye Mekanikleri ve Etkileşimler
 
 - [ ] **Görev 3.1: `CoinCollect` Görsel/İşitsel Efekt Geliştirmesi**

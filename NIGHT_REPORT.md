@@ -5,3 +5,4 @@
 - **Görev 1.3: İleri Atılma ve Enerji Kontrolcüsü (`DashController`)** tamamlandı (`Assets/_GameAssets/Scripts/DashController.cs`, `ARCHITECTURE.md`, `TASKS.md`).
 - **Görev 2.1: Oyun Durumu Enum Tanımı (`GameState`)** tamamlandı (`Assets/_GameAssets/Scripts/Enums/GameState.cs`, `ARCHITECTURE.md`, `TASKS.md`).
 - **Görev 2.2: Merkezi Oyun Yöneticisi (`GameManager`)** tamamlandı (`Assets/_GameAssets/Scripts/Core/GameManager.cs`, `ARCHITECTURE.md`, `TASKS.md`).
+- **Görev 2.3: `ClockUI` Süre Bitimi Eventi ve `CoinManager` HighScore Kaydı** tamamlandı (`Assets/_GameAssets/Scripts/UI/ClockUI.cs`, `Assets/_GameAssets/Scripts/UI/CoinManager.cs`, `ARCHITECTURE.md`, `TASKS.md`).

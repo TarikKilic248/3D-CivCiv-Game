@@ -32,10 +32,10 @@
 - `GameState.cs` : Oyun döngüsü durumlarını tanımlayan enum (`Playing`, `Paused`, `Victory`, `GameOver`).
 
 ### 3. Kullanıcı Arayüzü ve Oyun Yönetimi (`Assets/_GameAssets/Scripts/UI/`)
-- `CoinManager.cs` : Toplanan altın/puan miktarını yöneten Singleton sınıfı (`CoinManager.Instance`). `CoinsChanged` ve `CoinsCollected` event'lerini tetikler.
+- `CoinManager.cs` : Toplanan altın/puan miktarını ve `PlayerPrefs` (`CivCiv_HighScore`) tabanlı yüksek skoru yöneten Singleton sınıfı (`CoinManager.Instance`). `CoinsChanged` ve `CoinsCollected` event'lerini tetikler.
 - `CoinCollect.cs` : `ICollectable` arayüzünü uygulayan toplanabilir obje scripti. Oyuncu temas ettiğinde `CoinManager.Instance.AddCoins(value)` çağırır ve nesneyi yok eder.
 - `CoinUI.cs` : `CoinManager.Instance.CoinsChanged` event'ini dinleyerek ekrandaki `TextMeshProUGUI` (`CoinValueText`) metnini güncelleyen HUD bileşeni.
-- `ClockUI.cs` : Geri sayım sayacını (`MM:SS`) ve saat ibresi (`Stick`) rotasyonunu yöneten HUD bileşeni. `CoinManager.Instance.CoinsCollected` event'ini dinleyerek toplanan coin başına ekstra süre ekler.
+- `ClockUI.cs` : Geri sayım sayacını (`MM:SS`), süre bitiminde `OnTimerExpired` / `GameOver` tetiklemesini ve saat ibresi (`Stick`) rotasyonunu yöneten HUD bileşeni. `CoinManager.Instance.CoinsCollected` event'ini dinleyerek veya `AddBonusTime` ile ekstra süre ekler.
 - `SettingsUI.cs` : Oyun içi ayarlar menüsü ve ses/müzik yöneticisi Singleton sınıfı (`SettingsUI.Instance`). PopUp açma/kapama animasyonu, oyun duraklatma (`Time.timeScale`), `PlayerPrefs` ile müzik/SFX kaydetme (`CivCiv_MusicEnabled`, `CivCiv_SoundEnabled`), `SettingsUI.PlaySFX` genel ses çalma, yeniden başlatma ve çıkış işlevlerini barındırır.
 
 ### 4. Editör Araçları (`Assets/_GameAssets/Scripts/Editor/`)

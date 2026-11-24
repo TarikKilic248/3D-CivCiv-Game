@@ -12,6 +12,10 @@ public class ClockUI : MonoBehaviour
     private float remainingSeconds;
     private float currentStickAngle;
     private bool isSubscribed;
+    private bool hasExpired;
+
+    public event System.Action OnTimerExpired;
+    public float RemainingSeconds => remainingSeconds;
 
     private void Awake()
     {
@@ -55,8 +59,39 @@ public class ClockUI : MonoBehaviour
     private void Update()
     {
         if (remainingSeconds > 0f)
+        {
             remainingSeconds = Mathf.Max(0f, remainingSeconds - Time.deltaTime);
+            if (remainingSeconds <= 0f && !hasExpired)
+            {
+                hasExpired = true;
+                OnTimerExpired?.Invoke();
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.TriggerGameOver();
+                }
+            }
+        }
+        else if (!hasExpired)
+        {
+            hasExpired = true;
+            OnTimerExpired?.Invoke();
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.TriggerGameOver();
+            }
+        }
 
+        UpdateTimerUI();
+    }
+
+    public void AddBonusTime(float seconds)
+    {
+        if (seconds <= 0f) return;
+        remainingSeconds += seconds;
+        if (remainingSeconds > 0f)
+        {
+            hasExpired = false;
+        }
         UpdateTimerUI();
     }
 
