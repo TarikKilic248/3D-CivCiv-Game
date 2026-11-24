@@ -6,7 +6,7 @@
 - Derleme ve log kontrollerinde çıktının tamamını basma, sadece hata satırlarını filtrele: `dotnet build Assembly-CSharp.csproj | Select-String "error"`
 
 ## Görev Akışı ve Kota Sınırı (Kritik)
-- Her vardiyada `TASKS.md` içinden **en fazla 3 görev** tamamla ve oturumu sonlandır.
+- Her vardiyada `TASKS.md` içinden **en fazla 9 görev** tamamla ve oturumu sonlandır.
 - Tamamladığın her görevi (ve tüm maddeleri biten faz başlıklarını) `TASKS.md` dosyasından tamamen sil.
 - Tamamladığın görevi ve değişen dosya adlarını `NIGHT_REPORT.md` dosyasına 1 madde olarak ekle; yeni eklediğin scripti `ARCHITECTURE.md` dosyasına 1 satır olarak işle.
 

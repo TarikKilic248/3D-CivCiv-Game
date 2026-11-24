@@ -13,11 +13,6 @@
 
 ## Faz 2: Çekirdek Oyun Döngüsü (GameManager, GameState ve Zamanlayıcı Entegrasyonu)
 
-- [ ] **Görev 2.1: Oyun Durumu Enum Tanımı (`GameState`)**
-  - **Dosya Yolu:** `Assets/_GameAssets/Scripts/Enums/GameState.cs`
-  - **Sınıf Adı:** `GameState` (Enum)
-  - **Değerler:** `Playing`, `Paused`, `Victory`, `GameOver`
-
 - [ ] **Görev 2.2: Merkezi Oyun Yöneticisi (`GameManager`)**
   - **Dosya Yolu:** `Assets/_GameAssets/Scripts/Core/GameManager.cs`
   - **Sınıf Adı:** `GameManager : MonoBehaviour`

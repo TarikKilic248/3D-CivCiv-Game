@@ -28,6 +28,7 @@
 
 ### 2. Durum Tanımları (`Assets/_GameAssets/Scripts/Enums/`)
 - `PlayerState.cs` : Karakter hareket durumlarını tanımlayan enum (`Idle`, `Move`, `Jump`, `SlideIdle`, `Slide`, `Dash`, `Glide`).
+- `GameState.cs` : Oyun döngüsü durumlarını tanımlayan enum (`Playing`, `Paused`, `Victory`, `GameOver`).
 
 ### 3. Kullanıcı Arayüzü ve Oyun Yönetimi (`Assets/_GameAssets/Scripts/UI/`)
 - `CoinManager.cs` : Toplanan altın/puan miktarını yöneten Singleton sınıfı (`CoinManager.Instance`). `CoinsChanged` ve `CoinsCollected` event'lerini tetikler.
