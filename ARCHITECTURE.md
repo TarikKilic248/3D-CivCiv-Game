@@ -24,6 +24,7 @@
 - `TargetJump.cs` : Oyuncu (`PlayerController`) tetikleyici alana (`OnTriggerEnter`) girdiğinde karakterin `Rigidbody` bileşenine dikey zıplama kuvveti (`ForceMode.Impulse`) uygulayan zıplatma platformu.
 - `ICollectable.cs` : Toplanabilir nesneler için temel arayüz (`void Collect()`).
 - `Data/PlayerStatsSO.cs` : Karakterin hareket, zıplama, kayma (slide), ileri atılma (dash) ve stamina parametrelerini tutan `ScriptableObject` veri sınıfı.
+- `DashController.cs` : Karakterin ileri atılma (`Dash`) yeteneğini, bekleme süresini (cooldown) ve enerji (`Stamina`) tüketim/yenilenme döngüsünü yöneten bileşen.
 
 ### 2. Durum Tanımları (`Assets/_GameAssets/Scripts/Enums/`)
 - `PlayerState.cs` : Karakter hareket durumlarını tanımlayan enum (`Idle`, `Move`, `Jump`, `SlideIdle`, `Slide`, `Dash`, `Glide`).

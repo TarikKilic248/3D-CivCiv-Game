@@ -11,27 +11,6 @@
 
 ---
 
-## Faz 1: Veri Mimarisi (ScriptableObject) ve Karakter Yetenekleri (Dash & Stamina)
-
-- [ ] **Görev 1.3: İleri Atılma ve Enerji Kontrolcüsü (`DashController`)**
-  - **Dosya Yolu:** `Assets/_GameAssets/Scripts/DashController.cs`
-  - **Sınıf Adı:** `DashController : MonoBehaviour`
-  - **Alanlar ve Eventler:**
-    - `[SerializeField] private PlayerStatsSO _playerStats;`
-    - `[SerializeField] private KeyCode _dashKey = KeyCode.LeftShift;`
-    - `public event System.Action<float, float> OnStaminaChanged;` (`currentStamina`, `maxStamina`)
-    - `public event System.Action OnDashExecuted;`
-    - `public bool IsDashing { get; private set; }`
-  - **Metodlar:**
-    - `private void HandleDashInput()` : Yeni Input System (`Keyboard.current.leftShiftKey.wasPressedThisFrame`) ve eski Input (`Input.GetKeyDown(_dashKey)`) üzerinden girdi alır.
-    - `public bool CanDash()` : Cooldown süresi dolmuş mu, `currentStamina >= dashStaminaCost` mu ve `SettingsUI.IsOpen == false` mu kontrol eder.
-    - `public void ExecuteDash()` : `PlayerController.GetOrientation()` yönünde `Rigidbody.AddForce(dashDir * dashForce, ForceMode.Impulse)` uygular, `StateController.ChangeState(PlayerState.Dash)` çağırır, staminayı düşürür ve `OnStaminaChanged` event'ini tetikler.
-    - `public void RefillStamina(float amount)` : Dışarıdan stamina doldurur ve `OnStaminaChanged` tetikler.
-    - `public bool TryConsumeStamina(float amount)` : Belirtilen miktarda stamina varsa harcar ve `true` döner.
-    - `private void RegenerateStamina()` : `Update` içinde karakter dash atmıyorken staminayı saniyede `StaminaRegenRate` kadar doldurur.
-
----
-
 ## Faz 2: Çekirdek Oyun Döngüsü (GameManager, GameState ve Zamanlayıcı Entegrasyonu)
 
 - [ ] **Görev 2.1: Oyun Durumu Enum Tanımı (`GameState`)**
