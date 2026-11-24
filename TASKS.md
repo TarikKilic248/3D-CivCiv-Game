@@ -87,19 +87,6 @@
 
 ---
 
-## Faz 4: Arayüz (HUD) Genişletmesi ve Editör Otomasyonu
-
-- [ ] **Görev 4.2: `CivCivAutoSetup` Editör Aracının Yeni Sistemlerle Güncellenmesi**
-  - **Dosya Yolu:** `Assets/_GameAssets/Scripts/Editor/CivCivAutoSetup.cs`
-  - **Sınıf Adı:** `CivCivAutoSetup` (Static Editor Class)
-  - **Metodlar:**
-    - `[MenuItem("Tools/CivCiv/Oyun Yöneticilerini ve PlayerStats SO Kur %#g")] public static void SetupCoreManagers()` :
-      - `Assets/_GameAssets/Data/DefaultPlayerStats.asset` yolunda `PlayerStatsSO` yoksa `AssetDatabase.CreateAsset` ile otomatik oluşturur.
-      - Sahnedeki `PlayerController` üzerine `DashController` bileşenini ekler ve `DefaultPlayerStats` asset'ini bağlar.
-      - Sahnede `GameManager` yoksa oluşturur ve `GameplayHUD` bileşenini `Canvas` altına bağlar.
-
----
-
 ## Faz 5: Gelişmiş CivCiv Hareket Mekanikleri (Kanat Çırpma, Süzülme & Gaga Hamlesi)
 
 - [ ] **Görev 5.1: Çift Zıplama ve Kanat Çırparak Süzülme (`ChickGlideController`)**

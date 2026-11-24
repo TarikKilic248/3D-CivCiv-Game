@@ -261,4 +261,80 @@ public static class CivCivAutoSetup
         Debug.Log("<color=green><b>[CivCiv AutoSetup] Başarılı!</b></color> Settings UI, Menu butonları, müzik ve ses bağlantıları tamamlandı!");
         EditorUtility.DisplayDialog("Settings UI Kurulum", "Harika! Settings UI ve tüm menü butonları (Açma butonu, Müzik, Ses, Kapatma) tam işlevsel şekilde kuruldu ve bağlandı!", "Tamam");
     }
+
+    [MenuItem("Tools/CivCiv/Oyun Yöneticilerini ve PlayerStats SO Kur %#g")]
+    public static void SetupCoreManagers()
+    {
+        const string folderPath = "Assets/_GameAssets/Data";
+        const string assetPath = "Assets/_GameAssets/Data/DefaultPlayerStats.asset";
+
+        if (!AssetDatabase.IsValidFolder(folderPath))
+        {
+            if (!AssetDatabase.IsValidFolder("Assets/_GameAssets"))
+            {
+                AssetDatabase.CreateFolder("Assets", "_GameAssets");
+            }
+            AssetDatabase.CreateFolder("Assets/_GameAssets", "Data");
+        }
+
+        PlayerStatsSO statsSO = AssetDatabase.LoadAssetAtPath<PlayerStatsSO>(assetPath);
+        if (statsSO == null)
+        {
+            statsSO = ScriptableObject.CreateInstance<PlayerStatsSO>();
+            statsSO.ValidateStats();
+            AssetDatabase.CreateAsset(statsSO, assetPath);
+            AssetDatabase.SaveAssets();
+        }
+
+        PlayerController player = Object.FindAnyObjectByType<PlayerController>();
+        if (player != null)
+        {
+            Undo.RegisterFullObjectHierarchyUndo(player.gameObject, "Setup PlayerStats & DashController");
+
+            SerializedObject soPlayer = new SerializedObject(player);
+            SerializedProperty playerStatsProp = soPlayer.FindProperty("_playerStats");
+            if (playerStatsProp != null)
+            {
+                playerStatsProp.objectReferenceValue = statsSO;
+                soPlayer.ApplyModifiedProperties();
+            }
+
+            DashController dash = player.GetComponent<DashController>() ?? Undo.AddComponent<DashController>(player.gameObject);
+            SerializedObject soDash = new SerializedObject(dash);
+            SerializedProperty dashStatsProp = soDash.FindProperty("_playerStats");
+            if (dashStatsProp != null)
+            {
+                dashStatsProp.objectReferenceValue = statsSO;
+                soDash.ApplyModifiedProperties();
+            }
+
+            EditorUtility.SetDirty(player);
+            EditorUtility.SetDirty(dash);
+        }
+
+        GameManager gm = Object.FindAnyObjectByType<GameManager>();
+        if (gm == null)
+        {
+            GameObject gmObj = new GameObject("GameManager");
+            Undo.RegisterCreatedObjectUndo(gmObj, "Create GameManager");
+            gm = gmObj.AddComponent<GameManager>();
+        }
+        EditorUtility.SetDirty(gm);
+
+        Canvas canvas = Object.FindAnyObjectByType<Canvas>();
+        if (canvas != null)
+        {
+            GameplayHUD hud = canvas.GetComponentInChildren<GameplayHUD>(true);
+            if (hud == null)
+            {
+                GameObject hudObj = new GameObject("GameplayHUD", typeof(RectTransform));
+                hudObj.transform.SetParent(canvas.transform, false);
+                Undo.RegisterCreatedObjectUndo(hudObj, "Create GameplayHUD");
+                hud = hudObj.AddComponent<GameplayHUD>();
+            }
+            EditorUtility.SetDirty(hud);
+        }
+
+        Debug.Log("<color=green><b>[CivCiv AutoSetup] Başarılı!</b></color> DefaultPlayerStats, DashController, GameManager ve GameplayHUD kuruldu!");
+    }
 }

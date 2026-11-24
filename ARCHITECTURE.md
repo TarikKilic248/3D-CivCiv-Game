@@ -43,7 +43,7 @@
 - `GameplayHUD.cs` : `DashController.OnStaminaChanged` ile enerji çubuğunu (`Slider`) ve `GameManager.OnGameStateChanged` ile oyun sonu (`Victory` / `GameOver`) ekranını yöneten HUD bileşeni.
 
 ### 4. Editör Araçları (`Assets/_GameAssets/Scripts/Editor/`)
-- `CivCivAutoSetup.cs` : `Tools/CivCiv/` menüsü altında karakter, fizik, TPS/FPS Cinemachine kameraları (`Ctrl+Shift+K`) ve `SettingsUI` buton/referans hiyerarşisini (`Ctrl+Shift+U`) sahnede otomatik kuran editör aracı.
+- `CivCivAutoSetup.cs` : `Tools/CivCiv/` menüsü altında karakter, fizik, TPS/FPS Cinemachine kameraları (`Ctrl+Shift+K`), `SettingsUI` buton/referans hiyerarşisini (`Ctrl+Shift+U`) ve `DefaultPlayerStats` / `DashController` / `GameManager` / `GameplayHUD` bileşenlerini (`Ctrl+Shift+G`) sahnede otomatik kuran editör aracı.
 
 ## Mimari Kurallar ve İletişim Akışı
 - **İsim Alanı (Namespace):** Mevcut scriptler global namespace (root) altında tanımlıdır.
