@@ -13,21 +13,6 @@
 
 ## Faz 2: Çekirdek Oyun Döngüsü (GameManager, GameState ve Zamanlayıcı Entegrasyonu)
 
-- [ ] **Görev 2.2: Merkezi Oyun Yöneticisi (`GameManager`)**
-  - **Dosya Yolu:** `Assets/_GameAssets/Scripts/Core/GameManager.cs`
-  - **Sınıf Adı:** `GameManager : MonoBehaviour`
-  - **Alanlar ve Eventler:**
-    - `public static GameManager Instance { get; private set; }`
-    - `public GameState CurrentState { get; private set; } = GameState.Playing;`
-    - `public static event System.Action<GameState> OnGameStateChanged;`
-    - `[SerializeField] private int _targetCoinsForVictory = 0;` (0 ise sahnedeki tüm `CoinCollect` sayısı `Start` içinde otomatik hesaplanır).
-  - **Metodlar:**
-    - `public void SetGameState(GameState newState)` : Durumu günceller, `OnGameStateChanged` event'ini tetikler. `Victory` veya `GameOver` durumunda `Cursor.lockState = CursorLockMode.None`, `Cursor.visible = true` yapar.
-    - `private void HandleCoinsChanged(int currentCoins)` : `CoinManager.Instance.CoinsChanged` event'ini dinler; `_targetCoinsForVictory > 0 && currentCoins >= _targetCoinsForVictory` olduğunda `TriggerVictory()` çağırır.
-    - `public void TriggerVictory()` : `SetGameState(GameState.Victory)` çağırır ve `CoinManager.Instance.SaveHighScore()` tetikler.
-    - `public void TriggerGameOver()` : `SetGameState(GameState.GameOver)` çağırır.
-    - `public void RestartLevel()` : `Time.timeScale = 1f;` yapıp aktif sahneyi `SceneManager.LoadScene` ile yeniden yükler.
-
 - [ ] **Görev 2.3: `ClockUI` Süre Bitimi Eventi ve `CoinManager` HighScore Kaydı**
   - **Dosya Yolu:** `Assets/_GameAssets/Scripts/UI/ClockUI.cs` ve `Assets/_GameAssets/Scripts/UI/CoinManager.cs`
   - **Sınıf Adları:** `ClockUI : MonoBehaviour`, `CoinManager : MonoBehaviour`
