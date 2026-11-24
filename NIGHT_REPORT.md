@@ -9,3 +9,4 @@
 - **Görev 3.1: `CoinCollect` Görsel/İşitsel Efekt Geliştirmesi** tamamlandı (`Assets/_GameAssets/Scripts/UI/CoinCollect.cs`, `ARCHITECTURE.md`, `TASKS.md`).
 - **Görev 3.2: Çok Amaçlı Güçlendirici ve Bonus Öğesi (`PowerUpCollectable`)** tamamlandı (`Assets/_GameAssets/Scripts/Collectables/PowerUpCollectable.cs`, `ARCHITECTURE.md`, `TASKS.md`).
 - **Görev 3.3: Tehlike Alanı ve Yeniden Doğma Noktası (`HazardZone` & `Checkpoint`)** tamamlandı (`Assets/_GameAssets/Scripts/Gameplay/Checkpoint.cs`, `Assets/_GameAssets/Scripts/Gameplay/HazardZone.cs`, `ARCHITECTURE.md`, `TASKS.md`).
+- **Görev 4.1: Stamina Barı ve Oyun Sonu (Victory / GameOver) HUD Yöneticisi (`GameplayHUD`)** tamamlandı (`Assets/_GameAssets/Scripts/UI/GameplayHUD.cs`, `ARCHITECTURE.md`, `TASKS.md`).

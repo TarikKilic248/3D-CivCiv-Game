@@ -89,19 +89,6 @@
 
 ## Faz 4: Arayüz (HUD) Genişletmesi ve Editör Otomasyonu
 
-- [ ] **Görev 4.1: Stamina Barı ve Oyun Sonu (Victory / GameOver) HUD Yöneticisi (`GameplayHUD`)**
-  - **Dosya Yolu:** `Assets/_GameAssets/Scripts/UI/GameplayHUD.cs`
-  - **Sınıf Adı:** `GameplayHUD : MonoBehaviour`
-  - **Alanlar:**
-    - `[SerializeField] private UnityEngine.UI.Slider _staminaSlider;`
-    - `[SerializeField] private GameObject _endGamePanel;`
-    - `[SerializeField] private TMPro.TextMeshProUGUI _endGameTitleText;`
-    - `[SerializeField] private TMPro.TextMeshProUGUI _endGameStatsText;`
-    - `[SerializeField] private UnityEngine.UI.Button _restartButton;`
-  - **Metodlar:**
-    - `private void HandleStaminaChanged(float current, float max)` : `DashController.OnStaminaChanged` event'ine abone olur, `_staminaSlider.value = current / max` günceller.
-    - `private void HandleGameStateChanged(GameState state)` : `GameManager.OnGameStateChanged` event'ine abone olur; `Victory` veya `GameOver` durumunda `_endGamePanel` nesnesini aktif eder, toplanan `CoinManager.Instance.Coins` ve `HighScore` bilgisini yazar.
-
 - [ ] **Görev 4.2: `CivCivAutoSetup` Editör Aracının Yeni Sistemlerle Güncellenmesi**
   - **Dosya Yolu:** `Assets/_GameAssets/Scripts/Editor/CivCivAutoSetup.cs`
   - **Sınıf Adı:** `CivCivAutoSetup` (Static Editor Class)

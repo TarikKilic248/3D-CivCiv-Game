@@ -40,6 +40,7 @@
 - `CoinUI.cs` : `CoinManager.Instance.CoinsChanged` event'ini dinleyerek ekrandaki `TextMeshProUGUI` (`CoinValueText`) metnini güncelleyen HUD bileşeni.
 - `ClockUI.cs` : Geri sayım sayacını (`MM:SS`), süre bitiminde `OnTimerExpired` / `GameOver` tetiklemesini ve saat ibresi (`Stick`) rotasyonunu yöneten HUD bileşeni. `CoinManager.Instance.CoinsCollected` event'ini dinleyerek veya `AddBonusTime` ile ekstra süre ekler.
 - `SettingsUI.cs` : Oyun içi ayarlar menüsü ve ses/müzik yöneticisi Singleton sınıfı (`SettingsUI.Instance`). PopUp açma/kapama animasyonu, oyun duraklatma (`Time.timeScale`), `PlayerPrefs` ile müzik/SFX kaydetme (`CivCiv_MusicEnabled`, `CivCiv_SoundEnabled`), `SettingsUI.PlaySFX` genel ses çalma, yeniden başlatma ve çıkış işlevlerini barındırır.
+- `GameplayHUD.cs` : `DashController.OnStaminaChanged` ile enerji çubuğunu (`Slider`) ve `GameManager.OnGameStateChanged` ile oyun sonu (`Victory` / `GameOver`) ekranını yöneten HUD bileşeni.
 
 ### 4. Editör Araçları (`Assets/_GameAssets/Scripts/Editor/`)
 - `CivCivAutoSetup.cs` : `Tools/CivCiv/` menüsü altında karakter, fizik, TPS/FPS Cinemachine kameraları (`Ctrl+Shift+K`) ve `SettingsUI` buton/referans hiyerarşisini (`Ctrl+Shift+U`) sahnede otomatik kuran editör aracı.
