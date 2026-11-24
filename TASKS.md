@@ -89,14 +89,6 @@
 
 ## Faz 3: Toplanabilir Öğeler, Seviye Mekanikleri ve Etkileşimler
 
-- [ ] **Görev 3.2: Çok Amaçlı Güçlendirici ve Bonus Öğesi (`PowerUpCollectable`)**
-  - **Dosya Yolu:** `Assets/_GameAssets/Scripts/Collectables/PowerUpCollectable.cs`
-  - **Sınıf Adı:** `PowerUpCollectable : MonoBehaviour, ICollectable` (ve `public enum PowerUpType { ExtraTime, SpeedBoost, StaminaRefill }`)
-  - **Alanlar ve Metodlar:**
-    - `[SerializeField] private PowerUpType _powerUpType = PowerUpType.ExtraTime;`, `[SerializeField] private float _amount = 10f;`, `[SerializeField] private float _duration = 5f;`
-    - `public void Collect()` : `_powerUpType` değerine göre `ApplyPowerUp(PlayerController player)` çağırır.
-    - `private void ApplyPowerUp(PlayerController player)` : `ExtraTime` ise `FindAnyObjectByType<ClockUI>()?.AddBonusTime(_amount)`, `StaminaRefill` ise `player.GetComponent<DashController>()?.RefillStamina(_amount)`, `SpeedBoost` ise `player.SetSpeedMultiplier(_amount)` çağırır.
-
 - [ ] **Görev 3.3: Tehlike Alanı ve Yeniden Doğma Noktası (`HazardZone` & `Checkpoint`)**
   - **Dosya Yolu:** `Assets/_GameAssets/Scripts/Gameplay/Checkpoint.cs` ve `Assets/_GameAssets/Scripts/Gameplay/HazardZone.cs`
   - **Sınıf Adları:** `Checkpoint : MonoBehaviour`, `HazardZone : MonoBehaviour`

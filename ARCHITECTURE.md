@@ -26,6 +26,7 @@
 - `Data/PlayerStatsSO.cs` : Karakterin hareket, zıplama, kayma (slide), ileri atılma (dash) ve stamina parametrelerini tutan `ScriptableObject` veri sınıfı.
 - `DashController.cs` : Karakterin ileri atılma (`Dash`) yeteneğini, bekleme süresini (cooldown) ve enerji (`Stamina`) tüketim/yenilenme döngüsünü yöneten bileşen.
 - `Core/GameManager.cs` : Oyun döngüsünü (`GameState`), zafer/yenilgi koşullarını ve bölüm yeniden başlatma akışını yöneten merkezi Singleton sınıfı.
+- `Collectables/PowerUpCollectable.cs` : Ekstra süre (`ExtraTime`), hız artışı (`SpeedBoost`) ve enerji yenileme (`StaminaRefill`) sağlayan toplanabilir güçlendirici bileşeni.
 
 ### 2. Durum Tanımları (`Assets/_GameAssets/Scripts/Enums/`)
 - `PlayerState.cs` : Karakter hareket durumlarını tanımlayan enum (`Idle`, `Move`, `Jump`, `SlideIdle`, `Slide`, `Dash`, `Glide`).
