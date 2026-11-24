@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Slide sırasında collider boyutunu küçült (çömelme efekti)")]
     [SerializeField] private bool _adjustColliderOnSlide = true;
     [Tooltip("Slide esnasında collider yükseklik çarpanı")]
-    [SerializeField] [Range(0.2f, 1f)] private float _slideColliderMultiplier = 0.5f;
+    [SerializeField][Range(0.2f, 1f)] private float _slideColliderMultiplier = 0.5f;
 
     [Header("--- Ground Check & Collider ---")]
     [Tooltip("Arayüzde (Inspector) eklediğiniz Collider. Boş bırakırsanız otomatik tespit edilir.")]
@@ -61,6 +61,18 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Scene görünümünde zemin algılama gizmosunu göster")]
     [SerializeField] private bool _showGroundGizmo = true;
 
+    [Header("--- Animation Settings ---")]
+    [Tooltip("Karakterin Animator bileşeni (Boş bırakılırsa otomatik bulunur)")]
+    [SerializeField] private Animator _animator;
+    [SerializeField] private string _idleAnimation = "Idle";
+    [SerializeField] private string _moveAnimation = "Walk";
+    [SerializeField] private string _jumpAnimation = "Jump";
+    [SerializeField] private string _slideAnimation = "Run";
+
+    [Header("--- State Machine ---")]
+    [Tooltip("Karakter durum yöneticisi (StateController)")]
+    [SerializeField] private StateController _stateController;
+
     // Özel Değişkenler
     private Rigidbody _playerRigidbody;
     private Vector3 _moveDirection;
@@ -69,6 +81,7 @@ public class PlayerController : MonoBehaviour
     private bool _isSliding = false;
     private float _slideTimer = 0f;
     private Vector3 _slideDirection;
+    private PlayerState _lastAnimatedState = (PlayerState)(-1);
 
     // Collider orijinal boyutları
     private CapsuleCollider _capsuleCollider;
@@ -87,6 +100,8 @@ public class PlayerController : MonoBehaviour
             var orient = transform.Find("Orientation");
             if (orient != null) _playerOrientationTransform = orient;
         }
+        if (_stateController == null) _stateController = GetComponent<StateController>();
+        if (_animator == null) _animator = GetComponentInChildren<Animator>();
     }
 
     private void Reset()
@@ -94,6 +109,8 @@ public class PlayerController : MonoBehaviour
         _playerCollider = GetComponent<Collider>();
         var orient = transform.Find("Orientation");
         if (orient != null) _playerOrientationTransform = orient;
+        _stateController = GetComponent<StateController>();
+        _animator = GetComponentInChildren<Animator>();
     }
 #endif
 
@@ -122,6 +139,28 @@ public class PlayerController : MonoBehaviour
             _playerCollider = GetComponent<Collider>();
         }
 
+        // 4. StateController Kurulumu
+        if (_stateController == null)
+        {
+            _stateController = GetComponent<StateController>();
+            if (_stateController == null)
+            {
+                _stateController = gameObject.AddComponent<StateController>();
+            }
+        }
+
+        // 5. Animator Kurulumu
+        if (_animator == null)
+        {
+            _animator = GetComponentInChildren<Animator>();
+        }
+        if (_animator != null)
+        {
+            // Hareket Rigidbody ile yönetildiği için animasyon root motion'ı fiziğe karışmamalı.
+            _animator.applyRootMotion = false;
+        }
+        CacheAnimatorParameters();
+
         CacheColliderProperties();
     }
 
@@ -146,6 +185,10 @@ public class PlayerController : MonoBehaviour
         _isGrounded = CheckGround();
 
         HandleInputs();
+
+        SetStates();
+
+        UpdateAnimation();
 
         // Slide süresi yönetimi
         if (_isSliding)
@@ -301,6 +344,8 @@ public class PlayerController : MonoBehaviour
 
         _playerRigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
 
+        SetAnimTrigger(_hashJump);
+
         Invoke(nameof(ResetJump), _jumpCooldown);
     }
 
@@ -419,4 +464,143 @@ public class PlayerController : MonoBehaviour
         Gizmos.DrawWireSphere(endPoint, _groundCheckRadius);
         Gizmos.DrawLine(origin, endPoint);
     }
+
+    private void SetStates()
+    {
+        if (_stateController == null) return;
+
+        var movementDirection = GetMovementDirection();
+        var currentState = _stateController.GetCurrentState();
+
+        var newStateToSet = currentState switch
+        {
+            _ when !_isGrounded || !_canJump => PlayerState.Jump,
+            _ when _isSliding && movementDirection != Vector3.zero => PlayerState.Slide,
+            _ when _isSliding && movementDirection == Vector3.zero => PlayerState.SlideIdle,
+            _ when _isGrounded && movementDirection != Vector3.zero => PlayerState.Move,
+            _ when _isGrounded && movementDirection == Vector3.zero => PlayerState.Idle,
+            _ => currentState
+        };
+
+        if (newStateToSet != currentState)
+        {
+            _stateController.ChangeState(newStateToSet);
+            Debug.Log($"[Player State] Durum Değişti: {currentState} -> {newStateToSet}");
+        }
+    }
+
+    private Vector3 GetMovementDirection()
+    {
+        return _moveDirection.normalized;
+    }
+
+    public void SetMovementReference(Transform movementReference)
+    {
+        if (movementReference != null)
+        {
+            _playerOrientationTransform = movementReference;
+        }
+    }
+
+    #region Animation Handling
+    // Animasyon Parametre Hash'leri
+    private static readonly int _hashIsMoving = Animator.StringToHash("isMoving");
+    private static readonly int _hashWalking = Animator.StringToHash("Walking");
+    private static readonly int _hashRunning = Animator.StringToHash("Running");
+    private static readonly int _hashSpeed = Animator.StringToHash("Speed");
+    private static readonly int _hashMotionScale = Animator.StringToHash("MotionScale");
+    private static readonly int _hashDirX = Animator.StringToHash("DirX");
+    private static readonly int _hashDirZ = Animator.StringToHash("DirZ");
+    private static readonly int _hashIsGrounded = Animator.StringToHash("isGrounded");
+    private static readonly int _hashIsSliding = Animator.StringToHash("isSliding");
+    private static readonly int _hashState = Animator.StringToHash("State");
+    private static readonly int _hashJump = Animator.StringToHash("Jump");
+
+    private readonly System.Collections.Generic.HashSet<int> _animatorParams = new System.Collections.Generic.HashSet<int>();
+
+    private void CacheAnimatorParameters()
+    {
+        if (_animator == null) return;
+        _animatorParams.Clear();
+        foreach (var p in _animator.parameters)
+        {
+            _animatorParams.Add(p.nameHash);
+        }
+    }
+
+    private void UpdateAnimation()
+    {
+        if (_animator == null) return;
+
+        Vector3 flatVel = new Vector3(_playerRigidbody.linearVelocity.x, 0f, _playerRigidbody.linearVelocity.z);
+        float speed = flatVel.magnitude;
+        bool isMoving = speed > 0.15f && _isGrounded && !_isSliding;
+
+        PlayerState state = _stateController != null
+            ? _stateController.GetCurrentState()
+            : (isMoving ? PlayerState.Move : PlayerState.Idle);
+
+        SetAnimBool(_hashIsMoving, isMoving);
+        SetAnimBool(_hashWalking, state == PlayerState.Move);
+        SetAnimBool(_hashRunning, false);
+        SetAnimFloat(_hashSpeed, speed);
+        SetAnimFloat(_hashMotionScale, _maxSpeed > 0f ? speed / _maxSpeed : speed);
+        SetAnimFloat(_hashDirX, _horizontalInput);
+        SetAnimFloat(_hashDirZ, _verticalInput);
+        SetAnimBool(_hashIsGrounded, _isGrounded);
+        SetAnimBool(_hashIsSliding, _isSliding);
+
+        if (state != _lastAnimatedState)
+        {
+            PlayStateAnimation(state);
+            _lastAnimatedState = state;
+        }
+
+        SetAnimInt(_hashState, (int)state);
+    }
+
+    private void SetAnimBool(int hash, bool value)
+    {
+        if (_animatorParams.Contains(hash)) _animator.SetBool(hash, value);
+    }
+
+    private void SetAnimFloat(int hash, float value)
+    {
+        if (_animatorParams.Contains(hash)) _animator.SetFloat(hash, value);
+    }
+
+    private void SetAnimInt(int hash, int value)
+    {
+        if (_animatorParams.Contains(hash)) _animator.SetInteger(hash, value);
+    }
+
+    private void SetAnimTrigger(int hash)
+    {
+        if (_animatorParams.Contains(hash)) _animator.SetTrigger(hash);
+    }
+
+    private void PlayStateAnimation(PlayerState state)
+    {
+        string stateName = state switch
+        {
+            PlayerState.Move => _moveAnimation,
+            PlayerState.Jump => _jumpAnimation,
+            PlayerState.Slide => _slideAnimation,
+            PlayerState.SlideIdle => _idleAnimation,
+            _ => _idleAnimation
+        };
+
+        int stateHash = Animator.StringToHash(stateName);
+        if (_animator.HasState(0, stateHash))
+        {
+            _animator.CrossFadeInFixedTime(stateHash, 0.12f);
+        }
+
+        if (state == PlayerState.Jump)
+        {
+            SetAnimTrigger(_hashJump);
+        }
+    }
+
+    #endregion
 }

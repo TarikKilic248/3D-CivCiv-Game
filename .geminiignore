@@ -1,0 +1,28 @@
+# Unity Sistem ve Önbellek Klasörleri
+Library/
+Temp/
+Obj/
+Build/
+Builds/
+Logs/
+UserSettings/
+.vs/
+.idea/
+
+# Ağır Asset ve Medya Dosyaları (Ajanın bunları okumasına gerek yok)
+Assets/Synty/
+Assets/_GameAssets/
+*.fbx
+*.obj
+*.png
+*.jpg
+*.tga
+*.psd
+*.wav
+*.mp3
+*.ogg
+*.mat
+*.asset
+*.unity
+*.prefab
+*.meta

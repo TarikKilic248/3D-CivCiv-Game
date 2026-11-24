@@ -213,4 +213,52 @@ public static class CivCivAutoSetup
         Debug.Log("<color=green><b>[CivCiv AutoSetup] Başarılı!</b></color> TPS Kamera, FPS Kamera, Orientation, Collider ve Karakter bağlantıları tamamlandı!");
         EditorUtility.DisplayDialog("CivCiv Kurulum", "Harika! Tüm kameralar, orientation ve karakter referansları başarıyla bağlandı ve kuruldu.", "Tamam");
     }
+
+    [MenuItem("Tools/CivCiv/Settings UI ve Butonları Otomatik Kur ve Bağla %#u")]
+    public static void SetupSettingsUI()
+    {
+        // 1. Sahnede Canvas ve SettingsUI nesnesini bul
+        Canvas canvas = Object.FindAnyObjectByType<Canvas>();
+        GameObject settingsObj = null;
+
+        // SettingsUI adında nesne ara
+        foreach (var go in Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include))
+        {
+            if (go.name.Equals("SettingsUI", System.StringComparison.OrdinalIgnoreCase))
+            {
+                settingsObj = go;
+                break;
+            }
+        }
+
+        if (settingsObj == null)
+        {
+            if (canvas == null)
+            {
+                EditorUtility.DisplayDialog("Settings UI Kurulum", "Sahnede Canvas bulunamadı!", "Tamam");
+                return;
+            }
+
+            // Canvas altında SettingsUI oluştur
+            settingsObj = new GameObject("SettingsUI", typeof(RectTransform));
+            settingsObj.transform.SetParent(canvas.transform, false);
+            Undo.RegisterCreatedObjectUndo(settingsObj, "Create SettingsUI");
+        }
+
+        Undo.RegisterFullObjectHierarchyUndo(settingsObj, "Setup SettingsUI");
+
+        // 2. SettingsUI Script Bileşenini Ekle veya Al
+        SettingsUI settingsScript = settingsObj.GetComponent<SettingsUI>() ?? settingsObj.AddComponent<SettingsUI>();
+
+        // 3. Eksik Popup Butonlarını Oluştur ve Referansları Bağla
+        settingsScript.AutoResolveReferences();
+        settingsScript.BuildMissingPopupButtons();
+        settingsScript.AutoResolveReferences();
+
+        EditorUtility.SetDirty(settingsScript);
+        EditorUtility.SetDirty(settingsObj);
+
+        Debug.Log("<color=green><b>[CivCiv AutoSetup] Başarılı!</b></color> Settings UI, Menu butonları, müzik ve ses bağlantıları tamamlandı!");
+        EditorUtility.DisplayDialog("Settings UI Kurulum", "Harika! Settings UI ve tüm menü butonları (Açma butonu, Müzik, Ses, Kapatma) tam işlevsel şekilde kuruldu ve bağlandı!", "Tamam");
+    }
 }
