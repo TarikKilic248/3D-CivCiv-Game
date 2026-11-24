@@ -1,10 +1,13 @@
 using UnityEngine;
+using System;
 
 public class CoinManager : MonoBehaviour
 {
     public static CoinManager Instance { get; private set; }
 
     public int Coins { get; private set; }
+    public event Action<int> CoinsChanged;
+    public event Action<int> CoinsCollected;
 
     private void Awake()
     {
@@ -26,6 +29,8 @@ public class CoinManager : MonoBehaviour
         }
 
         Coins += amount;
+        CoinsChanged?.Invoke(Coins);
+        CoinsCollected?.Invoke(amount);
         Debug.Log($"Coins: {Coins}", this);
         return true;
     }
