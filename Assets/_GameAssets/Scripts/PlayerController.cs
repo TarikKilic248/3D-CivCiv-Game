@@ -6,6 +6,10 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
+    [Header("--- Data Architecture (ScriptableObject) ---")]
+    [Tooltip("Karakter istatistiklerini içeren ScriptableObject (Atanırsa değerleri otomatik yükler)")]
+    [SerializeField] private PlayerStatsSO _playerStats;
+
     [Header("--- Orientation & Movement ---")]
     [Tooltip("Karakterin baktığı / yönlendiği Transform (Boş bırakılırsa bu nesnenin transformu kullanılır)")]
     [SerializeField] private Transform _playerOrientationTransform;
@@ -81,6 +85,7 @@ public class PlayerController : MonoBehaviour
     private bool _isSliding = false;
     private float _slideTimer = 0f;
     private Vector3 _slideDirection;
+    private float _speedMultiplier = 1f;
     private PlayerState _lastAnimatedState = (PlayerState)(-1);
 
     // Collider orijinal boyutları
@@ -116,6 +121,11 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+        if (_playerStats != null)
+        {
+            ApplyStatsFromSO(_playerStats);
+        }
+
         // 1. Rigidbody Kurulumu
         _playerRigidbody = GetComponent<Rigidbody>();
         if (_playerRigidbody == null)
@@ -294,12 +304,12 @@ public class PlayerController : MonoBehaviour
         else if (_isGrounded)
         {
             // Yerde normal hareket
-            _playerRigidbody.AddForce(_moveDirection.normalized * _moveSpeed * 10f, ForceMode.Force);
+            _playerRigidbody.AddForce(_moveDirection.normalized * (_moveSpeed * _speedMultiplier * 10f), ForceMode.Force);
         }
         else
         {
             // Havadayken kontrollü hareket
-            _playerRigidbody.AddForce(_moveDirection.normalized * _moveSpeed * 10f * _airMultiplier, ForceMode.Force);
+            _playerRigidbody.AddForce(_moveDirection.normalized * (_moveSpeed * _speedMultiplier * 10f * _airMultiplier), ForceMode.Force);
         }
     }
 
@@ -308,7 +318,7 @@ public class PlayerController : MonoBehaviour
         Vector3 flatVel = new Vector3(_playerRigidbody.linearVelocity.x, 0f, _playerRigidbody.linearVelocity.z);
 
         // Slide durumuna göre uygun maksimum hız sınırı seçilir
-        float currentMaxSpeed = _isSliding ? _maxSlideSpeed : _maxSpeed;
+        float currentMaxSpeed = (_isSliding ? _maxSlideSpeed : _maxSpeed) * _speedMultiplier;
 
         if (flatVel.magnitude > currentMaxSpeed)
         {
@@ -500,6 +510,34 @@ public class PlayerController : MonoBehaviour
         {
             _playerOrientationTransform = movementReference;
         }
+    }
+
+    public void ApplyStatsFromSO(PlayerStatsSO stats)
+    {
+        if (stats == null) return;
+        _playerStats = stats;
+        _moveSpeed = stats.MoveSpeed;
+        _maxSpeed = stats.MaxSpeed;
+        _groundDrag = stats.GroundDrag;
+        _airDrag = stats.AirDrag;
+        _airMultiplier = stats.AirMultiplier;
+        _jumpForce = stats.JumpForce;
+        _jumpCooldown = stats.JumpCooldown;
+        _maxSlideSpeed = stats.MaxSlideSpeed;
+        _slideImpulseForce = stats.SlideImpulseForce;
+        _slideSustainForce = stats.SlideSustainForce;
+        _slideDrag = stats.SlideDrag;
+    }
+
+    public Rigidbody GetRigidbody() => _playerRigidbody;
+
+    public Transform GetOrientation() => _playerOrientationTransform != null ? _playerOrientationTransform : transform;
+
+    public bool IsGrounded() => _isGrounded;
+
+    public void SetSpeedMultiplier(float multiplier)
+    {
+        _speedMultiplier = Mathf.Max(0.1f, multiplier);
     }
 
     #region Animation Handling

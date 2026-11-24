@@ -13,16 +13,6 @@
 
 ## Faz 1: Veri Mimarisi (ScriptableObject) ve Karakter Yetenekleri (Dash & Stamina)
 
-- [ ] **Görev 1.2: `PlayerState` Enum Güncellemesi ve `PlayerController` SO Entegrasyonu**
-  - **Dosya Yolu:** `Assets/_GameAssets/Scripts/Enums/PlayerState.cs` ve `Assets/_GameAssets/Scripts/PlayerController.cs`
-  - **Sınıf Adı:** `PlayerState` (Enum) ve `PlayerController : MonoBehaviour`
-  - **Metodlar ve Değişiklikler:**
-    - `PlayerState.cs` içine `Dash` ve `Glide` durumlarını ekle.
-    - `PlayerController.cs` içine `[SerializeField] private PlayerStatsSO _playerStats;` referansı ekle.
-    - `public void ApplyStatsFromSO(PlayerStatsSO stats)` : Eğer `_playerStats != null` ise `Awake()` içinde hareket, zıplama ve slide değişkenlerini SO'dan yükler (atanmamışsa mevcut Inspector varsayılanlarını korur).
-    - `public Rigidbody GetRigidbody()`, `public Transform GetOrientation()` ve `public bool IsGrounded()` yardımcı getter metodlarını dış bileşenler için ekle.
-    - `public void SetSpeedMultiplier(float multiplier)` : Geçici hız güçlendirmeleri için hız çarpanını günceller.
-
 - [ ] **Görev 1.3: İleri Atılma ve Enerji Kontrolcüsü (`DashController`)**
   - **Dosya Yolu:** `Assets/_GameAssets/Scripts/DashController.cs`
   - **Sınıf Adı:** `DashController : MonoBehaviour`

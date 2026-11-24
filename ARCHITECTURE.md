@@ -18,7 +18,7 @@
 ## Mevcut Scriptler ve Sorumlulukları
 
 ### 1. Karakter, Kamera ve Oynanış (`Assets/_GameAssets/Scripts/`)
-- `PlayerController.cs` : `Rigidbody` tabanlı 3D karakter hareket kontrolcüsü (Yürüme, hız limitleri, zemin/hava sürtünmesi `linearDamping`, `SphereCastAll` tabanlı zemin kontrolü, zıplama, collider küçültmeli kayma/slide mekaniği ve `Animator` parametre/state senkronizasyonu).
+- `PlayerController.cs` : `Rigidbody` tabanlı 3D karakter hareket kontrolcüsü (`PlayerStatsSO` entegrasyonu, yürüme, hız limitleri ve çarpanı, zemin/hava sürtünmesi `linearDamping`, `SphereCastAll` tabanlı zemin kontrolü, zıplama, collider küçültmeli kayma/slide mekaniği ve `Animator` parametre/state senkronizasyonu).
 - `ThirdPersonCameraController.cs` : Cinemachine 3. Şahıs (`CM_TPS_Camera`) ve 1. Şahıs (`CM_FPS_Camera`) kamera perspektif yöneticisi (`CameraPerspective`), fare ile bakış/dönüş (`_rotateWithMouse`), perspektif geçişi (`V` tuşu), FPS modunda karakter gövdesini `ShadowsOnly` yapma ve imleç kilitleme (`CursorLockMode`).
 - `StateController.cs` : Karakterin anlık durumunu (`PlayerState`) tutan ve durum geçişlerini yöneten bileşen.
 - `TargetJump.cs` : Oyuncu (`PlayerController`) tetikleyici alana (`OnTriggerEnter`) girdiğinde karakterin `Rigidbody` bileşenine dikey zıplama kuvveti (`ForceMode.Impulse`) uygulayan zıplatma platformu.
@@ -26,7 +26,7 @@
 - `Data/PlayerStatsSO.cs` : Karakterin hareket, zıplama, kayma (slide), ileri atılma (dash) ve stamina parametrelerini tutan `ScriptableObject` veri sınıfı.
 
 ### 2. Durum Tanımları (`Assets/_GameAssets/Scripts/Enums/`)
-- `PlayerState.cs` : Karakter hareket durumlarını tanımlayan enum (`Idle`, `Move`, `Jump`, `SlideIdle`, `Slide`).
+- `PlayerState.cs` : Karakter hareket durumlarını tanımlayan enum (`Idle`, `Move`, `Jump`, `SlideIdle`, `Slide`, `Dash`, `Glide`).
 
 ### 3. Kullanıcı Arayüzü ve Oyun Yönetimi (`Assets/_GameAssets/Scripts/UI/`)
 - `CoinManager.cs` : Toplanan altın/puan miktarını yöneten Singleton sınıfı (`CoinManager.Instance`). `CoinsChanged` ve `CoinsCollected` event'lerini tetikler.
