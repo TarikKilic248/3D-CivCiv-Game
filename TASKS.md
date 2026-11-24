@@ -87,19 +87,6 @@
 
 ---
 
-## Faz 3: Toplanabilir Öğeler, Seviye Mekanikleri ve Etkileşimler
-
-- [ ] **Görev 3.3: Tehlike Alanı ve Yeniden Doğma Noktası (`HazardZone` & `Checkpoint`)**
-  - **Dosya Yolu:** `Assets/_GameAssets/Scripts/Gameplay/Checkpoint.cs` ve `Assets/_GameAssets/Scripts/Gameplay/HazardZone.cs`
-  - **Sınıf Adları:** `Checkpoint : MonoBehaviour`, `HazardZone : MonoBehaviour`
-  - **Metodlar:**
-    - `Checkpoint.cs` -> `public static Vector3 ActiveRespawnPoint { get; private set; }`, `public static bool HasCheckpoint { get; private set; }`
-    - `Checkpoint.cs` -> `public static void SetCheckpoint(Vector3 position)` ve `public static void ResetCheckpoints()`
-    - `Checkpoint.cs` -> `private void OnTriggerEnter(Collider other)` : `PlayerController` temas ettiğinde `SetCheckpoint(transform.position + Vector3.up * 0.5f)` kaydeder.
-    - `HazardZone.cs` -> `private void OnTriggerEnter(Collider other)` : Oyuncu suya, boşluğa veya tuzağa düştüğünde `RespawnPlayer(PlayerController player)` metodunu çağırır; karakterin `Rigidbody.linearVelocity` değerini sıfırlar ve `Checkpoint.ActiveRespawnPoint` noktasına ışınlar.
-
----
-
 ## Faz 4: Arayüz (HUD) Genişletmesi ve Editör Otomasyonu
 
 - [ ] **Görev 4.1: Stamina Barı ve Oyun Sonu (Victory / GameOver) HUD Yöneticisi (`GameplayHUD`)**
