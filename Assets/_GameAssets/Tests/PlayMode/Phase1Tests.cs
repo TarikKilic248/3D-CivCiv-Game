@@ -3,15 +3,17 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-#if UNITY_INCLUDE_TESTS
 using UnityEngine.Assertions;
+#if CIVCIV_PLAYMODE_TESTS
+using NUnit.Framework;
 using UnityEngine.TestTools;
 #endif
 
-#if UNITY_INCLUDE_TESTS
 public class Phase1Tests
 {
+#if CIVCIV_PLAYMODE_TESTS
     [UnityTest]
+#endif
     public IEnumerator Phase1_PlayerStats_And_Dash_Mechanics_Work()
     {
         // 1. Geçici test sahnesi kur
@@ -93,21 +95,21 @@ public class Phase1Tests
         float initialStamina = dashCtrl.CurrentStamina;
         Vector3 initialPos = playerObj.transform.position;
 
-        Assert.AreApproximatelyEqual(100f, initialStamina, 0.1f, "Başlangıç staminası 100 olmalı.");
-        Assert.IsTrue(dashCtrl.CanDash(), "Karakter başlangıçta dash atabilmeli.");
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(100f, initialStamina, 0.1f, "Başlangıç staminası 100 olmalı.");
+        UnityEngine.Assertions.Assert.IsTrue(dashCtrl.CanDash(), "Karakter başlangıçta dash atabilmeli.");
 
         // 2. Dash mekaniğini tetikle
         dashCtrl.ExecuteDash();
 
         fillRect.anchorMax = new Vector2(dashCtrl.CurrentStamina / dashCtrl.MaxStamina, 1f);
 
-        Assert.IsTrue(dashCtrl.CurrentStamina < initialStamina, "Dash sonrası stamina azalmalı.");
-        Assert.AreEqual(PlayerState.Dash, stateCtrl.GetCurrentState(), "Durum PlayerState.Dash olmalı.");
+        UnityEngine.Assertions.Assert.IsTrue(dashCtrl.CurrentStamina < initialStamina, "Dash sonrası stamina azalmalı.");
+        UnityEngine.Assertions.Assert.AreEqual(PlayerState.Dash, stateCtrl.GetCurrentState(), "Durum PlayerState.Dash olmalı.");
 
         yield return new WaitForFixedUpdate();
         yield return new WaitForSeconds(0.1f);
 
-        Assert.IsTrue(playerObj.transform.position.z > initialPos.z + 0.05f, "Karakter ileri yönde (Z+) hareket etmiş olmalı.");
+        UnityEngine.Assertions.Assert.IsTrue(playerObj.transform.position.z > initialPos.z + 0.05f, "Karakter ileri yönde (Z+) hareket etmiş olmalı.");
 
         // 3. Ekran görüntüsü al
         if (!Directory.Exists("TestScreenshots"))
@@ -118,4 +120,3 @@ public class Phase1Tests
         yield return null;
     }
 }
-#endif

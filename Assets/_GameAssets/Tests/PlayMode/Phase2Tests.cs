@@ -3,15 +3,17 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-#if UNITY_INCLUDE_TESTS
 using UnityEngine.Assertions;
+#if CIVCIV_PLAYMODE_TESTS
+using NUnit.Framework;
 using UnityEngine.TestTools;
 #endif
 
-#if UNITY_INCLUDE_TESTS
 public class Phase2Tests
 {
+#if CIVCIV_PLAYMODE_TESTS
     [UnityTest]
+#endif
     public IEnumerator Phase2_GameLoop_HighScore_And_TimerExpiration_Work()
     {
         // 1. Geçici test sahnesi kur
@@ -99,20 +101,20 @@ public class Phase2Tests
 
         yield return null;
 
-        Assert.AreEqual(GameState.Playing, gameMgr.CurrentState, "Başlangıç durumu Playing olmalı.");
+        UnityEngine.Assertions.Assert.AreEqual(GameState.Playing, gameMgr.CurrentState, "Başlangıç durumu Playing olmalı.");
 
         // 2. Bonus süre ekleme ve altın toplama -> HighScore & Victory doğrulaması
         float beforeBonus = clockUI.RemainingSeconds;
         clockUI.AddBonusTime(10f);
-        Assert.IsTrue(clockUI.RemainingSeconds > beforeBonus + 9f, "AddBonusTime süreyi artırmalı.");
+        UnityEngine.Assertions.Assert.IsTrue(clockUI.RemainingSeconds > beforeBonus + 9f, "AddBonusTime süreyi artırmalı.");
 
         coinMgr.AddCoins(3);
         yield return null;
 
-        Assert.AreEqual(3, coinMgr.Coins, "Toplanan altın 3 olmalı.");
-        Assert.AreEqual(3, coinMgr.HighScore, "HighScore 3 olarak güncellenmeli.");
-        Assert.AreEqual(3, PlayerPrefs.GetInt("CivCiv_HighScore", 0), "HighScore PlayerPrefs'e kaydedilmeli.");
-        Assert.AreEqual(GameState.Victory, gameMgr.CurrentState, "Hedef altına ulaşıldığında Victory tetiklenmeli.");
+        UnityEngine.Assertions.Assert.AreEqual(3, coinMgr.Coins, "Toplanan altın 3 olmalı.");
+        UnityEngine.Assertions.Assert.AreEqual(3, coinMgr.HighScore, "HighScore 3 olarak güncellenmeli.");
+        UnityEngine.Assertions.Assert.AreEqual(3, PlayerPrefs.GetInt("CivCiv_HighScore", 0), "HighScore PlayerPrefs'e kaydedilmeli.");
+        UnityEngine.Assertions.Assert.AreEqual(GameState.Victory, gameMgr.CurrentState, "Hedef altına ulaşıldığında Victory tetiklenmeli.");
 
         // 3. Süre bitimi -> OnTimerExpired & GameOver doğrulaması
         gameMgr.SetGameState(GameState.Playing);
@@ -122,8 +124,8 @@ public class Phase2Tests
         clockUI.SetRemainingTime(0.02f);
         yield return new WaitForSeconds(0.08f);
 
-        Assert.IsTrue(timerExpiredEventFired, "Süre bittiğinde OnTimerExpired tetiklenmeli.");
-        Assert.AreEqual(GameState.GameOver, gameMgr.CurrentState, "Süre bittiğinde GameState.GameOver olmalı.");
+        UnityEngine.Assertions.Assert.IsTrue(timerExpiredEventFired, "Süre bittiğinde OnTimerExpired tetiklenmeli.");
+        UnityEngine.Assertions.Assert.AreEqual(GameState.GameOver, gameMgr.CurrentState, "Süre bittiğinde GameState.GameOver olmalı.");
 
         // 4. Ekran görüntüsü al
         if (!Directory.Exists("TestScreenshots"))
@@ -134,4 +136,3 @@ public class Phase2Tests
         yield return null;
     }
 }
-#endif
