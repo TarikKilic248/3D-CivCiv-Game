@@ -13,24 +13,6 @@
 
 ## Faz 6: Can, Hasar ve Savunma Sistemi (Health & Damage Architecture)
 
-- [ ] **Görev 6.2: Oyuncu Can, Dokunulmazlık ve Geri Tepme Bileşeni (`PlayerHealth`)**
-  - **Dosya Yolu:** `Assets/_GameAssets/Scripts/Player/PlayerHealth.cs`
-  - **Sınıf Adı:** `PlayerHealth : MonoBehaviour, IDamageable`
-  - **Alanlar ve Eventler:**
-    - `[SerializeField] private int _maxHealth = 3;`
-    - `[SerializeField] private float _invincibilityDuration = 1.5f;`
-    - `[SerializeField] private float _knockbackForce = 8f;`
-    - `public int CurrentHealth { get; private set; }`
-    - `public bool IsAlive => CurrentHealth > 0;`
-    - `public bool IsInvincible { get; private set; }`
-    - `public event System.Action<int, int> OnHealthChanged;` (`current`, `max`)
-    - `public event System.Action OnPlayerDied;`
-  - **Metodlar:**
-    - `public void TakeDamage(int amount, Vector3 hitPoint, Vector3 hitNormal)` : `IsInvincible` veya `!IsAlive` ise işlem yapmaz; canı düşürür, `ApplyKnockback(-hitNormal)` uygular, `StartCoroutine(InvincibilityFlashRoutine())` başlatır ve can 0 ise `Die()` çağırır.
-    - `public void Heal(int amount)` : Canı `_maxHealth` sınırına kadar artırır ve `OnHealthChanged` tetikler.
-    - `private void ApplyKnockback(Vector3 direction)` : `PlayerController.GetRigidbody()` üzerine geri savrulma kuvveti uygular.
-    - `private void Die()` : `OnPlayerDied?.Invoke()` ve `GameManager.Instance?.TriggerGameOver()` çağırır.
-
 - [ ] **Görev 6.3: Kalp / Can Göstergesi HUD Bileşeni (`HealthUI`)**
   - **Dosya Yolu:** `Assets/_GameAssets/Scripts/UI/HealthUI.cs`
   - **Sınıf Adı:** `HealthUI : MonoBehaviour`

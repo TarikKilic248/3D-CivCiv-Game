@@ -14,3 +14,4 @@
 - **Görev 5.1: Çift Zıplama ve Kanat Çırparak Süzülme (`ChickGlideController`)** tamamlandı (`Assets/_GameAssets/Scripts/Player/ChickGlideController.cs`, `ARCHITECTURE.md`, `TASKS.md`).
 - **Görev 6.1: Hasar Alabilirlik Arayüzü (`IDamageable`)** tamamlandı (`Assets/_GameAssets/Scripts/Core/IDamageable.cs`, `ARCHITECTURE.md`, `TASKS.md`).
 - **Görev 5.2: Gaga Vuruşu ve Yere Çakılma (`ChickPeckAttack`)** tamamlandı (`Assets/_GameAssets/Scripts/Player/ChickPeckAttack.cs`, `ARCHITECTURE.md`, `TASKS.md`).
+- **Görev 6.2: Oyuncu Can, Dokunulmazlık ve Geri Tepme Bileşeni (`PlayerHealth`)** tamamlandı (`Assets/_GameAssets/Scripts/Player/PlayerHealth.cs`, `ARCHITECTURE.md`, `TASKS.md`).
