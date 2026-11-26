@@ -13,21 +13,6 @@
 
 ## Faz 7: Kombo, Çarpan ve Mıknatıs Sistemi (Score & Combo Mechanics)
 
-- [ ] **Görev 7.1: Kombo ve Skor Çarpanı Yöneticisi (`ComboManager`)**
-  - **Dosya Yolu:** `Assets/_GameAssets/Scripts/Core/ComboManager.cs`
-  - **Sınıf Adı:** `ComboManager : MonoBehaviour`
-  - **Alanlar ve Eventler:**
-    - `public static ComboManager Instance { get; private set; }`
-    - `[SerializeField] private float _comboResetTime = 3.5f;`
-    - `[SerializeField] private int _maxMultiplier = 5;`
-    - `public int CurrentStreak { get; private set; }`
-    - `public int CurrentMultiplier { get; private set; } = 1;`
-    - `public float RemainingComboTimeNormalized { get; private set; }`
-    - `public event System.Action<int, int, float> OnComboUpdated;` (`streak`, `multiplier`, `normalizedTimer`)
-  - **Metodlar:**
-    - `private void HandleCoinCollected(int baseAmount)` : `CoinManager.Instance.CoinsCollected` event'ini dinler; `_comboTimer = _comboResetTime` sıfırlar, `CurrentStreak++` artırır, her 3 seride `CurrentMultiplier` değerini `_maxMultiplier` sınırına kadar yükseltir.
-    - `public void ResetCombo()` : Süre bittiğinde veya oyuncu hasar aldığında (`PlayerHealth.OnHealthChanged`) çarpanı 1'e ve seriyi 0'a sıfırlar.
-
 - [ ] **Görev 7.2: Kombo Arayüz Bileşeni (`ComboUI`)**
   - **Dosya Yolu:** `Assets/_GameAssets/Scripts/UI/ComboUI.cs`
   - **Sınıf Adı:** `ComboUI : MonoBehaviour`
