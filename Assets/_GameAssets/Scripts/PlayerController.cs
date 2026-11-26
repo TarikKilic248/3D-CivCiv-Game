@@ -776,7 +776,7 @@ public class PlayerController : MonoBehaviour
         if (_stateController == null) return;
 
         var currentState = _stateController.GetCurrentState();
-        if (currentState == PlayerState.Dash)
+        if (currentState == PlayerState.Dash || currentState == PlayerState.Glide)
         {
             return;
         }
@@ -899,6 +899,7 @@ public class PlayerController : MonoBehaviour
             PlayerState.Dash => _slideAnimation,
             PlayerState.Move => _moveAnimation,
             PlayerState.Jump => _jumpAnimation,
+            PlayerState.Glide => _jumpAnimation,
             PlayerState.Slide => _slideAnimation,
             PlayerState.SlideIdle => _idleAnimation,
             _ => _idleAnimation

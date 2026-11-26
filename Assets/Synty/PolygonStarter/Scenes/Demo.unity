@@ -31007,7 +31007,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 49518264714503834, guid: 0187b4beb65fade429f7addf253582a1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.24964803
+      value: 0.25000006
       objectReference: {fileID: 0}
     - target: {fileID: 49518264714503834, guid: 0187b4beb65fade429f7addf253582a1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -31090,6 +31090,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 9057839255745945215, guid: 0187b4beb65fade429f7addf253582a1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2915484572354290724}
+    - targetCorrespondingSourceObject: {fileID: 9057839255745945215, guid: 0187b4beb65fade429f7addf253582a1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2915484572354290725}
   m_SourcePrefab: {fileID: 100100000, guid: 0187b4beb65fade429f7addf253582a1, type: 3}
 --- !u!1 &2915484572354290723 stripped
 GameObject:
@@ -31117,6 +31120,23 @@ MonoBehaviour:
   _dashStaminaCost: 30
   _staminaRegenRate: 15
   _staminaRegenDelay: 0.5
+--- !u!114 &2915484572354290725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2915484572354290723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec790c21efe727746bab9ee4155c05d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChickGlideController
+  _playerStats: {fileID: 11400000, guid: 3c5883762f6ba5c4a922c41e0324a334, type: 2}
+  _maxAirJumps: 1
+  _airJumpForce: 7
+  _maxGlideFallSpeed: 2
+  _glideKey: 32
 --- !u!1001 &8659943794992635204
 PrefabInstance:
   m_ObjectHideFlags: 0

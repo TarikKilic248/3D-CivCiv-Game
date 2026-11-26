@@ -12,5 +12,7 @@ public enum PlayerState
 
     Slide,
 
-    Dash
+    Dash,
+
+    Glide
 }
