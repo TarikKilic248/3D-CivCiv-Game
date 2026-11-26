@@ -1,6 +1,6 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `1` | Sirada: `3` (Calismaya Hazir: `3`) | Tamamlanan: `16` | Bloklanan: `2`
+- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `1` | Sirada: `2` (Calismaya Hazir: `2`) | Tamamlanan: `17` | Bloklanan: `2`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
@@ -10,7 +10,6 @@
 ## Siradaki Gorevler (`pending`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
-| `T017` | JSON Kalıcı Kayıt ve Yıldız Puanlama Sistemi (SaveManager, LevelDataSO & LevelProgressionManager) | T002, T016 | `fast` | - | Hazir |
 | `T018` | Nesne Havuzu ve Karakter Hareket Efektleri (ObjectPoolManager & PlayerVFXController) | T003, T007 | `fast` | - | Hazir |
 | `T019` | Kamera Hissiyatı ve 3D Ses Mimarisi (CameraJuiceController & SpatialAudioManager) | T003, T008 | `fast` | - | Hazir |
 
@@ -39,3 +38,4 @@
 | `T014` | Devriye Düşman Yapay Zekası (EnemyStatsSO & PatrolEnemyAI) | T008, T012 | `fast` | - | Commit `7c028e0` |
 | `T015` | Etkileşim Sistemi ve Basınç Plakası Bulmacası (IInteractable, PlayerInteractor & PressurePlateSwitch) | T001 | `fast` | - | Commit `40a468d` |
 | `T016` | Kayıp CivCiv Kurtarma Görevi ve Hedef Pusulası (LostChickNPC, ChickRescueManager & WaypointIndicatorUI) | T015, T007A | `fast` | Evet | Commit `0751228` |
+| `T017` | JSON Kalıcı Kayıt ve Yıldız Puanlama Sistemi (SaveManager, LevelDataSO & LevelProgressionManager) | T002, T016 | `fast` | - | Commit `a8181ff` |

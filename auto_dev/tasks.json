@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-26T21:56:40+00:00",
+  "updated_at": "2026-11-26T22:01:42+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -627,7 +627,7 @@
         "LevelProgressionManager toplanan altın ve kalan süreye göre 0-3 arası yıldız hesaplayıp SaveManager üzerinden kalıcı kaydeder.",
         "Check_T017 geçici bir JSON yoluna kayıt/okuma döngüsünü ve 1/2/3 yıldız eşik hesabını sayısal doğrular."
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [
         "T002",
         "T016"
@@ -648,9 +648,9 @@
       "verify_check": "T017",
       "retries": 0,
       "last_error": "",
-      "commit_sha": "",
+      "commit_sha": "a8181ff",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T21:56:40+00:00"
+      "updated_at": "2026-11-26T22:01:42+00:00"
     },
     {
       "id": "T018",
