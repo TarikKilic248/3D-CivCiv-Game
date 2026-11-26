@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-26T21:10:28+00:00",
+  "updated_at": "2026-11-26T21:19:51+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -387,7 +387,7 @@
         "Check_T010 ardışık altın toplama ile çarpan artışını, hasarda sıfırlanmayı ve CoinMagnet'in yakındaki bir altını oyuncuya yaklaştırdığını sayısal doğrular.",
         "UI bileşenleri UIThemeSO/UIStyleHelper temasını kullanır; düz gri/varsayılan Unity slider/panel bırakılmaz."
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [
         "T002",
         "T005",
@@ -409,11 +409,11 @@
       "tier": "fast",
       "visual_check": true,
       "verify_check": "T010",
-      "retries": 0,
+      "retries": 1,
       "last_error": "",
-      "commit_sha": "",
+      "commit_sha": "fcdb050",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T18:56:40+00:00"
+      "updated_at": "2026-11-26T21:19:51+00:00"
     },
     {
       "id": "T011",
