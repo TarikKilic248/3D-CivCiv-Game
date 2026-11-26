@@ -5,11 +5,14 @@ using TMPro;
 
 /// <summary>
 /// CivCiv 3D - Oyun İçi Arayüz ve Oyun Sonu Paneli (GameplayHUD)
-/// Stamina barını canlı günceller, Victory/GameOver durumlarında EndGamePanel'i açar.
+/// Stamina barını canlı günceller, UIThemeSO/UIStyleHelper temasını uygular ve Victory/GameOver durumlarında EndGamePanel'i açar.
 /// </summary>
 public class GameplayHUD : MonoBehaviour
 {
     public static GameplayHUD Instance { get; private set; }
+
+    [Header("--- Theme & Style ---")]
+    [SerializeField] private UIThemeSO _theme;
 
     [Header("--- Stamina UI ---")]
     [SerializeField] private Slider _staminaSlider;
@@ -27,6 +30,10 @@ public class GameplayHUD : MonoBehaviour
     [SerializeField] private DashController _dashController;
     [SerializeField] private GameManager _gameManager;
 
+    private float _currentNormalizedStamina = 1f;
+    private float _lowStaminaPulseTimer;
+
+    public UIThemeSO Theme => _theme;
     public Slider StaminaSlider => _staminaSlider;
     public Image StaminaFillImage => _staminaFillImage;
     public TextMeshProUGUI StaminaText => _staminaText;
@@ -48,6 +55,7 @@ public class GameplayHUD : MonoBehaviour
         Instance = this;
 
         AutoResolveReferences();
+        ApplyTheme(_theme);
 
         if (_endGamePanel != null)
         {
@@ -62,6 +70,26 @@ public class GameplayHUD : MonoBehaviour
         if (_dashController != null)
         {
             UpdateStaminaBar(_dashController.CurrentStamina, _dashController.MaxStamina);
+        }
+    }
+
+    private void Update()
+    {
+        UIThemeSO activeTheme = UIStyleHelper.ResolveTheme(_theme);
+        if (_staminaFillImage == null || _staminaSlider == null) return;
+
+        if (_currentNormalizedStamina <= activeTheme.lowStaminaThreshold)
+        {
+            _lowStaminaPulseTimer += Time.unscaledDeltaTime * activeTheme.lowPulseSpeed;
+            _staminaFillImage.color = UIStyleHelper.EvaluateBarFillColor(_currentNormalizedStamina, activeTheme, _lowStaminaPulseTimer);
+
+            float scalePulse = 1f + 0.025f * Mathf.Sin(_lowStaminaPulseTimer);
+            _staminaSlider.transform.localScale = new Vector3(scalePulse, scalePulse, 1f);
+        }
+        else if (_staminaSlider.transform.localScale != Vector3.one)
+        {
+            _staminaSlider.transform.localScale = Vector3.one;
+            _lowStaminaPulseTimer = 0f;
         }
     }
 
@@ -82,6 +110,51 @@ public class GameplayHUD : MonoBehaviour
             Instance = null;
         }
         UnsubscribeEvents();
+    }
+
+    /// <summary>
+    /// GameplayHUD üzerindeki tüm bar, panel, metin ve butonlara merkezi UI temasını uygular.
+    /// </summary>
+    public void ApplyTheme(UIThemeSO themeOverride = null)
+    {
+        if (themeOverride != null)
+        {
+            _theme = themeOverride;
+        }
+
+        UIThemeSO activeTheme = UIStyleHelper.ResolveTheme(_theme);
+
+        AutoResolveReferences();
+
+        if (_staminaSlider != null)
+        {
+            UIStyleHelper.ApplyBarStyle(_staminaSlider, activeTheme, _staminaFillImage, _staminaText);
+        }
+
+        if (_endGamePanel != null)
+        {
+            UIStyleHelper.ApplyPanelStyle(_endGamePanel, activeTheme, true);
+        }
+
+        if (_titleText != null)
+        {
+            UIStyleHelper.ApplyTextStyle(_titleText, activeTheme, true);
+        }
+
+        if (_scoreText != null)
+        {
+            UIStyleHelper.ApplyTextStyle(_scoreText, activeTheme, false);
+        }
+
+        if (_highScoreText != null)
+        {
+            UIStyleHelper.ApplyTextStyle(_highScoreText, activeTheme, false);
+        }
+
+        if (_restartButton != null)
+        {
+            UIStyleHelper.ApplyButtonStyle(_restartButton, activeTheme);
+        }
     }
 
     public void SubscribeEvents()
@@ -146,16 +219,26 @@ public class GameplayHUD : MonoBehaviour
 
     public void UpdateStaminaBar(float currentStamina, float maxStamina)
     {
+        float safeMax = maxStamina > 0f ? maxStamina : 100f;
+        float clamped = Mathf.Clamp(currentStamina, 0f, safeMax);
+        _currentNormalizedStamina = clamped / safeMax;
+
         if (_staminaSlider != null)
         {
             _staminaSlider.minValue = 0f;
-            _staminaSlider.maxValue = maxStamina > 0f ? maxStamina : 100f;
-            _staminaSlider.value = Mathf.Clamp(currentStamina, 0f, _staminaSlider.maxValue);
+            _staminaSlider.maxValue = safeMax;
+            _staminaSlider.value = clamped;
+        }
+
+        if (_staminaFillImage != null)
+        {
+            UIThemeSO activeTheme = UIStyleHelper.ResolveTheme(_theme);
+            _staminaFillImage.color = UIStyleHelper.EvaluateBarFillColor(_currentNormalizedStamina, activeTheme, _lowStaminaPulseTimer);
         }
 
         if (_staminaText != null)
         {
-            _staminaText.text = $"{Mathf.RoundToInt(currentStamina)} / {Mathf.RoundToInt(maxStamina)}";
+            _staminaText.text = $"{Mathf.RoundToInt(clamped)} / {Mathf.RoundToInt(safeMax)}";
         }
     }
 
@@ -204,6 +287,11 @@ public class GameplayHUD : MonoBehaviour
 
     public void OnRestartButtonClicked()
     {
+        if (SettingsUI.Instance != null)
+        {
+            SettingsUI.Instance.PlayClickSound();
+        }
+
         if (GameManager.Instance != null)
         {
             GameManager.Instance.RestartLevel();
@@ -230,6 +318,15 @@ public class GameplayHUD : MonoBehaviour
         if (_staminaSlider != null && _staminaFillImage == null && _staminaSlider.fillRect != null)
         {
             _staminaFillImage = _staminaSlider.fillRect.GetComponent<Image>();
+        }
+
+        if (_staminaSlider != null && _staminaText == null)
+        {
+            Transform stTr = _staminaSlider.transform.Find("StaminaText");
+            if (stTr != null)
+            {
+                _staminaText = stTr.GetComponent<TextMeshProUGUI>();
+            }
         }
 
         if (_endGamePanel == null)
