@@ -1,9 +1,10 @@
 # Compact Project Code Index (Auto-Generated, 0 Tokens)
-Indexed files: `30`
+Indexed files: `33`
 
 - `Assets/_GameAssets/Scripts/Collectables/PowerUpCollectable.cs` (236L): types: enum PowerUpType, class PowerUpCollectable: MonoBehaviour, ICollectable | api: UpdateMotion(float deltaTime), Collect(), Collect(PlayerController player), ApplyPowerUp(PlayerController player) | fields: powerUpType, extraTimeAmount, speedMultiplier, speedBoostDuration, staminaRefillAmount, rotateSpeed, bobAmplitude, bobFrequency, shrinkDuration, collectSound
 - `Assets/_GameAssets/Scripts/Core/GameManager.cs` (175L): types: class GameManager: MonoBehaviour | events: OnGameStateChanged | api: CountTargetCoinsInScene(), SubscribeEvents(), SubscribeToCoinManager(CoinManager cm), SubscribeToClock(ClockUI clock), SetState(GameState newState), TriggerVictory(), TriggerGameOver(), RestartLevel() | fields: currentState, targetCoins, autoDetectTargetCoins
 - `Assets/_GameAssets/Scripts/Data/PlayerStatsSO.cs` (116L): types: class PlayerStatsSO: ScriptableObject
+- `Assets/_GameAssets/Scripts/Data/UIThemeSO.cs` (86L): types: class UIThemeSO: ScriptableObject
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/AutoDevBridge.cs` (291L): types: class AutoDevBridge, class BridgeCommand, class BridgeResult | api: RunFromCommandLine()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/AutoDevVerifier.cs` (332L): types: class AutoDevCheckAttribute: Attribute, struct AutoDevCheckResult, class AutoDevVerifier | api: Pass(string summary, string details = "", ...), Fail(string summary, string details = ""), EnsureSceneOpen(string scenePath), SaveActiveScene(), ReloadCleanScene(string scenePath), InvokeLifecycle(MonoBehaviour target, string methodName), SimulatePhysicsSteps(int steps, float fixedDeltaTime, Acti...), RunCheck(string checkId, string scenePath), RunSmokeCheck(), ExportSceneHierarchySnapshot(string outputPath)
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T001.cs` (543L): types: class Check_T001 | api: Run()
@@ -13,6 +14,7 @@ Indexed files: `30`
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T005.cs` (178L): types: class Check_T005 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T006.cs` (217L): types: class Check_T006 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T007.cs` (172L): types: class Check_T007 | api: Run()
+- `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T007A.cs` (149L): types: class Check_T007A | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/CivCivAutoSetup.cs` (265L): types: class CivCivAutoSetup | api: SetupAll(), SetupSettingsUI()
 - `Assets/_GameAssets/Scripts/Enums/GameState.cs` (8L): types: enum GameState
 - `Assets/_GameAssets/Scripts/Enums/PlayerState.cs` (19L): types: enum PlayerState
@@ -29,5 +31,6 @@ Indexed files: `30`
 - `Assets/_GameAssets/Scripts/UI/CoinCollect.cs` (165L): types: class CoinCollect: MonoBehaviour, ICollectable | api: UpdateMotion(float deltaTime), Collect() | fields: value, rotateSpeed, bobAmplitude, bobFrequency, shrinkDuration, collectSound
 - `Assets/_GameAssets/Scripts/UI/CoinManager.cs` (85L): types: class CoinManager: MonoBehaviour | events: CoinsChanged, CoinsCollected, HighScoreChanged | api: LoadHighScore(), AddCoins(int amount), ResetCoins(), ResetHighScore()
 - `Assets/_GameAssets/Scripts/UI/CoinUI.cs` (69L): types: class CoinUI: MonoBehaviour | fields: coinValueText
-- `Assets/_GameAssets/Scripts/UI/GameplayHUD.cs` (286L): types: class GameplayHUD: MonoBehaviour | api: SubscribeEvents(), UnsubscribeEvents(), UpdateStaminaBar(float currentStamina, float maxStamina), HandleGameStateChanged(GameState state), OnRestartButtonClicked(), AutoResolveReferences() | fields: _staminaSlider, _staminaFillImage, _staminaText, _endGamePanel, _titleText, _scoreText, _highScoreText, _restartButton, _dashController, _gameManager
+- `Assets/_GameAssets/Scripts/UI/GameplayHUD.cs` (383L): types: class GameplayHUD: MonoBehaviour | api: ApplyTheme(UIThemeSO themeOverride = null), SubscribeEvents(), UnsubscribeEvents(), UpdateStaminaBar(float currentStamina, float maxStamina), HandleGameStateChanged(GameState state), OnRestartButtonClicked(), AutoResolveReferences() | fields: _theme, _staminaSlider, _staminaFillImage, _staminaText, _endGamePanel, _titleText, _scoreText, _highScoreText, _restartButton, _dashController
 - `Assets/_GameAssets/Scripts/UI/SettingsUI.cs` (848L): types: class SettingsUI: MonoBehaviour | events: OnMusicToggled, OnSoundToggled, OnMenuStateChanged | api: ToggleSettings(), OpenSettings(), CloseSettings(), ToggleMusic(), ToggleSound(), RestartGame(), QuitGame(), PlayClickSound(), PlaySFX(AudioClip clip, float volume = 1f), AutoResolveReferences() | fields: _settingsButton, _popUpPanel, _closeButton, _musicButton, _soundButton, _restartButton, _quitButton, _musicImage, _soundImage, _activeColor
+- `Assets/_GameAssets/Scripts/UI/UIStyleHelper.cs` (250L): types: class UIStyleHelper | api: ResolveTheme(UIThemeSO theme), ApplyBarStyle(Slider slider, UIThemeSO theme, Image...), EvaluateBarFillColor(float normalizedValue, UIThemeSO them...), ApplyPanelStyle(GameObject panel, UIThemeSO theme, bo...), ApplyButtonStyle(Button button, UIThemeSO theme, TextM...), ApplyTextStyle(TextMeshProUGUI text, UIThemeSO theme...)

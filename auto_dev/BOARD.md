@@ -1,6 +1,6 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `10` | Sirada: `5` (Calismaya Hazir: `3`) | Tamamlanan: `7` | Bloklanan: `0`
+- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `10` | Sirada: `4` (Calismaya Hazir: `2`) | Tamamlanan: `8` | Bloklanan: `0`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
@@ -19,7 +19,6 @@
 ## Siradaki Gorevler (`pending`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
-| `T007A` | Merkezi UI Tasarım Sistemi (UIThemeSO & UIStyleHelper) ve GameplayHUD Stil Yenilemesi | T004 | `fast` | Evet | Hazir |
 | `T007B` | Karakter Yetenek Cilası: Süzülme, Çift Zıplama ve Dash Hibrit Animasyon/VFX/SFX | T003, T007 | `fast` | - | Hazir |
 | `T008` | Hasar Arayüzü ve Oyuncu Can Sistemi (IDamageable & PlayerHealth) | T001, T002 | `fast` | - | Hazir |
 | `T009` | Kalp ve Can Göstergesi HUD Bileşeni (HealthUI) | T008, T007A | `fast` | Evet | Bagimlilik bekliyor |
@@ -38,3 +37,4 @@ _Yok._
 | `T005` | Gelişmiş Altın Geri Bildirimi ve Güçlendirici Sistemi (CoinCollect & PowerUpCollectable) | T001, T002, T003 | `fast` | - | Commit `cef8f19` |
 | `T006` | Kontrol Noktası ve Tehlike/Düşme Alanları (Checkpoint & HazardZone) | T001, T002 | `fast` | - | Commit `1e11fcd` |
 | `T007` | Çift Zıplama ve Kanatla Süzülme (ChickGlideController) | T001 | `fast` | - | Commit `fb739cd` |
+| `T007A` | Merkezi UI Tasarım Sistemi (UIThemeSO & UIStyleHelper) ve GameplayHUD Stil Yenilemesi | T004 | `fast` | Evet | Commit `dfbebdc` |
