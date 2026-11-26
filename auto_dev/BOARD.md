@@ -1,6 +1,6 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 20** | Taslak (Onay Bekleyen): `10` | Sirada: `3` (Calismaya Hazir: `1`) | Tamamlanan: `7` | Bloklanan: `0`
+- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `10` | Sirada: `5` (Calismaya Hazir: `3`) | Tamamlanan: `7` | Bloklanan: `0`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
@@ -10,18 +10,20 @@
 | `T013` | Kırılabilir Sandık ve Ganimet Sistemi (LootTableSO & BreakableCrate) | T005, T012 | `fast` | - | `approve` bekliyor |
 | `T014` | Devriye Düşman Yapay Zekası (EnemyStatsSO & PatrolEnemyAI) | T008, T012 | `fast` | - | `approve` bekliyor |
 | `T015` | Etkileşim Sistemi ve Basınç Plakası Bulmacası (IInteractable, PlayerInteractor & PressurePlateSwitch) | T001 | `fast` | - | `approve` bekliyor |
-| `T016` | Kayıp CivCiv Kurtarma Görevi ve Hedef Pusulası (LostChickNPC, ChickRescueManager & WaypointIndicatorUI) | T015 | `fast` | Evet | `approve` bekliyor |
+| `T016` | Kayıp CivCiv Kurtarma Görevi ve Hedef Pusulası (LostChickNPC, ChickRescueManager & WaypointIndicatorUI) | T015, T007A | `fast` | Evet | `approve` bekliyor |
 | `T017` | JSON Kalıcı Kayıt ve Yıldız Puanlama Sistemi (SaveManager, LevelDataSO & LevelProgressionManager) | T002, T016 | `fast` | - | `approve` bekliyor |
 | `T018` | Nesne Havuzu ve Karakter Hareket Efektleri (ObjectPoolManager & PlayerVFXController) | T003, T007 | `fast` | - | `approve` bekliyor |
 | `T019` | Kamera Hissiyatı ve 3D Ses Mimarisi (CameraJuiceController & SpatialAudioManager) | T003, T008 | `fast` | - | `approve` bekliyor |
-| `T020` | Dinamik Gece/Gündüz Döngüsü, Başarım Sistemi ve Bütünlük Doğrulayıcı | T017 | `smart` | Evet | `approve` bekliyor |
+| `T020` | Dinamik Gece/Gündüz Döngüsü, Başarım Sistemi ve Bütünlük Doğrulayıcı | T017, T007A | `smart` | Evet | `approve` bekliyor |
 
 ## Siradaki Gorevler (`pending`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
+| `T007A` | Merkezi UI Tasarım Sistemi (UIThemeSO & UIStyleHelper) ve GameplayHUD Stil Yenilemesi | T004 | `fast` | Evet | Hazir |
+| `T007B` | Karakter Yetenek Cilası: Süzülme, Çift Zıplama ve Dash Hibrit Animasyon/VFX/SFX | T003, T007 | `fast` | - | Hazir |
 | `T008` | Hasar Arayüzü ve Oyuncu Can Sistemi (IDamageable & PlayerHealth) | T001, T002 | `fast` | - | Hazir |
-| `T009` | Kalp ve Can Göstergesi HUD Bileşeni (HealthUI) | T008 | `fast` | Evet | Bagimlilik bekliyor |
-| `T010` | Kombo Çarpanı (ComboManager & ComboUI) ve Altın Mıknatısı (CoinMagnet) | T002, T005, T008 | `fast` | Evet | Bagimlilik bekliyor |
+| `T009` | Kalp ve Can Göstergesi HUD Bileşeni (HealthUI) | T008, T007A | `fast` | Evet | Bagimlilik bekliyor |
+| `T010` | Kombo Çarpanı (ComboManager & ComboUI) ve Altın Mıknatısı (CoinMagnet) | T002, T005, T008, T007A | `fast` | Evet | Bagimlilik bekliyor |
 
 ## Bloklanan Gorevler (`blocked`)
 _Yok._

@@ -149,7 +149,10 @@ Fix the issues cleanly and return ONLY JSON matching the schema (`summary`, `cha
 STRICT RULES (low-token fast check):
 1. Call `read_file` ONCE on this exact PNG image ONLY: `{screenshot}`
 2. Do NOT read any C# or text files. Do NOT run any shell commands. Do NOT explore the repo.
-3. Evaluate ONLY obvious visual defects in the image (pitch-black/broken camera, visibly broken/overlapping HUD text, missing always-visible HUD widget). Note: panels that start hidden (e.g. EndGamePanel) are EXPECTED to be hidden, and the pre-existing centered Settings popup may appear visible in Edit Mode because SettingsUI.Start() hides it at runtime (ignore it).
+3. Evaluate BOTH functional visuals AND art/style consistency:
+   - Reject pitch-black/broken camera, visibly overlapping HUD text, or missing always-visible HUD widgets.
+   - Reject unstyled default Unity grey/blue flat sliders or plain white/grey rectangles that clash with the game's existing warm golden-yellow/amber/orange cartoon UI style (matching Settings, Clock, Coin). New HUD bars/panels MUST use warm gold/amber/orange styling, crisp borders/outlines, and consistent font styling.
+   - Note: panels that start hidden (e.g. EndGamePanel) are EXPECTED to be hidden, and the pre-existing centered Settings popup may appear visible in Edit Mode because SettingsUI.Start() hides it at runtime (ignore it).
 4. Immediately return ONLY JSON matching the schema (`passed`, `summary`, `issues`).
 
 Task criteria context:

@@ -15,6 +15,7 @@ trigger: always_on
 3. **Unity 6 Geliştirme ve Davranışsal Doğrulama**
    - Çalışma zamanı scriptlerini `Assets/_GameAssets/Scripts/` altına, mevcut projeyle uyumlu (global namespace) biçimde yaz.
    - Unity `6000.6` API uyumu için `FindObjectsByType<T>(FindObjectsInactive.Include)` kullan (`FindObjectsSortMode` parametresini KULLANMA; `CS0618` uyarısı üretir).
+   - **Dikey Dilim & Görsel Kimlik Standardı:** Her yeni UI bileşeni `UIThemeSO` / `UIStyleHelper` üzerinden oyunun mevcut sıcak altın-sarı/turuncu/koyu kehribar çizgi film stiline (`MenuPopUp.png`, mevcut font, çerçeve/gölge) uymalıdır; düz gri/mavi varsayılan Unity UI bırakma. Her oynanış/yetenek görevi aynı görev içinde görsel/prosedürel hareket (eğim/salınım/squash-stretch), `ParticleSystem`/`TrailRenderer` efekti ve `SettingsUI.PlaySFX` ses kancası içermelidir.
    - Otonom görev turu içinde `python auto_dev/cli.py verify` veya `Unity.exe` ÇALIŞTIRMA; derleme ve doğrulama orkestratör tarafından senin turundan hemen sonra 0 tokenla çalıştırılır.
    - Gereksiz Editör menüsü (`Uygula`/`Geri çek`/`Detay`) şablon kodu üretme; geri alma işlemi Git üzerinden yapılır.
    - Sahne veya `ScriptableObject` bağlantıları gerekiyorsa yalnızca C# Unity Editor API (`SerializedObject`, `AssetDatabase`, `Undo`) kullan.

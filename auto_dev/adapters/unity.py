@@ -203,6 +203,9 @@ class UnityAdapter(ProjectAdapter):
 - Active scene: `{self.scene_path}` (NEVER read or edit `.unity`, `.prefab`, `.asset`, `.csproj` as text!).
 - Place runtime C# scripts under `Assets/_GameAssets/Scripts/` (global namespace matching existing scripts).
 - Unity 6000.6 API: use `FindObjectsByType<T>(FindObjectsInactive.Include)` (NEVER pass `FindObjectsSortMode` — obsolete CS0618).
+- Vertical Slice & Visual Identity Standard:
+  - Every UI task MUST use `UIThemeSO` / `UIStyleHelper` (matching the game's warm golden-yellow/amber/orange cartoon UI style, `MenuPopUp.png`, existing `TMP_FontAsset`, dark amber borders/outlines — NEVER leave plain default grey/blue Unity sliders or flat unthemed boxes!).
+  - Every gameplay/ability task MUST include visible & audible feedback in the same task: Animator trigger/state if present + procedural motion (tilt/bob/squash-stretch/spin) + Unity `ParticleSystem`/`TrailRenderer` VFX + `SettingsUI.PlaySFX` hook.
 - Do NOT create Editor menu boilerplate (`Uygula`/`Geri cek`/`Detay`); Git handles rollback.
 - Do NOT run `python auto_dev/cli.py verify`, `Unity.exe`, or shell build commands inside your turn — the orchestrator compiles and runs `Check_{check_id}` automatically at 0 tokens right after you finish! Running verify yourself prematurely modifies `Demo.unity` and triggers `scope_diff_guard` failure.
 - Create a concise standalone behavioral check (~60-150 lines max) at `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_{check_id}.cs` decorated with `[AutoDevCheck("{check_id}")]`:

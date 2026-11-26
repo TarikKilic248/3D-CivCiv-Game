@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-26T19:11:31+00:00",
+  "updated_at": "2026-11-26T19:32:39+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -236,14 +236,88 @@
       "updated_at": "2026-11-26T19:11:31+00:00"
     },
     {
+      "id": "T007A",
+      "title": "Merkezi UI Tasarım Sistemi (UIThemeSO & UIStyleHelper) ve GameplayHUD Stil Yenilemesi",
+      "description": "Oyunun mevcut Settings/Clock/Coin görsel kimliğine (sıcak altın-sarı #FFD54F, turuncu #FF9800, koyu kehribar çerçeve #6D3B00, koyu gölgeli/konturlu beyaz-krem TMP metin ve Assets/_GameAssets/Sprites/MenuPopUp.png) birebir uyan merkezi UIThemeSO (DefaultUITheme.asset) ve UIStyleHelper yardımcı sınıfını oluştur. Mevcut GameplayHUD içindeki Stamina/Dash barını düz gri/mavi Unity slider görünümünden çıkarıp koyu kehribar çerçeveli, altın-turuncu dolgulu, düşük staminada renk değiştiren/nabız atan temalı bir bara dönüştür; EndGamePanel arka planını MenuPopUp.png ve yuvarlatılmış turuncu buton stiliyle yenileyip Demo.unity üzerine uygula.",
+      "acceptance_criteria": [
+        "Assets/_GameAssets/Scripts/Data/UIThemeSO.cs ve Assets/_GameAssets/Data/DefaultUITheme.asset oluşturulur; mevcut MenuPopUp.png ve sahnedeki TMP_FontAsset bağlanır.",
+        "Assets/_GameAssets/Scripts/UI/UIStyleHelper.cs (ApplyBarStyle, ApplyPanelStyle, ApplyButtonStyle, ApplyTextStyle) tüm yeni UI görevlerinin kullanabileceği standart API sunar.",
+        "GameplayHUD Stamina barı ve EndGamePanel UIStyleHelper ile yeniden stillendirilir ve Demo.unity sahnesinde kaydedilir.",
+        "Check_T007A DefaultUITheme.asset varlığını, GameplayHUD renk/font/sprite stilinin varsayılan gri/beyaz olmadığını ve düşük stamina renk geçişini sayısal doğrular.",
+        "Görsel doğrulamada Stamina barı mevcut Clock/Coin/Settings stiliyle uyumlu, net ve çakışmasız görünür."
+      ],
+      "status": "pending",
+      "depends_on": [
+        "T004"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Data/UIThemeSO.cs",
+        "Assets/_GameAssets/Scripts/UI/UIStyleHelper.cs",
+        "Assets/_GameAssets/Scripts/UI/GameplayHUD.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T007A.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/UI/GameplayHUD.cs",
+        "Assets/_GameAssets/Scripts/UI/SettingsUI.cs",
+        "Assets/_GameAssets/Scripts/UI/CoinUI.cs",
+        "Assets/_GameAssets/Scripts/UI/ClockUI.cs"
+      ],
+      "tier": "fast",
+      "visual_check": true,
+      "verify_check": "T007A",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T19:32:39+00:00",
+      "updated_at": "2026-11-26T19:32:39+00:00"
+    },
+    {
+      "id": "T007B",
+      "title": "Karakter Yetenek Cilası: Süzülme, Çift Zıplama ve Dash Hibrit Animasyon/VFX/SFX",
+      "description": "Mevcut T003 (DashController) ve T007 (ChickGlideController) yeteneklerine görsel ve işitsel hayat ver: PlayerAbilityFeedback bileşenini oluşturup Demo.unity karakterine bağla. (1) Süzülme (Glide): Karakter görselinde öne hafif eğilme + yumuşak yan salınım/kanat çırpma hissi + süzülme rüzgar/tüy ParticleSystem efekti + varsa Animator Glide/Jump geçişi; (2) Çift Zıplama (Air Jump): Kısa prosedürel zıplama squash-stretch/spin + ayak altında genişleyen hava halkası ParticleSystem + SFX kancası; (3) Dash: Anlık öne uzama/eğim + sıcak altın-turuncu TrailRenderer hız izi + patlama toz/kıvılcım ParticleSystem + SettingsUI.PlaySFX kancası. Ayrıca DashController ve ChickGlideController içine OnDashStarted, OnAirJumpExecuted, OnGlideStateChanged eventlerini ekle.",
+      "acceptance_criteria": [
+        "DashController OnDashStarted, ChickGlideController OnAirJumpExecuted ve OnGlideStateChanged eventlerini yayınlar.",
+        "PlayerAbilityFeedback.cs Demo.unity karakterine eklenir; çalışma zamanında/Editörde eksiksiz TrailRenderer ve ParticleSystem alt efekt objelerini kurar.",
+        "Süzülme aktifken karakter görselinin eğim/salınımı ve Glide partikül emisyonu açılır; süzülme bitince orijinal duruşa yumuşakça döner.",
+        "Dash ve AirJump tetiklendiğinde ilgili TrailRenderer/ParticleSystem aktif olur ve görsel ölçek/eğim değişimi gözlemlenir.",
+        "Check_T007B Dash, AirJump ve Glide tetiklemelerinde eventlerin çalıştığını, görsel transform değişimini ve Trail/ParticleSystem aktivasyonunu sayısal doğrular."
+      ],
+      "status": "pending",
+      "depends_on": [
+        "T003",
+        "T007"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Player/DashController.cs",
+        "Assets/_GameAssets/Scripts/Player/ChickGlideController.cs",
+        "Assets/_GameAssets/Scripts/Player/PlayerAbilityFeedback.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T007B.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/Player/DashController.cs",
+        "Assets/_GameAssets/Scripts/Player/ChickGlideController.cs",
+        "Assets/_GameAssets/Scripts/PlayerController.cs",
+        "Assets/_GameAssets/Scripts/UI/SettingsUI.cs"
+      ],
+      "tier": "fast",
+      "visual_check": false,
+      "verify_check": "T007B",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T19:32:39+00:00",
+      "updated_at": "2026-11-26T19:32:39+00:00"
+    },
+    {
       "id": "T008",
       "title": "Hasar Arayüzü ve Oyuncu Can Sistemi (IDamageable & PlayerHealth)",
-      "description": "Hasar alabilen tüm oyun nesneleri için ortak IDamageable arayüzünü (TakeDamage, IsAlive) oluştur. Oyuncu için PlayerHealth bileşenini ekle: mevcut/maksimum can, iyileşme (Heal), hasar sonrası geçici dokunulmazlık (invincibility frames), geri savrulma (knockback), OnHealthChanged ve OnDied event'leri; can sıfırlandığında GameManager.TriggerGameOver() çağrısı. Demo.unity karakterine ekle.",
+      "description": "Hasar alabilen tüm oyun nesneleri için ortak IDamageable arayüzünü (TakeDamage, IsAlive) oluştur. Oyuncu için PlayerHealth bileşenini ekle: mevcut/maksimum can, iyileşme (Heal), hasar sonrası geçici dokunulmazlık (invincibility frames), geri savrulma (knockback), OnHealthChanged ve OnDied event'leri; can sıfırlandığında GameManager.TriggerGameOver() çağrısı. Demo.unity karakterine ekle. Dikey Dilim standardı: Mekanikle birlikte görsel/prosedürel geri bildirim (parlama/eğim/sarsıntı), uygun ParticleSystem efekti ve SettingsUI.PlaySFX ses kancası aynı görevde eklenmelidir.",
       "acceptance_criteria": [
         "IDamageable.cs ve PlayerHealth.cs (CurrentHealth, MaxHealth, IsAlive, IsInvincible, TakeDamage, Heal, OnHealthChanged) oluşturulur.",
         "Dokunulmazlık süresi aktifken gelen ikinci TakeDamage çağrısı can azaltmaz.",
         "Can 0 olduğunda GameManager.CurrentState GameOver olur.",
-        "Check_T008 hasar, i-frame engeli, iyileşme ve ölümde GameOver geçişini doğrular."
+        "Check_T008 hasar, i-frame engeli, iyileşme ve ölümde GameOver geçişini doğrular.",
+        "Mekanik tetiklendiğinde görsel/prosedürel geri bildirim veya ParticleSystem efekti ve SFX kancası çalışır."
       ],
       "status": "pending",
       "depends_on": [
@@ -271,16 +345,18 @@
     {
       "id": "T009",
       "title": "Kalp ve Can Göstergesi HUD Bileşeni (HealthUI)",
-      "description": "PlayerHealth.OnHealthChanged event'ini dinleyerek oyuncunun mevcut/maksimum canını ekranda kalp ikonları ve metin ile gösteren HealthUI bileşenini oluştur ve Demo.unity Canvas altına mevcut UI ile çakışmayacak şekilde yerleştir.",
+      "description": "PlayerHealth.OnHealthChanged event'ini dinleyerek oyuncunun mevcut/maksimum canını ekranda kalp ikonları ve metin ile gösteren HealthUI bileşenini oluştur ve Demo.unity Canvas altına mevcut UI ile çakışmayacak şekilde yerleştir. Tüm UI öğeleri UIThemeSO / UIStyleHelper ile oyunun mevcut altın-sarı/turuncu/koyu kehribar temasına birebir uygun kurulmalıdır.",
       "acceptance_criteria": [
         "HealthUI.cs can azaldığında ve arttığında ikon görünümünü/renklerini ve can metnini günceller.",
         "Demo.unity Canvas altında HealthPanel ve HealthUI referansları Editor API ile bağlanır.",
         "Check_T009 PlayerHealth.TakeDamage ve Heal çağrıları sonrası HealthUI metin ve aktif ikon sayısının doğru güncellendiğini doğrular.",
-        "Görsel kontrolde HealthUI ekranda net ve diğer HUD öğeleriyle çakışmadan görünür."
+        "Görsel kontrolde HealthUI ekranda net ve diğer HUD öğeleriyle çakışmadan görünür.",
+        "UI bileşenleri UIThemeSO/UIStyleHelper temasını kullanır; düz gri/varsayılan Unity slider/panel bırakılmaz."
       ],
       "status": "pending",
       "depends_on": [
-        "T008"
+        "T008",
+        "T007A"
       ],
       "target_files": [
         "Assets/_GameAssets/Scripts/UI/HealthUI.cs",
@@ -288,7 +364,8 @@
       ],
       "context_files": [
         "Assets/_GameAssets/Scripts/Player/PlayerHealth.cs",
-        "Assets/_GameAssets/Scripts/UI/GameplayHUD.cs"
+        "Assets/_GameAssets/Scripts/UI/GameplayHUD.cs",
+        "Assets/_GameAssets/Scripts/UI/UIStyleHelper.cs"
       ],
       "tier": "fast",
       "visual_check": true,
@@ -302,18 +379,20 @@
     {
       "id": "T010",
       "title": "Kombo Çarpanı (ComboManager & ComboUI) ve Altın Mıknatısı (CoinMagnet)",
-      "description": "Ardışık altın toplandığında kombo serisini ve skor çarpanını artıran, süre dolunca veya oyuncu hasar alınca sıfırlanan ComboManager + HUD göstergesi ComboUI ile yakındaki CoinCollect objelerini oyuncuya doğru çeken CoinMagnet (ve geçici süper mıknatıs) bileşenini kurup Demo.unity'ye entegre et.",
+      "description": "Ardışık altın toplandığında kombo serisini ve skor çarpanını artıran, süre dolunca veya oyuncu hasar alınca sıfırlanan ComboManager + HUD göstergesi ComboUI ile yakındaki CoinCollect objelerini oyuncuya doğru çeken CoinMagnet (ve geçici süper mıknatıs) bileşenini kurup Demo.unity'ye entegre et. Tüm UI öğeleri UIThemeSO / UIStyleHelper ile oyunun mevcut altın-sarı/turuncu/koyu kehribar temasına birebir uygun kurulmalıdır.",
       "acceptance_criteria": [
         "ComboManager ardışık altınlarda CurrentStreak ve CurrentMultiplier değerlerini artırır, süre dolunca veya hasar alınca ResetCombo çalışır.",
         "ComboUI OnComboUpdated ile çarpan metnini ve süre doluluk çubuğunu günceller.",
         "CoinMagnet belirli yarıçaptaki CoinCollect nesnelerini karaktere doğru hareket ettirir.",
-        "Check_T010 ardışık altın toplama ile çarpan artışını, hasarda sıfırlanmayı ve CoinMagnet'in yakındaki bir altını oyuncuya yaklaştırdığını sayısal doğrular."
+        "Check_T010 ardışık altın toplama ile çarpan artışını, hasarda sıfırlanmayı ve CoinMagnet'in yakındaki bir altını oyuncuya yaklaştırdığını sayısal doğrular.",
+        "UI bileşenleri UIThemeSO/UIStyleHelper temasını kullanır; düz gri/varsayılan Unity slider/panel bırakılmaz."
       ],
       "status": "pending",
       "depends_on": [
         "T002",
         "T005",
-        "T008"
+        "T008",
+        "T007A"
       ],
       "target_files": [
         "Assets/_GameAssets/Scripts/Core/ComboManager.cs",
@@ -324,7 +403,8 @@
       "context_files": [
         "Assets/_GameAssets/Scripts/UI/CoinManager.cs",
         "Assets/_GameAssets/Scripts/UI/CoinCollect.cs",
-        "Assets/_GameAssets/Scripts/Player/PlayerHealth.cs"
+        "Assets/_GameAssets/Scripts/Player/PlayerHealth.cs",
+        "Assets/_GameAssets/Scripts/UI/UIStyleHelper.cs"
       ],
       "tier": "fast",
       "visual_check": true,
@@ -338,12 +418,13 @@
     {
       "id": "T011",
       "title": "Dinamik Parkur Öğeleri (MovingPlatform, FallingPlatform & WindCurrentZone)",
-      "description": "Platform oynanışını zenginleştiren 3 fiziksel seviye mekaniği oluştur: noktalar arasında hareket ederken üzerindeki oyuncuyu kaydırmadan taşıyan MovingPlatform, üzerine basılınca titreyip düşen ve sonra yenilenen FallingPlatform, içine giren ve özellikle süzülen (ChickGlideController) oyuncuyu yukarı iten WindCurrentZone. Demo.unity'ye örnek birer parkur öğesi ekle.",
+      "description": "Platform oynanışını zenginleştiren 3 fiziksel seviye mekaniği oluştur: noktalar arasında hareket ederken üzerindeki oyuncuyu kaydırmadan taşıyan MovingPlatform, üzerine basılınca titreyip düşen ve sonra yenilenen FallingPlatform, içine giren ve özellikle süzülen (ChickGlideController) oyuncuyu yukarı iten WindCurrentZone. Demo.unity'ye örnek birer parkur öğesi ekle. Dikey Dilim standardı: Mekanikle birlikte görsel/prosedürel geri bildirim (parlama/eğim/sarsıntı), uygun ParticleSystem efekti ve SettingsUI.PlaySFX ses kancası aynı görevde eklenmelidir.",
       "acceptance_criteria": [
         "MovingPlatform sabit karelerde noktalar arasında hareket eder ve platform delta hareketini oyuncuya aktarır.",
         "FallingPlatform tetiklenince gecikme sonrası düşer ve respawn süresi sonunda başlangıç konumuna döner.",
         "WindCurrentZone içindeki oyuncunun Rigidbody'sine yukarı yönlü kaldırma kuvveti uygular (süzülürken ekstra çarpanla).",
-        "Check_T011 her üç mekaniği adım adım simüle ederek pozisyon/hız ve durum geçişlerini sayısal doğrular."
+        "Check_T011 her üç mekaniği adım adım simüle ederek pozisyon/hız ve durum geçişlerini sayısal doğrular.",
+        "Mekanik tetiklendiğinde görsel/prosedürel geri bildirim veya ParticleSystem efekti ve SFX kancası çalışır."
       ],
       "status": "draft",
       "depends_on": [
@@ -371,11 +452,12 @@
     {
       "id": "T012",
       "title": "CivCiv Gaga Saldırısı ve Havadan Yere Çakılma (ChickPeckAttack)",
-      "description": "Civciv karakterine yakın mesafe gaga vuruşu (PerformPeck, cooldown, ön alandaki IDamageable hedeflere hasar) ve havadayken hızla yere inip çevreye alan hasarı vuran Ground Pound (StartGroundPound, OnGroundPoundImpact) yeteneklerini kazandır ve Demo.unity karakterine ekle.",
+      "description": "Civciv karakterine yakın mesafe gaga vuruşu (PerformPeck, cooldown, ön alandaki IDamageable hedeflere hasar) ve havadayken hızla yere inip çevreye alan hasarı vuran Ground Pound (StartGroundPound, OnGroundPoundImpact) yeteneklerini kazandır ve Demo.unity karakterine ekle. Dikey Dilim standardı: Mekanikle birlikte görsel/prosedürel geri bildirim (parlama/eğim/sarsıntı), uygun ParticleSystem efekti ve SettingsUI.PlaySFX ses kancası aynı görevde eklenmelidir.",
       "acceptance_criteria": [
         "ChickPeckAttack.cs PerformPeck() ile menzildeki IDamageable hedeflere hasar verir ve cooldown uygular.",
         "Havadayken StartGroundPound() güçlü negatif dikey hız uygular ve yere inince çevredeki IDamageable hedeflere alan hasarı verir.",
-        "Check_T012 sahte bir IDamageable hedefle hem gaga vuruşunun hem yere çakılma darbesinin gerçek hasar ilettiğini doğrular."
+        "Check_T012 sahte bir IDamageable hedefle hem gaga vuruşunun hem yere çakılma darbesinin gerçek hasar ilettiğini doğrular.",
+        "Mekanik tetiklendiğinde görsel/prosedürel geri bildirim veya ParticleSystem efekti ve SFX kancası çalışır."
       ],
       "status": "draft",
       "depends_on": [
@@ -402,11 +484,12 @@
     {
       "id": "T013",
       "title": "Kırılabilir Sandık ve Ganimet Sistemi (LootTableSO & BreakableCrate)",
-      "description": "Ağırlıklı olasılıklarla ödül seçen LootTableSO ScriptableObject veri yapısını ve IDamageable uygulayan BreakableCrate bileşenini (gaga vuruşu, ground pound veya Dash çarpmasıyla kırılıp altın/ödül düşüren sandık) oluştur. DefaultLootTable.asset ve örnek sandıkları Demo.unity sahnesine kur.",
+      "description": "Ağırlıklı olasılıklarla ödül seçen LootTableSO ScriptableObject veri yapısını ve IDamageable uygulayan BreakableCrate bileşenini (gaga vuruşu, ground pound veya Dash çarpmasıyla kırılıp altın/ödül düşüren sandık) oluştur. DefaultLootTable.asset ve örnek sandıkları Demo.unity sahnesine kur. Dikey Dilim standardı: Mekanikle birlikte görsel/prosedürel geri bildirim (parlama/eğim/sarsıntı), uygun ParticleSystem efekti ve SettingsUI.PlaySFX ses kancası aynı görevde eklenmelidir.",
       "acceptance_criteria": [
         "LootTableSO ağırlıklı rastgele seçim (RollLoot) yapar ve boş/geçersiz girdilerde güvenli davranır.",
         "BreakableCrate IDamageable uygular; canı sıfırlanınca OnBroken tetiklenir ve ganimet/altın üretir.",
-        "Check_T013 BreakableCrate'e ChickPeckAttack/TakeDamage uygulayıp kırıldığını ve ödül üretildiğini doğrular."
+        "Check_T013 BreakableCrate'e ChickPeckAttack/TakeDamage uygulayıp kırıldığını ve ödül üretildiğini doğrular.",
+        "Mekanik tetiklendiğinde görsel/prosedürel geri bildirim veya ParticleSystem efekti ve SFX kancası çalışır."
       ],
       "status": "draft",
       "depends_on": [
@@ -435,11 +518,12 @@
     {
       "id": "T014",
       "title": "Devriye Düşman Yapay Zekası (EnemyStatsSO & PatrolEnemyAI)",
-      "description": "Düşman hız, algılama menzili, can ve hasar değerlerini tutan EnemyStatsSO ile devriye gezen, oyuncuyu görünce kovalayan, yandan çarpınca PlayerHealth'e hasar veren, ancak üstüne zıplandığında veya gagalandığında hasar alıp oyuncuyu yukarı zıplatan PatrolEnemyAI bileşenini oluştur. DefaultEnemyStats.asset ve örnek bir düşmanı Demo.unity'ye yerleştir.",
+      "description": "Düşman hız, algılama menzili, can ve hasar değerlerini tutan EnemyStatsSO ile devriye gezen, oyuncuyu görünce kovalayan, yandan çarpınca PlayerHealth'e hasar veren, ancak üstüne zıplandığında veya gagalandığında hasar alıp oyuncuyu yukarı zıplatan PatrolEnemyAI bileşenini oluştur. DefaultEnemyStats.asset ve örnek bir düşmanı Demo.unity'ye yerleştir. Dikey Dilim standardı: Mekanikle birlikte görsel/prosedürel geri bildirim (parlama/eğim/sarsıntı), uygun ParticleSystem efekti ve SettingsUI.PlaySFX ses kancası aynı görevde eklenmelidir.",
       "acceptance_criteria": [
         "EnemyStatsSO ve IDamageable uygulayan PatrolEnemyAI (Patrol, Chase, Defeated durumları) oluşturulur.",
         "Oyuncu algılama menziline girdiğinde düşman Chase durumuna geçer; üstten zıplama veya TakeDamage ile düşman hasar alır/etkisizleşir.",
-        "Check_T014 devriye hareketini, menzilde Chase geçişini, yandan hasarı ve üstten/saldırıyla yenilmeyi doğrular."
+        "Check_T014 devriye hareketini, menzilde Chase geçişini, yandan hasarı ve üstten/saldırıyla yenilmeyi doğrular.",
+        "Mekanik tetiklendiğinde görsel/prosedürel geri bildirim veya ParticleSystem efekti ve SFX kancası çalışır."
       ],
       "status": "draft",
       "depends_on": [
@@ -468,11 +552,12 @@
     {
       "id": "T015",
       "title": "Etkileşim Sistemi ve Basınç Plakası Bulmacası (IInteractable, PlayerInteractor & PressurePlateSwitch)",
-      "description": "Çevredeki etkileşimli nesneler için IInteractable arayüzü, oyuncunun yakınındaki etkileşimli nesneyi bulup E tuşuyla tetikleyen PlayerInteractor ve üzerine çıkıldığında bağlı hedefi/kapıyı açan PressurePlateSwitch bileşenlerini oluşturup Demo.unity'ye örnek bir basınç plakası ekle.",
+      "description": "Çevredeki etkileşimli nesneler için IInteractable arayüzü, oyuncunun yakınındaki etkileşimli nesneyi bulup E tuşuyla tetikleyen PlayerInteractor ve üzerine çıkıldığında bağlı hedefi/kapıyı açan PressurePlateSwitch bileşenlerini oluşturup Demo.unity'ye örnek bir basınç plakası ekle. Dikey Dilim standardı: Mekanikle birlikte görsel/prosedürel geri bildirim (parlama/eğim/sarsıntı), uygun ParticleSystem efekti ve SettingsUI.PlaySFX ses kancası aynı görevde eklenmelidir.",
       "acceptance_criteria": [
         "IInteractable (CanInteract, GetPromptText, Interact) ve PlayerInteractor (FindNearestInteractable, TryInteract) oluşturulur.",
         "PressurePlateSwitch oyuncu veya ağırlık üzerine gelince OnActivated/OnDeactivated event'lerini tetikler ve bağlı hedef transformu hareket ettirir.",
-        "Check_T015 PlayerInteractor'ın menzildeki nesneyi tetiklediğini ve PressurePlateSwitch'in aktivasyonda hedef nesneyi oynattığını doğrular."
+        "Check_T015 PlayerInteractor'ın menzildeki nesneyi tetiklediğini ve PressurePlateSwitch'in aktivasyonda hedef nesneyi oynattığını doğrular.",
+        "Mekanik tetiklendiğinde görsel/prosedürel geri bildirim veya ParticleSystem efekti ve SFX kancası çalışır."
       ],
       "status": "draft",
       "depends_on": [
@@ -499,16 +584,18 @@
     {
       "id": "T016",
       "title": "Kayıp CivCiv Kurtarma Görevi ve Hedef Pusulası (LostChickNPC, ChickRescueManager & WaypointIndicatorUI)",
-      "description": "Oyuna karakterine yakışan ana hedef ekle: etkileşimle veya temasla kurtarılıp oyuncuyu kuyruk halinde takip eden LostChickNPC, bölümdeki kurtarma ilerlemesini takip eden ChickRescueManager ve ekranda en yakın kurtarılmamış civcivin yönünü/mesafesini (metre) gösteren WaypointIndicatorUI bileşenlerini Demo.unity'ye kur.",
+      "description": "Oyuna karakterine yakışan ana hedef ekle: etkileşimle veya temasla kurtarılıp oyuncuyu kuyruk halinde takip eden LostChickNPC, bölümdeki kurtarma ilerlemesini takip eden ChickRescueManager ve ekranda en yakın kurtarılmamış civcivin yönünü/mesafesini (metre) gösteren WaypointIndicatorUI bileşenlerini Demo.unity'ye kur. Tüm UI öğeleri UIThemeSO / UIStyleHelper ile oyunun mevcut altın-sarı/turuncu/koyu kehribar temasına birebir uygun kurulmalıdır. Dikey Dilim standardı: Mekanikle birlikte görsel/prosedürel geri bildirim (parlama/eğim/sarsıntı), uygun ParticleSystem efekti ve SettingsUI.PlaySFX ses kancası aynı görevde eklenmelidir.",
       "acceptance_criteria": [
         "LostChickNPC kurtarıldığında IsRescued = true olur, ChickRescueManager sayacını artırır ve oyuncuyu takip etmeye başlar.",
         "WaypointIndicatorUI en yakın kurtarılmamış LostChickNPC'yi bulup mesafe metnini günceller, hepsi kurtarılınca gizlenir.",
         "Check_T016 bir LostChickNPC kurtarıldığında sayaç artışını, takip hareketini ve WaypointIndicatorUI güncellemesini doğrular.",
-        "Görsel kontrolde WaypointIndicatorUI HUD üzerinde temiz görünür."
+        "Görsel kontrolde WaypointIndicatorUI HUD üzerinde temiz görünür.",
+        "UI bileşenleri UIThemeSO/UIStyleHelper temasını kullanır; düz gri/varsayılan Unity slider/panel bırakılmaz."
       ],
       "status": "draft",
       "depends_on": [
-        "T015"
+        "T015",
+        "T007A"
       ],
       "target_files": [
         "Assets/_GameAssets/Scripts/Gameplay/LostChickNPC.cs",
@@ -519,7 +606,8 @@
       "context_files": [
         "Assets/_GameAssets/Scripts/Core/IInteractable.cs",
         "Assets/_GameAssets/Scripts/Player/PlayerInteractor.cs",
-        "Assets/_GameAssets/Scripts/UI/GameplayHUD.cs"
+        "Assets/_GameAssets/Scripts/UI/GameplayHUD.cs",
+        "Assets/_GameAssets/Scripts/UI/UIStyleHelper.cs"
       ],
       "tier": "fast",
       "visual_check": true,
@@ -636,16 +724,18 @@
     {
       "id": "T020",
       "title": "Dinamik Gece/Gündüz Döngüsü, Başarım Sistemi ve Bütünlük Doğrulayıcı",
-      "description": "Directional Light açısını ve ışık yoğunluğunu zamana göre değiştiren DayNightCycleController, oyun içi kilometre taşlarını takip edip bildirim gösteren AchievementSO + AchievementManager ve oyun açılışında kritik yöneticilerin sahnede mevcut olmasını güvenceye alan RuntimeSystemValidator bileşenlerini Demo.unity'ye entegre ederek uçtan uca doğrula.",
+      "description": "Directional Light açısını ve ışık yoğunluğunu zamana göre değiştiren DayNightCycleController, oyun içi kilometre taşlarını takip edip bildirim gösteren AchievementSO + AchievementManager ve oyun açılışında kritik yöneticilerin sahnede mevcut olmasını güvenceye alan RuntimeSystemValidator bileşenlerini Demo.unity'ye entegre ederek uçtan uca doğrula. Tüm UI öğeleri UIThemeSO / UIStyleHelper ile oyunun mevcut altın-sarı/turuncu/koyu kehribar temasına birebir uygun kurulmalıdır.",
       "acceptance_criteria": [
         "DayNightCycleController zaman ilerledikçe Directional Light rotasyonunu ve gündüz/gece durumunu günceller.",
         "AchievementManager hedef değere ulaşılınca kilidi açar, OnAchievementUnlocked tetikler ve SaveManager ile senkron tutar.",
         "RuntimeSystemValidator kritik yöneticilerin sahnede eksiksiz olduğunu doğrular/tamamlar.",
-        "Check_T020 ışık açısı değişimini, başarım açılışını ve tüm ana sistemlerin Demo.unity üzerinde sağlıklı varlığını doğrular."
+        "Check_T020 ışık açısı değişimini, başarım açılışını ve tüm ana sistemlerin Demo.unity üzerinde sağlıklı varlığını doğrular.",
+        "UI bileşenleri UIThemeSO/UIStyleHelper temasını kullanır; düz gri/varsayılan Unity slider/panel bırakılmaz."
       ],
       "status": "draft",
       "depends_on": [
-        "T017"
+        "T017",
+        "T007A"
       ],
       "target_files": [
         "Assets/_GameAssets/Scripts/Gameplay/DayNightCycleController.cs",
@@ -657,7 +747,8 @@
       "context_files": [
         "Assets/_GameAssets/Scripts/Core/SaveManager.cs",
         "Assets/_GameAssets/Scripts/Core/GameManager.cs",
-        "Assets/_GameAssets/Scripts/UI/CoinManager.cs"
+        "Assets/_GameAssets/Scripts/UI/CoinManager.cs",
+        "Assets/_GameAssets/Scripts/UI/UIStyleHelper.cs"
       ],
       "tier": "smart",
       "visual_check": true,
