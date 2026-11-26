@@ -1,6 +1,7 @@
 # Compact Project Code Index (Auto-Generated, 0 Tokens)
-Indexed files: `23`
+Indexed files: `25`
 
+- `Assets/_GameAssets/Scripts/Collectables/PowerUpCollectable.cs` (236L): types: enum PowerUpType, class PowerUpCollectable: MonoBehaviour, ICollectable | api: UpdateMotion(float deltaTime), Collect(), Collect(PlayerController player), ApplyPowerUp(PlayerController player) | fields: powerUpType, extraTimeAmount, speedMultiplier, speedBoostDuration, staminaRefillAmount, rotateSpeed, bobAmplitude, bobFrequency, shrinkDuration, collectSound
 - `Assets/_GameAssets/Scripts/Core/GameManager.cs` (175L): types: class GameManager: MonoBehaviour | events: OnGameStateChanged | api: CountTargetCoinsInScene(), SubscribeEvents(), SubscribeToCoinManager(CoinManager cm), SubscribeToClock(ClockUI clock), SetState(GameState newState), TriggerVictory(), TriggerGameOver(), RestartLevel() | fields: currentState, targetCoins, autoDetectTargetCoins
 - `Assets/_GameAssets/Scripts/Data/PlayerStatsSO.cs` (116L): types: class PlayerStatsSO: ScriptableObject
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/AutoDevBridge.cs` (291L): types: class AutoDevBridge, class BridgeCommand, class BridgeResult | api: RunFromCommandLine()
@@ -9,6 +10,7 @@ Indexed files: `23`
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T002.cs` (163L): types: class Check_T002 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T003.cs` (322L): types: class Check_T003 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T004.cs` (163L): types: class Check_T004 | api: Run()
+- `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T005.cs` (178L): types: class Check_T005 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/CivCivAutoSetup.cs` (265L): types: class CivCivAutoSetup | api: SetupAll(), SetupSettingsUI()
 - `Assets/_GameAssets/Scripts/Enums/GameState.cs` (8L): types: enum GameState
 - `Assets/_GameAssets/Scripts/Enums/PlayerState.cs` (17L): types: enum PlayerState
@@ -19,7 +21,7 @@ Indexed files: `23`
 - `Assets/_GameAssets/Scripts/TargetJump.cs` (42L): types: class TargetJump: MonoBehaviour | api: LaunchRigidbody(Rigidbody playerRigidbody) | fields: jumpForce, jumpHeight
 - `Assets/_GameAssets/Scripts/ThirdPersonCameraController.cs` (693L): types: enum CameraPerspective, class ThirdPersonCameraController: MonoBehaviour | api: AutoFindReferences(), TogglePerspective(), ApplyPerspective(CameraPerspective perspective) | fields: _playerTransform, _playerVisualTransform, _orientationTransform, _tpsCamera, _fpsCamera, _rotateWithMouse, _instantTurnInTPS, _tpsRotationSpeed, _instantTurnInFPS, _mouseSensitivity
 - `Assets/_GameAssets/Scripts/UI/ClockUI.cs` (175L): types: class ClockUI: MonoBehaviour | events: OnTimerExpired | api: Tick(float deltaTime), AddBonusTime(float seconds), SetRemainingSeconds(float seconds) | fields: timerText, stick, startingSeconds, secondsAddedPerCoinValue, stickMoveSpeed
-- `Assets/_GameAssets/Scripts/UI/CoinCollect.cs` (28L): types: class CoinCollect: MonoBehaviour, ICollectable | api: Collect() | fields: value
+- `Assets/_GameAssets/Scripts/UI/CoinCollect.cs` (165L): types: class CoinCollect: MonoBehaviour, ICollectable | api: UpdateMotion(float deltaTime), Collect() | fields: value, rotateSpeed, bobAmplitude, bobFrequency, shrinkDuration, collectSound
 - `Assets/_GameAssets/Scripts/UI/CoinManager.cs` (85L): types: class CoinManager: MonoBehaviour | events: CoinsChanged, CoinsCollected, HighScoreChanged | api: LoadHighScore(), AddCoins(int amount), ResetCoins(), ResetHighScore()
 - `Assets/_GameAssets/Scripts/UI/CoinUI.cs` (69L): types: class CoinUI: MonoBehaviour | fields: coinValueText
 - `Assets/_GameAssets/Scripts/UI/GameplayHUD.cs` (286L): types: class GameplayHUD: MonoBehaviour | api: SubscribeEvents(), UnsubscribeEvents(), UpdateStaminaBar(float currentStamina, float maxStamina), HandleGameStateChanged(GameState state), OnRestartButtonClicked(), AutoResolveReferences() | fields: _staminaSlider, _staminaFillImage, _staminaText, _endGamePanel, _titleText, _scoreText, _highScoreText, _restartButton, _dashController, _gameManager

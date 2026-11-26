@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-26T18:56:40+00:00",
+  "updated_at": "2026-11-26T19:02:00+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -145,7 +145,7 @@
         "PowerUpCollectable üç türü (ExtraTime, SpeedBoost, StaminaRefill) destekler ve ilgili sistemlere gerçekten etki eder.",
         "Check_T005 her üç güçlendiricinin ClockUI süresini, PlayerController hız çarpanını ve DashController staminasını sayısal olarak değiştirdiğini doğrular."
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [
         "T001",
         "T002",
@@ -165,11 +165,11 @@
       "tier": "fast",
       "visual_check": false,
       "verify_check": "T005",
-      "retries": 0,
+      "retries": 1,
       "last_error": "",
-      "commit_sha": "",
+      "commit_sha": "cef8f19",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T18:56:40+00:00"
+      "updated_at": "2026-11-26T19:02:00+00:00"
     },
     {
       "id": "T006",

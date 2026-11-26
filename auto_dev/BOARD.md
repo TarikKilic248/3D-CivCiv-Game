@@ -1,6 +1,6 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 20** | Taslak (Onay Bekleyen): `10` | Sirada: `6` (Calismaya Hazir: `4`) | Tamamlanan: `4` | Bloklanan: `0`
+- Ozet: **Toplam 20** | Taslak (Onay Bekleyen): `10` | Sirada: `5` (Calismaya Hazir: `3`) | Tamamlanan: `5` | Bloklanan: `0`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
@@ -19,7 +19,6 @@
 ## Siradaki Gorevler (`pending`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
-| `T005` | Gelişmiş Altın Geri Bildirimi ve Güçlendirici Sistemi (CoinCollect & PowerUpCollectable) | T001, T002, T003 | `fast` | - | Hazir |
 | `T006` | Kontrol Noktası ve Tehlike/Düşme Alanları (Checkpoint & HazardZone) | T001, T002 | `fast` | - | Hazir |
 | `T007` | Çift Zıplama ve Kanatla Süzülme (ChickGlideController) | T001 | `fast` | - | Hazir |
 | `T008` | Hasar Arayüzü ve Oyuncu Can Sistemi (IDamageable & PlayerHealth) | T001, T002 | `fast` | - | Hazir |
@@ -36,3 +35,4 @@ _Yok._
 | `T002` | Merkezi Oyun Döngüsü (GameState, GameManager, ClockUI & HighScore) | - | `fast` | - | Commit `f141f27` |
 | `T003` | Stamina Tabanlı İleri Atılma Yeteneği (DashController) | T001 | `fast` | - | Commit `94cd240` |
 | `T004` | Oyun İçi Enerji Çubuğu ve Oyun Sonu Ekranı (GameplayHUD) | T002, T003 | `fast` | Evet | Commit `ee6f253` |
+| `T005` | Gelişmiş Altın Geri Bildirimi ve Güçlendirici Sistemi (CoinCollect & PowerUpCollectable) | T001, T002, T003 | `fast` | - | Commit `cef8f19` |
