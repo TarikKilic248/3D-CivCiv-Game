@@ -1,20 +1,21 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `7` | Sirada: `0` (Calismaya Hazir: `0`) | Tamamlanan: `13` | Bloklanan: `2`
+- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `4` | Sirada: `3` (Calismaya Hazir: `2`) | Tamamlanan: `13` | Bloklanan: `2`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
-| `T014` | Devriye Düşman Yapay Zekası (EnemyStatsSO & PatrolEnemyAI) | T008, T012 | `fast` | - | `approve` bekliyor |
-| `T015` | Etkileşim Sistemi ve Basınç Plakası Bulmacası (IInteractable, PlayerInteractor & PressurePlateSwitch) | T001 | `fast` | - | `approve` bekliyor |
-| `T016` | Kayıp CivCiv Kurtarma Görevi ve Hedef Pusulası (LostChickNPC, ChickRescueManager & WaypointIndicatorUI) | T015, T007A | `fast` | Evet | `approve` bekliyor |
 | `T017` | JSON Kalıcı Kayıt ve Yıldız Puanlama Sistemi (SaveManager, LevelDataSO & LevelProgressionManager) | T002, T016 | `fast` | - | `approve` bekliyor |
 | `T018` | Nesne Havuzu ve Karakter Hareket Efektleri (ObjectPoolManager & PlayerVFXController) | T003, T007 | `fast` | - | `approve` bekliyor |
 | `T019` | Kamera Hissiyatı ve 3D Ses Mimarisi (CameraJuiceController & SpatialAudioManager) | T003, T008 | `fast` | - | `approve` bekliyor |
 | `T020` | Dinamik Gece/Gündüz Döngüsü, Başarım Sistemi ve Bütünlük Doğrulayıcı | T017, T007A | `smart` | Evet | `approve` bekliyor |
 
 ## Siradaki Gorevler (`pending`)
-_Yok._
+| ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
+| --- | --- | --- | --- | --- | --- |
+| `T014` | Devriye Düşman Yapay Zekası (EnemyStatsSO & PatrolEnemyAI) | T008, T012 | `fast` | - | Hazir |
+| `T015` | Etkileşim Sistemi ve Basınç Plakası Bulmacası (IInteractable, PlayerInteractor & PressurePlateSwitch) | T001 | `fast` | - | Hazir |
+| `T016` | Kayıp CivCiv Kurtarma Görevi ve Hedef Pusulası (LostChickNPC, ChickRescueManager & WaypointIndicatorUI) | T015, T007A | `fast` | Evet | Bagimlilik bekliyor |
 
 ## Bloklanan Gorevler (`blocked`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
