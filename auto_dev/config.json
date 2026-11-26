@@ -1,0 +1,77 @@
+{
+  "project_name": "3D CivCiv Game",
+  "git": {
+    "protected_branches": ["main", "master"],
+    "dev_branch": "auto-dev",
+    "task_branch_prefix": "task/",
+    "auto_push": false,
+    "commit_prefix": "feat",
+    "state_commit_enabled": true
+  },
+  "models": {
+    "planner": {
+      "model": "gemini-4-neon-medium",
+      "effort": "medium",
+      "timeout_sec": 300
+    },
+    "fast": {
+      "model": "gemini-3.8-flash-medium",
+      "effort": "medium",
+      "timeout_sec": 300
+    },
+    "smart": {
+      "model": "gemini-4-neon-medium",
+      "effort": "medium",
+      "timeout_sec": 420
+    },
+    "visual": {
+      "model": "gemini-3.8-flash-medium",
+      "effort": "low",
+      "timeout_sec": 180
+    }
+  },
+  "limits": {
+    "max_tasks_per_run": 3,
+    "max_retries_per_task": 2,
+    "max_consecutive_blocks": 2,
+    "max_changed_files": 25,
+    "max_diff_lines": 1500,
+    "max_context_file_chars": 8000,
+    "max_index_chars": 14000
+  },
+  "scope": {
+    "allowed_write_prefixes": [
+      "Assets/_GameAssets/",
+      "Assets/Synty/PolygonStarter/Scenes/Demo.unity"
+    ],
+    "forbidden_agent_edit_extensions": [
+      ".unity",
+      ".prefab",
+      ".asset",
+      ".mat",
+      ".csproj",
+      ".sln",
+      ".slnx",
+      ".fbx",
+      ".png",
+      ".jpg"
+    ],
+    "index_include_roots": [
+      "Assets/_GameAssets/Scripts"
+    ],
+    "index_extensions": [".cs"]
+  },
+  "adapter": {
+    "type": "unity",
+    "unity_exe": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.6.8f1\\Editor\\Unity.exe",
+    "scene_path": "Assets/Synty/PolygonStarter/Scenes/Demo.unity",
+    "bridge_timeout_sec": 150,
+    "batch_timeout_sec": 240
+  },
+  "agent_cli": {
+    "executable": "agy",
+    "mode": "auto",
+    "skip_permissions": false,
+    "extra_args": []
+  }
+}

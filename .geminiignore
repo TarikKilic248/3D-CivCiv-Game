@@ -1,4 +1,4 @@
-# Unity Sistem ve Önbellek Klasörleri
+# Unity Sistem ve Onbellek Klasorleri
 Library/
 Temp/
 Obj/
@@ -8,14 +8,18 @@ Logs/
 UserSettings/
 .vs/
 .idea/
+.utmp/
 
-# Ağır Asset ve Medya Dosyaları (Ajanın bunları okumasına gerek yok)
+# Agir 3D Asset, Paket ve Medya Dosyalari (Token Tasarrufu)
 Assets/Synty/
-Assets/_GameAssets/
+Assets/_GameAssets/*
+!Assets/_GameAssets/Scripts/
+!Assets/_GameAssets/Scripts/**
 *.fbx
 *.obj
 *.png
 *.jpg
+*.jpeg
 *.tga
 *.psd
 *.wav
@@ -26,3 +30,12 @@ Assets/_GameAssets/
 *.unity
 *.prefab
 *.meta
+*.csproj
+*.sln
+*.slnx
+
+# AutoDev calisma zamani ham loglarini gizle, kompakt sahne ozetini ve gorsel ciktilari acik birak
+.autodev/*
+!.autodev/scene_hierarchy.txt
+!.autodev/runs/
+!.autodev/runs/**/*.png
