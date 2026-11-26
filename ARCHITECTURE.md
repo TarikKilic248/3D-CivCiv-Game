@@ -50,11 +50,11 @@
 - `HealthUI.cs` : `PlayerHealth.OnHealthChanged` event'ini dinleyerek ekrandaki kalp ikonlarını (`_heartIcons`) ve can metnini (`_healthText`) güncelleyen HUD bileşeni.
 - `ComboUI.cs` : `ComboManager.Instance.OnComboUpdated` event'ini dinleyerek kombo çarpan metnini (`_comboText`), ölçek sıçrama animasyonunu ve süre çubuğunu (`_comboTimerFill`) güncelleyen HUD bileşeni.
 
-### 4. Editör Araçları (`Assets/_GameAssets/Scripts/Editor/`)
+### 4. Editör Araçları ve Otomasyon Köprüsü (`Assets/_GameAssets/Scripts/Editor/`)
 - `CivCivAutoSetup.cs` : `Tools/CivCiv/` menüsü altında karakter, fizik, TPS/FPS Cinemachine kameraları (`Ctrl+Shift+K`), `SettingsUI` buton/referans hiyerarşisini (`Ctrl+Shift+U`) ve `DefaultPlayerStats` / `DashController` / `GameManager` / `GameplayHUD` bileşenlerini (`Ctrl+Shift+G`) sahnede otomatik kuran editör aracı.
-- `NightAgentMenu.cs` : `Tools/Night Agent/` menüsü altında her faz için standart `Uygula`, `Geri çek` ve `Detay` aksiyonlarını yöneten editör aracı.
-- `Tests/PlayMode/Phase1Tests.cs` : Faz 1 (`PlayerStatsSO`, `PlayerController`, `DashController`) mekaniklerini ve görsel çıktısını geçici sahnede doğrulayan Play Mode testi.
-- `Tests/PlayMode/Phase2Tests.cs` : Faz 2 (`GameState`, `GameManager`, `ClockUI`, `CoinManager`) çekirdek oyun döngüsü, süre bitimi ve yüksek skor kaydını geçici sahnede doğrulayan Play Mode testi.
+- `NightAgentMenu.cs` : `Tools/Night Agent/` menüsü altında her faz için standart `Uygula`, `Geri çek` ve `Detay` aksiyonlarını yöneten, bileşenleri doğrudan `Demo.unity` sahnesine kurup kaydeden editör aracı.
+- `NightAgentVerifier.cs` : Fazların `Demo.unity` üzerindeki bileşen/referans doğrulamasını yapan, aktif sahnenin 30 satırlık hiyerarşi özetini (`TestScreenshots/scene_hierarchy.txt`) ve kamera ekran görüntüsünü (`TestScreenshots/faz<No>_sonucu.png`) üreten doğrulayıcı.
+- `NightAgentBridge.cs` : `[InitializeOnLoad]` tabanlı hibrit otomasyon köprüsü. Unity Editör açıkken `TestScreenshots/night_agent_cmd.txt` komutlarını (`SNAPSHOT`, `APPLY:<No>`, `REVERT:<No>`, `VERIFY:<No>`) otomatik çalıştırır, kapalıyken `-batchmode -executeMethod NightAgentBridge.RunFromCommandLine` ile çalışır ve sonucu `TestScreenshots/night_agent_result.txt` dosyasına yazar.
 
 ## Mimari Kurallar ve İletişim Akışı
 - **İsim Alanı (Namespace):** Mevcut scriptler global namespace (root) altında tanımlıdır.
