@@ -1,6 +1,6 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 20** | Taslak (Onay Bekleyen): `16` | Sirada: `2` (Calismaya Hazir: `1`) | Tamamlanan: `2` | Bloklanan: `0`
+- Ozet: **Toplam 20** | Taslak (Onay Bekleyen): `16` | Sirada: `1` (Calismaya Hazir: `1`) | Tamamlanan: `3` | Bloklanan: `0`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
@@ -25,8 +25,7 @@
 ## Siradaki Gorevler (`pending`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
-| `T003` | Stamina Tabanlı İleri Atılma Yeteneği (DashController) | T001 | `fast` | - | Hazir |
-| `T004` | Oyun İçi Enerji Çubuğu ve Oyun Sonu Ekranı (GameplayHUD) | T002, T003 | `fast` | Evet | Bagimlilik bekliyor |
+| `T004` | Oyun İçi Enerji Çubuğu ve Oyun Sonu Ekranı (GameplayHUD) | T002, T003 | `fast` | Evet | Hazir |
 
 ## Bloklanan Gorevler (`blocked`)
 _Yok._
@@ -36,3 +35,4 @@ _Yok._
 | --- | --- | --- | --- | --- | --- |
 | `T001` | Veri Mimarisi (PlayerStatsSO) ve PlayerController Temel Düzeltmeleri | - | `smart` | - | Commit `2305e43` |
 | `T002` | Merkezi Oyun Döngüsü (GameState, GameManager, ClockUI & HighScore) | - | `fast` | - | Commit `f141f27` |
+| `T003` | Stamina Tabanlı İleri Atılma Yeteneği (DashController) | T001 | `fast` | - | Commit `94cd240` |

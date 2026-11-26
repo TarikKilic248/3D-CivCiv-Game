@@ -1,17 +1,19 @@
 # Compact Project Code Index (Auto-Generated, 0 Tokens)
-Indexed files: `19`
+Indexed files: `21`
 
 - `Assets/_GameAssets/Scripts/Core/GameManager.cs` (175L): types: class GameManager: MonoBehaviour | events: OnGameStateChanged | api: CountTargetCoinsInScene(), SubscribeEvents(), SubscribeToCoinManager(CoinManager cm), SubscribeToClock(ClockUI clock), SetState(GameState newState), TriggerVictory(), TriggerGameOver(), RestartLevel() | fields: currentState, targetCoins, autoDetectTargetCoins
-- `Assets/_GameAssets/Scripts/Data/PlayerStatsSO.cs` (87L): types: class PlayerStatsSO: ScriptableObject
+- `Assets/_GameAssets/Scripts/Data/PlayerStatsSO.cs` (116L): types: class PlayerStatsSO: ScriptableObject
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/AutoDevBridge.cs` (291L): types: class AutoDevBridge, class BridgeCommand, class BridgeResult | api: RunFromCommandLine()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/AutoDevVerifier.cs` (302L): types: class AutoDevCheckAttribute: Attribute, struct AutoDevCheckResult, class AutoDevVerifier | api: Pass(string summary, string details = "", ...), Fail(string summary, string details = ""), EnsureSceneOpen(string scenePath), SaveActiveScene(), ReloadCleanScene(string scenePath), InvokeLifecycle(MonoBehaviour target, string methodName), SimulatePhysicsSteps(int steps, float fixedDeltaTime, Acti...), RunCheck(string checkId, string scenePath), RunSmokeCheck(), ExportSceneHierarchySnapshot(string outputPath)
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T001.cs` (543L): types: class Check_T001 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T002.cs` (163L): types: class Check_T002 | api: Run()
+- `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T003.cs` (322L): types: class Check_T003 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/CivCivAutoSetup.cs` (265L): types: class CivCivAutoSetup | api: SetupAll(), SetupSettingsUI()
 - `Assets/_GameAssets/Scripts/Enums/GameState.cs` (8L): types: enum GameState
-- `Assets/_GameAssets/Scripts/Enums/PlayerState.cs` (15L): types: enum PlayerState
+- `Assets/_GameAssets/Scripts/Enums/PlayerState.cs` (17L): types: enum PlayerState
 - `Assets/_GameAssets/Scripts/ICollectable.cs` (5L): types: interface ICollectable
-- `Assets/_GameAssets/Scripts/PlayerController.cs` (914L): types: class PlayerController: MonoBehaviour | api: ApplyStatsFromSO(PlayerStatsSO stats), SetSpeedMultiplier(float multiplier), SetExternalMovementOverride(bool isOverridden), GetRigidbody(), IsInputBlocked(), RefreshGroundState(), StepTimers(float deltaTime), ProcessInputs(float horizontal, float vertical, boo...), SetMovementReference(Transform movementReference) | fields: _playerStats, _playerOrientationTransform, _moveSpeed, _maxSpeed, _groundDrag, _airDrag, _airMultiplier, _jumpForce, _jumpCooldown, _coyoteTime
+- `Assets/_GameAssets/Scripts/Player/DashController.cs` (362L): types: class DashController: MonoBehaviour | events: OnStaminaChanged | api: ApplyStatsFromSO(PlayerStatsSO stats), SyncFieldsFromSO(PlayerStatsSO stats), Step(float deltaTime), ExecuteDash(), EndDash(), ResetStamina(), SetStamina(float amount) | fields: _playerStats, _dashSpeed, _dashDuration, _dashCooldown, _dashKey, _maxStamina, _dashStaminaCost, _staminaRegenRate, _staminaRegenDelay
+- `Assets/_GameAssets/Scripts/PlayerController.cs` (921L): types: class PlayerController: MonoBehaviour | api: ApplyStatsFromSO(PlayerStatsSO stats), SetSpeedMultiplier(float multiplier), SetExternalMovementOverride(bool isOverridden), GetRigidbody(), IsInputBlocked(), RefreshGroundState(), StepTimers(float deltaTime), ProcessInputs(float horizontal, float vertical, boo...), SetMovementReference(Transform movementReference) | fields: _playerStats, _playerOrientationTransform, _moveSpeed, _maxSpeed, _groundDrag, _airDrag, _airMultiplier, _jumpForce, _jumpCooldown, _coyoteTime
 - `Assets/_GameAssets/Scripts/StateController.cs` (25L): types: class StateController: MonoBehaviour | api: ChangeState(PlayerState newState), GetCurrentState()
 - `Assets/_GameAssets/Scripts/TargetJump.cs` (42L): types: class TargetJump: MonoBehaviour | api: LaunchRigidbody(Rigidbody playerRigidbody) | fields: jumpForce, jumpHeight
 - `Assets/_GameAssets/Scripts/ThirdPersonCameraController.cs` (693L): types: enum CameraPerspective, class ThirdPersonCameraController: MonoBehaviour | api: AutoFindReferences(), TogglePerspective(), ApplyPerspective(CameraPerspective perspective) | fields: _playerTransform, _playerVisualTransform, _orientationTransform, _tpsCamera, _fpsCamera, _rotateWithMouse, _instantTurnInTPS, _tpsRotationSpeed, _instantTurnInFPS, _mouseSensitivity
