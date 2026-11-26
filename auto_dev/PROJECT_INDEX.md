@@ -1,11 +1,12 @@
 # Compact Project Code Index (Auto-Generated, 0 Tokens)
-Indexed files: `44`
+Indexed files: `47`
 
 - `Assets/_GameAssets/Scripts/Collectables/CoinMagnet.cs` (273L): types: class CoinMagnet: MonoBehaviour | events: OnSuperMagnetChanged, OnCoinPulled | api: ActivateSuperMagnet(float duration, float radiusMultiplie...), DeactivateSuperMagnet(), RefreshCoinCache(), StepMagnet(float deltaTime), EnsureVFXSetup() | fields: _magnetRadius, _pullSpeed, _targetHeightOffset, _autoCollectDistance, _defaultSuperRadiusMultiplier, _defaultSuperSpeedMultiplier, _magnetAuraParticles, _superMagnetSound, _magnetPullSound
 - `Assets/_GameAssets/Scripts/Collectables/PowerUpCollectable.cs` (236L): types: enum PowerUpType, class PowerUpCollectable: MonoBehaviour, ICollectable | api: UpdateMotion(float deltaTime), Collect(), Collect(PlayerController player), ApplyPowerUp(PlayerController player) | fields: powerUpType, extraTimeAmount, speedMultiplier, speedBoostDuration, staminaRefillAmount, rotateSpeed, bobAmplitude, bobFrequency, shrinkDuration, collectSound
 - `Assets/_GameAssets/Scripts/Core/ComboManager.cs` (302L): types: class ComboManager: MonoBehaviour | events: OnComboUpdated, OnComboReset | api: ResolveDependencies(), BindTargets(CoinManager coinManager, PlayerHealth...), SubscribeEvents(), UnsubscribeEvents(), RegisterCoinPickup(int coinAmount = 1), Tick(float deltaTime), ResetCombo() | fields: _comboDuration, _multiplierStep, _maxMultiplier, _applyBonusCoins, _coinManager, _playerHealth, _comboUpSound, _comboResetSound
 - `Assets/_GameAssets/Scripts/Core/GameManager.cs` (175L): types: class GameManager: MonoBehaviour | events: OnGameStateChanged | api: CountTargetCoinsInScene(), SubscribeEvents(), SubscribeToCoinManager(CoinManager cm), SubscribeToClock(ClockUI clock), SetState(GameState newState), TriggerVictory(), TriggerGameOver(), RestartLevel() | fields: currentState, targetCoins, autoDetectTargetCoins
 - `Assets/_GameAssets/Scripts/Core/IDamageable.cs` (14L): types: interface IDamageable
+- `Assets/_GameAssets/Scripts/Data/LootTableSO.cs` (121L): types: class LootTableSO: ScriptableObject, class LootEntry | api: RollCount(), RollLoot(), RollPrefab(), AddEntry(LootEntry entry), ClearEntries() | fields: _entries
 - `Assets/_GameAssets/Scripts/Data/PlayerStatsSO.cs` (116L): types: class PlayerStatsSO: ScriptableObject
 - `Assets/_GameAssets/Scripts/Data/UIThemeSO.cs` (86L): types: class UIThemeSO: ScriptableObject
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/AutoDevBridge.cs` (304L): types: class AutoDevBridge, class BridgeCommand, class BridgeResult | api: RunFromCommandLine()
@@ -22,9 +23,11 @@ Indexed files: `44`
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T008.cs` (171L): types: class Check_T008 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T010.cs` (230L): types: class Check_T010 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T012.cs` (150L): types: class Check_T012, class DummyDamageable: MonoBehaviour, IDamageable | api: TakeDamage(int damage), TakeDamage(int damage, Vector3 hitDirection), Heal(int amount), Run()
+- `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T013.cs` (193L): types: class Check_T013 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/CivCivAutoSetup.cs` (265L): types: class CivCivAutoSetup | api: SetupAll(), SetupSettingsUI()
 - `Assets/_GameAssets/Scripts/Enums/GameState.cs` (8L): types: enum GameState
 - `Assets/_GameAssets/Scripts/Enums/PlayerState.cs` (19L): types: enum PlayerState
+- `Assets/_GameAssets/Scripts/Gameplay/BreakableCrate.cs` (586L): types: class BreakableCrate: MonoBehaviour, IDamageable | events: OnBroken, OnHit, OnHealthChanged | api: ResolveDependencies(), StepFeedback(float deltaTime), ResetVisualPoseImmediate(), TakeDamage(int damage), TakeDamage(int damage, Vector3 hitDirection), Heal(int amount), Break(Vector3 hitDirection = default), EnsureVFXSetup() | fields: _maxHealth, _currentHealth, _isInvincible, _lootTable, _coinPrefab, _directCoinReward, _dropEjectionForce, _dropUpwardForce, _dashImpactDamage, _canBreakOnDash
 - `Assets/_GameAssets/Scripts/Gameplay/Checkpoint.cs` (189L): types: class Checkpoint: MonoBehaviour | events: OnCheckpointActivated, OnActivated | api: ResetActiveCheckpoint(), SetActiveCheckpoint(Checkpoint checkpoint, bool triggerFe...), Activate(bool triggerFeedback = true), PlayFeedback(), OnTriggerEnter(Collider other) | fields: _isDefaultCheckpoint, _respawnPointTransform, _spawnOffset, _indicatorRenderer, _activeColor, _activateParticles, _activateSound
 - `Assets/_GameAssets/Scripts/Gameplay/HazardZone.cs` (136L): types: class HazardZone: MonoBehaviour | events: OnPlayerHazardTriggered, OnHazardEntered | api: OnTriggerEnter(Collider other), RespawnPlayer(PlayerController player), GetRespawnPosition(PlayerController player) | fields: _overrideRespawnTransform, _hazardSound, _hazardVFX
 - `Assets/_GameAssets/Scripts/ICollectable.cs` (5L): types: interface ICollectable

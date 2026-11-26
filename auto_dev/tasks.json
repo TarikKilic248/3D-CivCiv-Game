@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-26T21:31:49+00:00",
+  "updated_at": "2026-11-26T21:36:42+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -491,7 +491,7 @@
         "Check_T013 BreakableCrate'e ChickPeckAttack/TakeDamage uygulayıp kırıldığını ve ödül üretildiğini doğrular.",
         "Mekanik tetiklendiğinde görsel/prosedürel geri bildirim veya ParticleSystem efekti ve SFX kancası çalışır."
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [
         "T005",
         "T012"
@@ -511,9 +511,9 @@
       "verify_check": "T013",
       "retries": 0,
       "last_error": "",
-      "commit_sha": "",
+      "commit_sha": "030af2b",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T21:19:52+00:00"
+      "updated_at": "2026-11-26T21:36:42+00:00"
     },
     {
       "id": "T014",
