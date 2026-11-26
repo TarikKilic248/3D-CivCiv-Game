@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-26T17:44:03+00:00",
+  "updated_at": "2026-11-26T17:48:50+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -46,7 +46,7 @@
         "CoinManager HighScore özelliğini PlayerPrefs ile kaydedip yükler.",
         "Check_T002 gerçek zamanlı/event simülasyonu ile süre bitiminde GameOver, hedef altın toplanınca Victory ve HighScore güncellemesini sayısal doğrular."
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [],
       "target_files": [
         "Assets/_GameAssets/Scripts/Enums/GameState.cs",
@@ -65,9 +65,9 @@
       "verify_check": "T002",
       "retries": 0,
       "last_error": "",
-      "commit_sha": "",
+      "commit_sha": "f141f27",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T17:11:19+00:00"
+      "updated_at": "2026-11-26T17:48:50+00:00"
     },
     {
       "id": "T003",
