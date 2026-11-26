@@ -2,9 +2,18 @@
 
 | Kosu ID | Tarih (UTC) | Tamamlanan | Bloklanan | Sure (sn) | Bitis Nedeni |
 | --- | --- | --- | --- | --- | --- |
+| `run_20261126_175609` | `2026-11-26T17:56:09+00:00` | `2` | `1` | `2122.07` | completed |
 | `run_20261126_174353` | `2026-11-26T17:43:53+00:00` | `1` | `1` | `294.58` | queue_drained |
 
 ## Son Kosu Detaylari
+
+### Kosu `run_20261126_175609` (2026-11-26T17:56:09+00:00)
+- **T001** — Veri Mimarisi (PlayerStatsSO) ve PlayerController Temel Düzeltmeleri: **DONE** (`2305e43`) [722.09s | modeller: `gemini-4-neon-xhigh, gemini-4-neon-xhigh`]
+- **T003** — Stamina Tabanlı İleri Atılma Yeteneği (DashController): **DONE** (`94cd240`) [502.85s | modeller: `gemini-3.8-flash-medium, gemini-4-neon-xhigh`]
+- **T004** — Oyun İçi Enerji Çubuğu ve Oyun Sonu Ekranı (GameplayHUD): **BLOCKED** [897.13s | modeller: `gemini-3.8-flash-medium, gemini-4-neon-xhigh`]
+  - Hata ozeti: `[agy] print timeout after 3m0s with turn in progress; returning partial output
+error: print timeout after 3m0s with the turn still in progress; the response is partial
+AGY_ERROR: {`
 
 ### Kosu `run_20261126_174353` (2026-11-26T17:43:53+00:00)
 - **T001** — Veri Mimarisi (PlayerStatsSO) ve PlayerController Temel Düzeltmeleri: **BLOCKED** [8.21s | modeller: `gemini-4-neon-xhigh, gemini-4-neon-xhigh`]
