@@ -218,9 +218,7 @@ class TestAutoDevCore(unittest.TestCase):
                 target_files=["src/app.py"],
                 status="pending",
             )
-            GitOps(root, cfg.git).commit_state_files(
-                [cfg.tasks_file, cfg.board_file], "chore: add test tasks"
-            )
+            # Intentionally do NOT commit tasks.json / BOARD.md to verify auto state-sync on dev_branch!
 
             adapter = GenericAdapter(cfg)
             orch = Orchestrator(cfg, adapter)

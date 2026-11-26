@@ -1,5 +1,672 @@
 {
   "schema_version": 1,
-  "updated_at": "",
-  "tasks": []
+  "updated_at": "2026-11-26T17:11:19+00:00",
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Veri Mimarisi (PlayerStatsSO) ve PlayerController Temel Düzeltmeleri",
+      "description": "Karakter hareket parametrelerini merkezi ScriptableObject (PlayerStatsSO) yapısına taşı. PlayerController üzerinde mevcut kritik eksikleri gider: (1) SettingsUI.IsOpen veya oyun duraklatıldığında/bittiğinde hareket/zıplama/slide girdilerini kilitle; (2) harici hız çarpanı (SetSpeedMultiplier) ve harici hız ezme koruması (ör. Dash/Knockback sırasında LimitSpeed ve ApplyDrag'ın hızı kısıtlamasını önleyen geçici override desteği) ekle; (3) Coyote Time ve Jump Buffering ekleyerek platform zıplama hissiyatını iyileştir; (4) TargetJump.cs üzerinde zıplatma öncesi dikey hızı sıfırlayarak tutarlı fırlatma yüksekliği sağla. Demo.unity içindeki PlayerController'a DefaultPlayerStats.asset bağla.",
+      "acceptance_criteria": [
+        "Assets/_GameAssets/Scripts/Data/PlayerStatsSO.cs oluşturulur ve DefaultPlayerStats.asset Editor API ile üretilip Demo.unity'deki PlayerController'a bağlanır.",
+        "PlayerController.ApplyStatsFromSO(PlayerStatsSO), SetSpeedMultiplier(float), SetExternalMovementOverride(bool), GetRigidbody() ve IsGrounded erişimleri bulunur.",
+        "SettingsUI.IsOpen veya Time.timeScale == 0 iken girdi işlenmez.",
+        "Harici hareket override aktifken FixedUpdate (LimitSpeed/ApplyDrag) yüksek yatay hızı MaxSpeed sınırına ezmez; Check_T001 bunu Physics.Simulate ile sayısal doğrular.",
+        "TargetJump düşen oyuncuya temas ettiğinde önce y hızını sıfırlayıp tutarlı dikey hız uygular."
+      ],
+      "status": "pending",
+      "depends_on": [],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Data/PlayerStatsSO.cs",
+        "Assets/_GameAssets/Scripts/PlayerController.cs",
+        "Assets/_GameAssets/Scripts/TargetJump.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T001.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/PlayerController.cs",
+        "Assets/_GameAssets/Scripts/TargetJump.cs",
+        "Assets/_GameAssets/Scripts/StateController.cs",
+        "Assets/_GameAssets/Scripts/UI/SettingsUI.cs"
+      ],
+      "tier": "smart",
+      "visual_check": false,
+      "verify_check": "T001",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T17:11:19+00:00"
+    },
+    {
+      "id": "T002",
+      "title": "Merkezi Oyun Döngüsü (GameState, GameManager, ClockUI & HighScore)",
+      "description": "Oyuna gerçek bir kazanma/kaybetme döngüsü ekle: GameState enum'u (Playing, Paused, Victory, GameOver) ve merkezi GameManager Singleton'ı oluştur. ClockUI süresi 00:00 olduğunda OnTimerExpired event'ini tetiklesin ve dışarıdan AddBonusTime(float) desteklesin; CoinManager kalıcı yüksek skoru (PlayerPrefs 'CivCiv_HighScore') kaydetsin. GameManager tüm hedef altınlar toplandığında Victory, süre dolduğunda GameOver durumuna geçsin, OnGameStateChanged event'ini tetiklesin ve RestartLevel() sunsun. Demo.unity sahnesinde GameManager ve CoinManager hazır olsun.",
+      "acceptance_criteria": [
+        "GameState.cs ve GameManager.cs (Singleton, CurrentState, OnGameStateChanged, TriggerVictory, TriggerGameOver, RestartLevel) oluşturulur.",
+        "ClockUI süresi sıfıra indiğinde OnTimerExpired bir kez tetiklenir ve AddBonusTime ile kalan süre artırılabilir.",
+        "CoinManager HighScore özelliğini PlayerPrefs ile kaydedip yükler.",
+        "Check_T002 gerçek zamanlı/event simülasyonu ile süre bitiminde GameOver, hedef altın toplanınca Victory ve HighScore güncellemesini sayısal doğrular."
+      ],
+      "status": "pending",
+      "depends_on": [],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Enums/GameState.cs",
+        "Assets/_GameAssets/Scripts/Core/GameManager.cs",
+        "Assets/_GameAssets/Scripts/UI/ClockUI.cs",
+        "Assets/_GameAssets/Scripts/UI/CoinManager.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T002.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/UI/ClockUI.cs",
+        "Assets/_GameAssets/Scripts/UI/CoinManager.cs",
+        "Assets/_GameAssets/Scripts/UI/CoinCollect.cs"
+      ],
+      "tier": "fast",
+      "visual_check": false,
+      "verify_check": "T002",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T17:11:19+00:00"
+    },
+    {
+      "id": "T003",
+      "title": "Stamina Tabanlı İleri Atılma Yeteneği (DashController)",
+      "description": "PlayerState enum'una Dash durumunu ekle ve PlayerStatsSO parametrelerini kullanan DashController bileşenini oluştur (Left Shift ile ileri atılma, cooldown, stamina tüketimi/yenilenmesi, OnStaminaChanged(float current, float max) event'i). Dash sırasında PlayerController harici hız override mekanizmasını kullanarak hızın LimitSpeed/ApplyDrag tarafından ezilmesini önle. Demo.unity karakterine DashController ve DefaultPlayerStats bağla.",
+      "acceptance_criteria": [
+        "PlayerState.cs içinde Dash durumu eklenir ve DashController.cs ExecuteDash(), IsDashing, CurrentStamina, MaxStamina, OnStaminaChanged sunar.",
+        "Demo.unity'deki PlayerController nesnesine DashController ve DefaultPlayerStats.asset bağlanıp kaydedilir.",
+        "Check_T003 ExecuteDash() çağırıp PlayerController.FixedUpdate + DashController.FixedUpdate + Physics.Simulate ile 4 kare simülasyon yaparak yatay hızın MaxSpeed'in belirgin üstünde korunduğunu, karakterin ilerlediğini ve Stamina'nın düştüğünü doğrular."
+      ],
+      "status": "pending",
+      "depends_on": [
+        "T001"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Enums/PlayerState.cs",
+        "Assets/_GameAssets/Scripts/Player/DashController.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T003.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/PlayerController.cs",
+        "Assets/_GameAssets/Scripts/Data/PlayerStatsSO.cs",
+        "Assets/_GameAssets/Scripts/Enums/PlayerState.cs",
+        "Assets/_GameAssets/Scripts/StateController.cs"
+      ],
+      "tier": "fast",
+      "visual_check": false,
+      "verify_check": "T003",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T17:11:19+00:00"
+    },
+    {
+      "id": "T004",
+      "title": "Oyun İçi Enerji Çubuğu ve Oyun Sonu Ekranı (GameplayHUD)",
+      "description": "DashController.OnStaminaChanged event'ini dinleyip ekranda enerji çubuğunu (Slider) güncelleyen ve GameManager.OnGameStateChanged ile Victory/GameOver panelini (skor, HighScore, yeniden başlatma butonu) açan GameplayHUD bileşenini yaz ve Demo.unity Canvas altına düzenli/çakışmayan biçimde kur.",
+      "acceptance_criteria": [
+        "GameplayHUD.cs stamina barını canlı günceller, Victory/GameOver durumlarında EndGamePanel'i açar, imleci serbest bırakır ve Restart butonunu GameManager.RestartLevel'e bağlar.",
+        "Demo.unity Canvas altında StaminaBar ve başlangıçta kapalı EndGamePanel hiyerarşisi Editor API ile kurulur.",
+        "Check_T004 stamina değişiminde Slider değerinin güncellendiğini ve TriggerVictory/TriggerGameOver sonrası panelin aktif olup skor metninin dolduğunu doğrular.",
+        "Görsel kontrolde HUD mevcut Clock/Coin/Settings öğeleriyle çakışmadan temiz görünür."
+      ],
+      "status": "pending",
+      "depends_on": [
+        "T002",
+        "T003"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/UI/GameplayHUD.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T004.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/Core/GameManager.cs",
+        "Assets/_GameAssets/Scripts/Player/DashController.cs",
+        "Assets/_GameAssets/Scripts/UI/CoinManager.cs",
+        "Assets/_GameAssets/Scripts/UI/SettingsUI.cs"
+      ],
+      "tier": "fast",
+      "visual_check": true,
+      "verify_check": "T004",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T17:11:19+00:00"
+    },
+    {
+      "id": "T005",
+      "title": "Gelişmiş Altın Geri Bildirimi ve Güçlendirici Sistemi (CoinCollect & PowerUpCollectable)",
+      "description": "CoinCollect scriptine dönme/süzülme animasyonu, toplama sesi (SettingsUI.PlaySFX) ve çift toplamayı önleyen küçülerek yok olma akışı ekle. Ayrıca ExtraTime (ClockUI bonus süre), SpeedBoost (PlayerController geçici hız çarpanı) ve StaminaRefill (DashController anında enerji doldurma) sağlayan PowerUpCollectable bileşeni oluştur ve Demo.unity'ye örnek güçlendiriciler yerleştir.",
+      "acceptance_criteria": [
+        "CoinCollect iki kez Collect() çağrıldığında ikinci çağrıyı yoksayar, dönme/bobbing hareketi yapar ve toplama geri bildirimi üretir.",
+        "PowerUpCollectable üç türü (ExtraTime, SpeedBoost, StaminaRefill) destekler ve ilgili sistemlere gerçekten etki eder.",
+        "Check_T005 her üç güçlendiricinin ClockUI süresini, PlayerController hız çarpanını ve DashController staminasını sayısal olarak değiştirdiğini doğrular."
+      ],
+      "status": "draft",
+      "depends_on": [
+        "T001",
+        "T002",
+        "T003"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/UI/CoinCollect.cs",
+        "Assets/_GameAssets/Scripts/Collectables/PowerUpCollectable.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T005.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/UI/CoinCollect.cs",
+        "Assets/_GameAssets/Scripts/ICollectable.cs",
+        "Assets/_GameAssets/Scripts/UI/ClockUI.cs",
+        "Assets/_GameAssets/Scripts/Player/DashController.cs"
+      ],
+      "tier": "fast",
+      "visual_check": false,
+      "verify_check": "T005",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T16:00:00+00:00"
+    },
+    {
+      "id": "T006",
+      "title": "Kontrol Noktası ve Tehlike/Düşme Alanları (Checkpoint & HazardZone)",
+      "description": "Haritadan düşme veya tehlikeli bölgeye girme durumları için Checkpoint (aktif yeniden doğma noktası + başlangıç noktası varsayılanı) ve HazardZone (oyuncunun hızını sıfırlayıp son güvenli Checkpoint'e ışınlayan tetikleyici) sistemlerini oluştur ve Demo.unity altına alt düşme sınırı (FallKillZone) ile başlangıç Checkpoint'i kur.",
+      "acceptance_criteria": [
+        "Checkpoint.ActiveRespawnPoint oyuncu temas ettiğinde güncellenir ve görsel/olay geri bildirimi üretir.",
+        "HazardZone oyuncuyu aktif Checkpoint konumuna ışınlar ve Rigidbody hızını sıfırlar.",
+        "Check_T006 oyuncuyu tehlike alanına sokup hızın sıfırlandığını ve pozisyonun Checkpoint noktasına döndüğünü sayısal olarak doğrular."
+      ],
+      "status": "draft",
+      "depends_on": [
+        "T001",
+        "T002"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Gameplay/Checkpoint.cs",
+        "Assets/_GameAssets/Scripts/Gameplay/HazardZone.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T006.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/PlayerController.cs",
+        "Assets/_GameAssets/Scripts/Core/GameManager.cs"
+      ],
+      "tier": "fast",
+      "visual_check": false,
+      "verify_check": "T006",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T16:00:00+00:00"
+    },
+    {
+      "id": "T007",
+      "title": "Çift Zıplama ve Kanatla Süzülme (ChickGlideController)",
+      "description": "PlayerState enum'una Glide durumunu ekle. Civciv karakterine havadayken ikinci kez zıplama (Air Jump, yere inince sıfırlanır) ve havada düşerken Space tuşuna basılı tutulduğunda düşüş hızını sınırlayan kanat süzülmesi (ChickGlideController) ekle ve Demo.unity karakterine bağla.",
+      "acceptance_criteria": [
+        "PlayerState.Glide eklenir ve ChickGlideController.cs ExecuteAirJump(), StartGlide()/StopGlide(), IsGliding ve RemainingAirJumps sunar.",
+        "Süzülme aktifken dikey düşüş hızı maxGlideFallSpeed sınırını aşmaz.",
+        "Check_T007 havada ExecuteAirJump() sonrası pozitif dikey hız oluştuğunu ve düşüş sırasında süzülme aktifken düşüş hızının limitlendiğini Physics.Simulate ile doğrular."
+      ],
+      "status": "draft",
+      "depends_on": [
+        "T001"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Enums/PlayerState.cs",
+        "Assets/_GameAssets/Scripts/Player/ChickGlideController.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T007.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/PlayerController.cs",
+        "Assets/_GameAssets/Scripts/Data/PlayerStatsSO.cs",
+        "Assets/_GameAssets/Scripts/Enums/PlayerState.cs"
+      ],
+      "tier": "fast",
+      "visual_check": false,
+      "verify_check": "T007",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T16:00:00+00:00"
+    },
+    {
+      "id": "T008",
+      "title": "Hasar Arayüzü ve Oyuncu Can Sistemi (IDamageable & PlayerHealth)",
+      "description": "Hasar alabilen tüm oyun nesneleri için ortak IDamageable arayüzünü (TakeDamage, IsAlive) oluştur. Oyuncu için PlayerHealth bileşenini ekle: mevcut/maksimum can, iyileşme (Heal), hasar sonrası geçici dokunulmazlık (invincibility frames), geri savrulma (knockback), OnHealthChanged ve OnDied event'leri; can sıfırlandığında GameManager.TriggerGameOver() çağrısı. Demo.unity karakterine ekle.",
+      "acceptance_criteria": [
+        "IDamageable.cs ve PlayerHealth.cs (CurrentHealth, MaxHealth, IsAlive, IsInvincible, TakeDamage, Heal, OnHealthChanged) oluşturulur.",
+        "Dokunulmazlık süresi aktifken gelen ikinci TakeDamage çağrısı can azaltmaz.",
+        "Can 0 olduğunda GameManager.CurrentState GameOver olur.",
+        "Check_T008 hasar, i-frame engeli, iyileşme ve ölümde GameOver geçişini doğrular."
+      ],
+      "status": "draft",
+      "depends_on": [
+        "T001",
+        "T002"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Core/IDamageable.cs",
+        "Assets/_GameAssets/Scripts/Player/PlayerHealth.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T008.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/PlayerController.cs",
+        "Assets/_GameAssets/Scripts/Core/GameManager.cs"
+      ],
+      "tier": "fast",
+      "visual_check": false,
+      "verify_check": "T008",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T16:00:00+00:00"
+    },
+    {
+      "id": "T009",
+      "title": "Kalp ve Can Göstergesi HUD Bileşeni (HealthUI)",
+      "description": "PlayerHealth.OnHealthChanged event'ini dinleyerek oyuncunun mevcut/maksimum canını ekranda kalp ikonları ve metin ile gösteren HealthUI bileşenini oluştur ve Demo.unity Canvas altına mevcut UI ile çakışmayacak şekilde yerleştir.",
+      "acceptance_criteria": [
+        "HealthUI.cs can azaldığında ve arttığında ikon görünümünü/renklerini ve can metnini günceller.",
+        "Demo.unity Canvas altında HealthPanel ve HealthUI referansları Editor API ile bağlanır.",
+        "Check_T009 PlayerHealth.TakeDamage ve Heal çağrıları sonrası HealthUI metin ve aktif ikon sayısının doğru güncellendiğini doğrular.",
+        "Görsel kontrolde HealthUI ekranda net ve diğer HUD öğeleriyle çakışmadan görünür."
+      ],
+      "status": "draft",
+      "depends_on": [
+        "T008"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/UI/HealthUI.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T009.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/Player/PlayerHealth.cs",
+        "Assets/_GameAssets/Scripts/UI/GameplayHUD.cs"
+      ],
+      "tier": "fast",
+      "visual_check": true,
+      "verify_check": "T009",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T16:00:00+00:00"
+    },
+    {
+      "id": "T010",
+      "title": "Kombo Çarpanı (ComboManager & ComboUI) ve Altın Mıknatısı (CoinMagnet)",
+      "description": "Ardışık altın toplandığında kombo serisini ve skor çarpanını artıran, süre dolunca veya oyuncu hasar alınca sıfırlanan ComboManager + HUD göstergesi ComboUI ile yakındaki CoinCollect objelerini oyuncuya doğru çeken CoinMagnet (ve geçici süper mıknatıs) bileşenini kurup Demo.unity'ye entegre et.",
+      "acceptance_criteria": [
+        "ComboManager ardışık altınlarda CurrentStreak ve CurrentMultiplier değerlerini artırır, süre dolunca veya hasar alınca ResetCombo çalışır.",
+        "ComboUI OnComboUpdated ile çarpan metnini ve süre doluluk çubuğunu günceller.",
+        "CoinMagnet belirli yarıçaptaki CoinCollect nesnelerini karaktere doğru hareket ettirir.",
+        "Check_T010 ardışık altın toplama ile çarpan artışını, hasarda sıfırlanmayı ve CoinMagnet'in yakındaki bir altını oyuncuya yaklaştırdığını sayısal doğrular."
+      ],
+      "status": "draft",
+      "depends_on": [
+        "T002",
+        "T005",
+        "T008"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Core/ComboManager.cs",
+        "Assets/_GameAssets/Scripts/UI/ComboUI.cs",
+        "Assets/_GameAssets/Scripts/Collectables/CoinMagnet.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T010.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/UI/CoinManager.cs",
+        "Assets/_GameAssets/Scripts/UI/CoinCollect.cs",
+        "Assets/_GameAssets/Scripts/Player/PlayerHealth.cs"
+      ],
+      "tier": "fast",
+      "visual_check": true,
+      "verify_check": "T010",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T16:00:00+00:00"
+    },
+    {
+      "id": "T011",
+      "title": "Dinamik Parkur Öğeleri (MovingPlatform, FallingPlatform & WindCurrentZone)",
+      "description": "Platform oynanışını zenginleştiren 3 fiziksel seviye mekaniği oluştur: noktalar arasında hareket ederken üzerindeki oyuncuyu kaydırmadan taşıyan MovingPlatform, üzerine basılınca titreyip düşen ve sonra yenilenen FallingPlatform, içine giren ve özellikle süzülen (ChickGlideController) oyuncuyu yukarı iten WindCurrentZone. Demo.unity'ye örnek birer parkur öğesi ekle.",
+      "acceptance_criteria": [
+        "MovingPlatform sabit karelerde noktalar arasında hareket eder ve platform delta hareketini oyuncuya aktarır.",
+        "FallingPlatform tetiklenince gecikme sonrası düşer ve respawn süresi sonunda başlangıç konumuna döner.",
+        "WindCurrentZone içindeki oyuncunun Rigidbody'sine yukarı yönlü kaldırma kuvveti uygular (süzülürken ekstra çarpanla).",
+        "Check_T011 her üç mekaniği adım adım simüle ederek pozisyon/hız ve durum geçişlerini sayısal doğrular."
+      ],
+      "status": "draft",
+      "depends_on": [
+        "T007"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Gameplay/MovingPlatform.cs",
+        "Assets/_GameAssets/Scripts/Gameplay/FallingPlatform.cs",
+        "Assets/_GameAssets/Scripts/Gameplay/WindCurrentZone.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T011.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/PlayerController.cs",
+        "Assets/_GameAssets/Scripts/Player/ChickGlideController.cs"
+      ],
+      "tier": "fast",
+      "visual_check": false,
+      "verify_check": "T011",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T16:00:00+00:00"
+    },
+    {
+      "id": "T012",
+      "title": "CivCiv Gaga Saldırısı ve Havadan Yere Çakılma (ChickPeckAttack)",
+      "description": "Civciv karakterine yakın mesafe gaga vuruşu (PerformPeck, cooldown, ön alandaki IDamageable hedeflere hasar) ve havadayken hızla yere inip çevreye alan hasarı vuran Ground Pound (StartGroundPound, OnGroundPoundImpact) yeteneklerini kazandır ve Demo.unity karakterine ekle.",
+      "acceptance_criteria": [
+        "ChickPeckAttack.cs PerformPeck() ile menzildeki IDamageable hedeflere hasar verir ve cooldown uygular.",
+        "Havadayken StartGroundPound() güçlü negatif dikey hız uygular ve yere inince çevredeki IDamageable hedeflere alan hasarı verir.",
+        "Check_T012 sahte bir IDamageable hedefle hem gaga vuruşunun hem yere çakılma darbesinin gerçek hasar ilettiğini doğrular."
+      ],
+      "status": "draft",
+      "depends_on": [
+        "T001",
+        "T008"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Player/ChickPeckAttack.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T012.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/PlayerController.cs",
+        "Assets/_GameAssets/Scripts/Core/IDamageable.cs"
+      ],
+      "tier": "fast",
+      "visual_check": false,
+      "verify_check": "T012",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T16:00:00+00:00"
+    },
+    {
+      "id": "T013",
+      "title": "Kırılabilir Sandık ve Ganimet Sistemi (LootTableSO & BreakableCrate)",
+      "description": "Ağırlıklı olasılıklarla ödül seçen LootTableSO ScriptableObject veri yapısını ve IDamageable uygulayan BreakableCrate bileşenini (gaga vuruşu, ground pound veya Dash çarpmasıyla kırılıp altın/ödül düşüren sandık) oluştur. DefaultLootTable.asset ve örnek sandıkları Demo.unity sahnesine kur.",
+      "acceptance_criteria": [
+        "LootTableSO ağırlıklı rastgele seçim (RollLoot) yapar ve boş/geçersiz girdilerde güvenli davranır.",
+        "BreakableCrate IDamageable uygular; canı sıfırlanınca OnBroken tetiklenir ve ganimet/altın üretir.",
+        "Check_T013 BreakableCrate'e ChickPeckAttack/TakeDamage uygulayıp kırıldığını ve ödül üretildiğini doğrular."
+      ],
+      "status": "draft",
+      "depends_on": [
+        "T005",
+        "T012"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Data/LootTableSO.cs",
+        "Assets/_GameAssets/Scripts/Gameplay/BreakableCrate.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T013.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/Core/IDamageable.cs",
+        "Assets/_GameAssets/Scripts/Player/ChickPeckAttack.cs",
+        "Assets/_GameAssets/Scripts/UI/CoinCollect.cs"
+      ],
+      "tier": "fast",
+      "visual_check": false,
+      "verify_check": "T013",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T16:00:00+00:00"
+    },
+    {
+      "id": "T014",
+      "title": "Devriye Düşman Yapay Zekası (EnemyStatsSO & PatrolEnemyAI)",
+      "description": "Düşman hız, algılama menzili, can ve hasar değerlerini tutan EnemyStatsSO ile devriye gezen, oyuncuyu görünce kovalayan, yandan çarpınca PlayerHealth'e hasar veren, ancak üstüne zıplandığında veya gagalandığında hasar alıp oyuncuyu yukarı zıplatan PatrolEnemyAI bileşenini oluştur. DefaultEnemyStats.asset ve örnek bir düşmanı Demo.unity'ye yerleştir.",
+      "acceptance_criteria": [
+        "EnemyStatsSO ve IDamageable uygulayan PatrolEnemyAI (Patrol, Chase, Defeated durumları) oluşturulur.",
+        "Oyuncu algılama menziline girdiğinde düşman Chase durumuna geçer; üstten zıplama veya TakeDamage ile düşman hasar alır/etkisizleşir.",
+        "Check_T014 devriye hareketini, menzilde Chase geçişini, yandan hasarı ve üstten/saldırıyla yenilmeyi doğrular."
+      ],
+      "status": "draft",
+      "depends_on": [
+        "T008",
+        "T012"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Data/EnemyStatsSO.cs",
+        "Assets/_GameAssets/Scripts/AI/PatrolEnemyAI.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T014.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/Core/IDamageable.cs",
+        "Assets/_GameAssets/Scripts/Player/PlayerHealth.cs",
+        "Assets/_GameAssets/Scripts/Player/ChickPeckAttack.cs"
+      ],
+      "tier": "fast",
+      "visual_check": false,
+      "verify_check": "T014",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T16:00:00+00:00"
+    },
+    {
+      "id": "T015",
+      "title": "Etkileşim Sistemi ve Basınç Plakası Bulmacası (IInteractable, PlayerInteractor & PressurePlateSwitch)",
+      "description": "Çevredeki etkileşimli nesneler için IInteractable arayüzü, oyuncunun yakınındaki etkileşimli nesneyi bulup E tuşuyla tetikleyen PlayerInteractor ve üzerine çıkıldığında bağlı hedefi/kapıyı açan PressurePlateSwitch bileşenlerini oluşturup Demo.unity'ye örnek bir basınç plakası ekle.",
+      "acceptance_criteria": [
+        "IInteractable (CanInteract, GetPromptText, Interact) ve PlayerInteractor (FindNearestInteractable, TryInteract) oluşturulur.",
+        "PressurePlateSwitch oyuncu veya ağırlık üzerine gelince OnActivated/OnDeactivated event'lerini tetikler ve bağlı hedef transformu hareket ettirir.",
+        "Check_T015 PlayerInteractor'ın menzildeki nesneyi tetiklediğini ve PressurePlateSwitch'in aktivasyonda hedef nesneyi oynattığını doğrular."
+      ],
+      "status": "draft",
+      "depends_on": [
+        "T001"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Core/IInteractable.cs",
+        "Assets/_GameAssets/Scripts/Player/PlayerInteractor.cs",
+        "Assets/_GameAssets/Scripts/Gameplay/PressurePlateSwitch.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T015.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/PlayerController.cs"
+      ],
+      "tier": "fast",
+      "visual_check": false,
+      "verify_check": "T015",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T16:00:00+00:00"
+    },
+    {
+      "id": "T016",
+      "title": "Kayıp CivCiv Kurtarma Görevi ve Hedef Pusulası (LostChickNPC, ChickRescueManager & WaypointIndicatorUI)",
+      "description": "Oyuna karakterine yakışan ana hedef ekle: etkileşimle veya temasla kurtarılıp oyuncuyu kuyruk halinde takip eden LostChickNPC, bölümdeki kurtarma ilerlemesini takip eden ChickRescueManager ve ekranda en yakın kurtarılmamış civcivin yönünü/mesafesini (metre) gösteren WaypointIndicatorUI bileşenlerini Demo.unity'ye kur.",
+      "acceptance_criteria": [
+        "LostChickNPC kurtarıldığında IsRescued = true olur, ChickRescueManager sayacını artırır ve oyuncuyu takip etmeye başlar.",
+        "WaypointIndicatorUI en yakın kurtarılmamış LostChickNPC'yi bulup mesafe metnini günceller, hepsi kurtarılınca gizlenir.",
+        "Check_T016 bir LostChickNPC kurtarıldığında sayaç artışını, takip hareketini ve WaypointIndicatorUI güncellemesini doğrular.",
+        "Görsel kontrolde WaypointIndicatorUI HUD üzerinde temiz görünür."
+      ],
+      "status": "draft",
+      "depends_on": [
+        "T015"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Gameplay/LostChickNPC.cs",
+        "Assets/_GameAssets/Scripts/Core/ChickRescueManager.cs",
+        "Assets/_GameAssets/Scripts/UI/WaypointIndicatorUI.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T016.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/Core/IInteractable.cs",
+        "Assets/_GameAssets/Scripts/Player/PlayerInteractor.cs",
+        "Assets/_GameAssets/Scripts/UI/GameplayHUD.cs"
+      ],
+      "tier": "fast",
+      "visual_check": true,
+      "verify_check": "T016",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T16:00:00+00:00"
+    },
+    {
+      "id": "T017",
+      "title": "JSON Kalıcı Kayıt ve Yıldız Puanlama Sistemi (SaveManager, LevelDataSO & LevelProgressionManager)",
+      "description": "Cüzdan altını, rekor skor, kurtarılan toplam civciv ve bölüm yıldızlarını JSON formatında güvenle kaydedip yükleyen SaveManager ile bölüm hedefleri ve 1-3 yıldız eşiklerini tanımlayan LevelDataSO + LevelProgressionManager sistemini kur. DefaultLevelData.asset oluşturup Demo.unity'ye bağla.",
+      "acceptance_criteria": [
+        "SaveManager JSON serileştirme/deserileştirme (Save/Load/Reset) işlemini hatasız yapar ve test için özel dosya yolu destekler.",
+        "LevelProgressionManager toplanan altın ve kalan süreye göre 0-3 arası yıldız hesaplayıp SaveManager üzerinden kalıcı kaydeder.",
+        "Check_T017 geçici bir JSON yoluna kayıt/okuma döngüsünü ve 1/2/3 yıldız eşik hesabını sayısal doğrular."
+      ],
+      "status": "draft",
+      "depends_on": [
+        "T002",
+        "T016"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Core/SaveManager.cs",
+        "Assets/_GameAssets/Scripts/Data/LevelDataSO.cs",
+        "Assets/_GameAssets/Scripts/Core/LevelProgressionManager.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T017.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/Core/GameManager.cs",
+        "Assets/_GameAssets/Scripts/UI/CoinManager.cs",
+        "Assets/_GameAssets/Scripts/Core/ChickRescueManager.cs"
+      ],
+      "tier": "fast",
+      "visual_check": false,
+      "verify_check": "T017",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T16:00:00+00:00"
+    },
+    {
+      "id": "T018",
+      "title": "Nesne Havuzu ve Karakter Hareket Efektleri (ObjectPoolManager & PlayerVFXController)",
+      "description": "Sık üretilen efekt ve nesneler için GC baskısını azaltan ObjectPoolManager ile karakterin zıplama, iniş, kayma ve Dash anlarında toz/tüy/iz efektlerini havuzdan tetikleyen PlayerVFXController bileşenini oluşturup Demo.unity'ye kur.",
+      "acceptance_criteria": [
+        "ObjectPoolManager.Spawn ve Return nesneleri yeniden kullanır (aynı instance geri döner, gereksiz Instantiate yapmaz).",
+        "PlayerVFXController Dash/Jump/Land olaylarına bağlanıp efekt tetikler ve eksik prefab durumunda hata fırlatmaz.",
+        "Check_T018 havuzdan nesne alma-iade etme yeniden kullanımını ve PlayerVFXController tetikleme sayacını doğrular."
+      ],
+      "status": "draft",
+      "depends_on": [
+        "T003",
+        "T007"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Core/ObjectPoolManager.cs",
+        "Assets/_GameAssets/Scripts/Player/PlayerVFXController.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T018.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/PlayerController.cs",
+        "Assets/_GameAssets/Scripts/Player/DashController.cs",
+        "Assets/_GameAssets/Scripts/Player/ChickGlideController.cs"
+      ],
+      "tier": "fast",
+      "visual_check": false,
+      "verify_check": "T018",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T16:00:00+00:00"
+    },
+    {
+      "id": "T019",
+      "title": "Kamera Hissiyatı ve 3D Ses Mimarisi (CameraJuiceController & SpatialAudioManager)",
+      "description": "Dash/kayma sırasında Cinemachine FOV açısını yumuşakça genişleten ve hasar/darbe anında sönümlü kamera sarsıntısı uygulayan CameraJuiceController ile kategorize ses kütüphanesi (AudioLibrarySO), rastgele pitch'li 3D ses yöneticisi (SpatialAudioManager, SettingsUI.IsSoundEnabled uyumlu) ve hareket adım sesi tetikleyicisi (FootstepAudioTrigger) oluştur.",
+      "acceptance_criteria": [
+        "CameraJuiceController Dash/Boost sırasında hedef FOV'u artırır, TriggerShake ile sönümlü sarsıntı ofseti üretir.",
+        "SpatialAudioManager SettingsUI.IsSoundEnabled kapalıyken ses çalmaz, açıkken pitch varyasyonuyla oynatır.",
+        "Check_T019 FOV değişimini, sarsıntı sönümlemesini ve ses yöneticisinin mute/unmute davranışını sayısal doğrular."
+      ],
+      "status": "draft",
+      "depends_on": [
+        "T003",
+        "T008"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Camera/CameraJuiceController.cs",
+        "Assets/_GameAssets/Scripts/Data/AudioLibrarySO.cs",
+        "Assets/_GameAssets/Scripts/Audio/SpatialAudioManager.cs",
+        "Assets/_GameAssets/Scripts/Audio/FootstepAudioTrigger.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T019.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/ThirdPersonCameraController.cs",
+        "Assets/_GameAssets/Scripts/UI/SettingsUI.cs",
+        "Assets/_GameAssets/Scripts/Player/DashController.cs",
+        "Assets/_GameAssets/Scripts/Player/PlayerHealth.cs"
+      ],
+      "tier": "fast",
+      "visual_check": false,
+      "verify_check": "T019",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T16:00:00+00:00"
+    },
+    {
+      "id": "T020",
+      "title": "Dinamik Gece/Gündüz Döngüsü, Başarım Sistemi ve Bütünlük Doğrulayıcı",
+      "description": "Directional Light açısını ve ışık yoğunluğunu zamana göre değiştiren DayNightCycleController, oyun içi kilometre taşlarını takip edip bildirim gösteren AchievementSO + AchievementManager ve oyun açılışında kritik yöneticilerin sahnede mevcut olmasını güvenceye alan RuntimeSystemValidator bileşenlerini Demo.unity'ye entegre ederek uçtan uca doğrula.",
+      "acceptance_criteria": [
+        "DayNightCycleController zaman ilerledikçe Directional Light rotasyonunu ve gündüz/gece durumunu günceller.",
+        "AchievementManager hedef değere ulaşılınca kilidi açar, OnAchievementUnlocked tetikler ve SaveManager ile senkron tutar.",
+        "RuntimeSystemValidator kritik yöneticilerin sahnede eksiksiz olduğunu doğrular/tamamlar.",
+        "Check_T020 ışık açısı değişimini, başarım açılışını ve tüm ana sistemlerin Demo.unity üzerinde sağlıklı varlığını doğrular."
+      ],
+      "status": "draft",
+      "depends_on": [
+        "T017"
+      ],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Gameplay/DayNightCycleController.cs",
+        "Assets/_GameAssets/Scripts/Data/AchievementSO.cs",
+        "Assets/_GameAssets/Scripts/Core/AchievementManager.cs",
+        "Assets/_GameAssets/Scripts/Core/RuntimeSystemValidator.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T020.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/Core/SaveManager.cs",
+        "Assets/_GameAssets/Scripts/Core/GameManager.cs",
+        "Assets/_GameAssets/Scripts/UI/CoinManager.cs"
+      ],
+      "tier": "smart",
+      "visual_check": true,
+      "verify_check": "T020",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-26T16:00:00+00:00",
+      "updated_at": "2026-11-26T16:00:00+00:00"
+    }
+  ]
 }

@@ -204,6 +204,7 @@ Do NOT edit any files. Return ONLY JSON matching the schema (`passed`, `summary`
                     "ready_tasks": [t.to_dict() for t in ready],
                 }
 
+            self._sync_pending_state_files()
             self.git.ensure_safe_dev_branch()
             index_text = self.indexer.build_index(self.cfg.index_file)
             self.adapter.prepare_environment()
@@ -270,6 +271,28 @@ Do NOT edit any files. Return ONLY JSON matching the schema (`passed`, `summary`
                 "report_path": str(report_path),
                 "records": [r.to_dict() for r in records],
             }
+
+    def _sync_pending_state_files(self) -> None:
+        """Auto-commit ONLY AutoDev state/plan files on dev_branch (e.g. right after `approve` or `plan`)."""
+        if self.git.current_branch() != self.cfg.git.dev_branch:
+            return
+        state_paths = [
+            self.cfg.tasks_file,
+            self.cfg.board_file,
+            self.cfg.index_file,
+            self.cfg.report_file,
+            self.cfg.auto_dev_dir / "ROADMAP.md",
+        ]
+        allowed_rel = {
+            p.resolve().relative_to(self.cfg.repo_root.resolve()).as_posix()
+            for p in state_paths
+        }
+        dirty = self.git.changed_files()
+        if dirty and all(f in allowed_rel for f in dirty):
+            self.git.commit_state_files(
+                [p for p in state_paths if p.exists()],
+                "chore(autodev): sync task queue and board state",
+            )
 
     def _snapshot_file_mtimes(self, paths: list[str]) -> dict[str, tuple[int, int]]:
         snap: dict[str, tuple[int, int]] = {}
