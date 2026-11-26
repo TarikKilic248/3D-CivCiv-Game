@@ -4,14 +4,14 @@
     "protected_branches": ["main", "master"],
     "dev_branch": "auto-dev",
     "task_branch_prefix": "task/",
-    "auto_push": false,
+    "auto_push": true,
     "commit_prefix": "feat",
     "state_commit_enabled": true
   },
   "models": {
     "planner": {
-      "model": "gemini-4-neon-xhigh",
-      "effort": "xhigh",
+      "model": "gemini-4-neon-medium",
+      "effort": "medium",
       "timeout_sec": 300
     },
     "fast": {
@@ -28,6 +28,81 @@
       "model": "gemini-3.8-flash-low",
       "effort": "low",
       "timeout_sec": 90
+    }
+  },
+  "model_pools": {
+    "gemini": {
+      "planner": {
+        "model": "gemini-4-neon-medium",
+        "effort": "medium",
+        "timeout_sec": 300
+      },
+      "fast": {
+        "model": "gemini-3.8-flash-medium",
+        "effort": "medium",
+        "timeout_sec": 300
+      },
+      "smart": {
+        "model": "gemini-4-neon-medium",
+        "effort": "medium",
+        "timeout_sec": 420
+      },
+      "visual": {
+        "model": "gemini-3.8-flash-low",
+        "effort": "low",
+        "timeout_sec": 90
+      }
+    },
+    "claude": {
+      "planner": {
+        "model": "claude-opus-5-5-medium",
+        "effort": "medium",
+        "timeout_sec": 360
+      },
+      "fast": {
+        "model": "claude-sonnet-5-5-low",
+        "effort": "low",
+        "timeout_sec": 300
+      },
+      "smart": {
+        "model": "claude-opus-5-5-medium",
+        "effort": "medium",
+        "timeout_sec": 420
+      },
+      "visual": {
+        "model": "claude-sonnet-5-5-low",
+        "effort": "low",
+        "timeout_sec": 90
+      }
+    }
+  },
+  "night_shift": {
+    "shifts": [
+      {
+        "name": "Shift1_Gemini",
+        "start": "22:00",
+        "end": "03:00",
+        "pool": "gemini"
+      },
+      {
+        "name": "Shift2_Claude",
+        "start": "03:00",
+        "end": "08:00",
+        "pool": "claude"
+      }
+    ],
+    "failover_on_quota": true,
+    "quota_cooldown_minutes": 305,
+    "cutoff_buffer_minutes": 10,
+    "auto_promote_drafts": true,
+    "auto_promote_batch_size": 3,
+    "auto_plan_when_empty": true,
+    "auto_plan_batch_size": 3,
+    "max_auto_plan_batches_per_night": 2,
+    "keep_awake": true,
+    "pool_5h_budgets": {
+      "gemini": 2500000,
+      "claude": 1500000
     }
   },
   "limits": {

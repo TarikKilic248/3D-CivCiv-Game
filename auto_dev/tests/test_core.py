@@ -228,10 +228,10 @@ class TestAutoDevCore(unittest.TestCase):
             def fake_run_prompt(prompt, profile, schema=None, tag="task", run_dir=None, read_only=False):
                 calls.append((tag, profile.model))
                 app_py = root / "src" / "app.py"
-                if tag == "T001_a1":
+                if tag.startswith("T001_") and tag.endswith("_a1"):
                     # Attempt 1 (Flash) introduces a bug -> fails test -> triggers escalation!
                     app_py.write_text("def add(a: int, b: int) -> int:\n    return a - b\n", encoding="utf-8")
-                elif tag == "T001_a2":
+                elif tag.startswith("T001_") and tag.endswith("_a2"):
                     # Attempt 2 (Smart escalation) fixes it!
                     app_py.write_text(
                         "def add(a: int, b: int) -> int:\n    return a + b\n\ndef mul(a: int, b: int) -> int:\n    return a * b\n",
@@ -249,13 +249,13 @@ class TestAutoDevCore(unittest.TestCase):
                 )
 
             orch.runner.run_prompt = fake_run_prompt  # type: ignore[method-assign]
-            res = orch.run(max_tasks=3)
+            res = orch.run(max_tasks=3, keep_awake=False)
 
             # Verify escalation occurred: T001_a1 used Flash, T001_a2 used Neon
-            self.assertEqual(calls[0], ("T001_a1", "gemini-3.8-flash-medium"))
-            self.assertEqual(calls[1], ("T001_a2", "gemini-4-neon-medium"))
-            self.assertEqual(calls[2], ("T002_a1", "gemini-3.8-flash-medium"))
-            self.assertEqual(calls[3], ("T002_a2", "gemini-4-neon-medium"))
+            self.assertEqual(calls[0], ("T001_gemini_a1", "gemini-3.8-flash-medium"))
+            self.assertEqual(calls[1], ("T001_gemini_a2", "gemini-4-neon-medium"))
+            self.assertEqual(calls[2], ("T002_gemini_a1", "gemini-3.8-flash-medium"))
+            self.assertEqual(calls[3], ("T002_gemini_a2", "gemini-4-neon-medium"))
 
             final_tasks = {t.id: t for t in store.load()}
             self.assertEqual(final_tasks["T001"].status, "done")
@@ -310,6 +310,162 @@ class TestAutoDevCore(unittest.TestCase):
                 )
             self.assertTrue(res.ok)
             self.assertNotIn("--effort", captured_cmd)
+
+    def test_quota_error_detection_and_reset_hint(self) -> None:
+        from auto_dev.core.agent_runner import detect_quota_error
+
+        is_q, hint = detect_quota_error("RESOURCE_EXHAUSTED: Five Hour Limit reached. Refreshes in 3h 43m")
+        self.assertTrue(is_q)
+        self.assertEqual(hint, 3 * 3600 + 43 * 60)
+
+        is_q2, hint2 = detect_quota_error("HTTP 429 Too Many Requests")
+        self.assertTrue(is_q2)
+        self.assertIsNone(hint2)
+
+        is_q3, _ = detect_quota_error("CS0103: The name 'foo' does not exist in the current context")
+        self.assertFalse(is_q3)
+
+    def test_dual_pool_failover_clean_rollback_and_brief(self) -> None:
+        from auto_dev.core.models import TokenUsage
+
+        with tempfile.TemporaryDirectory() as td:
+            root = _init_temp_git_repo(Path(td))
+            cfg = AutoDevConfig.load(repo_root=root)
+            store = TaskStore(cfg.tasks_file, cfg.board_file)
+            store.add_task(
+                title="Quota failover task",
+                description="Add sub() cleanly",
+                target_files=["src/app.py"],
+                status="pending",
+            )
+
+            orch = Orchestrator(cfg, GenericAdapter(cfg))
+            seen: list[tuple[str, str]] = []
+
+            def fake_run_prompt(prompt, profile, schema=None, tag="task", run_dir=None, read_only=False):
+                seen.append((tag, profile.model))
+                app_py = root / "src" / "app.py"
+                if "gemini" in profile.model:
+                    # Simulate half-edited broken file before quota exhaustion
+                    app_py.write_text("BROKEN_PARTIAL_SYNTAX(((", encoding="utf-8")
+                    return AgentResult(
+                        ok=False,
+                        model=profile.model,
+                        effort=profile.effort,
+                        summary="",
+                        duration_sec=12.5,
+                        exit_code=1,
+                        error="RESOURCE_EXHAUSTED: Five Hour Limit reached. Refreshes in 2h 10m",
+                        usage=TokenUsage(input_tokens=40000, output_tokens=5000, total_tokens=45000),
+                        is_quota_error=True,
+                        quota_reset_hint_sec=2 * 3600 + 10 * 60,
+                    )
+                # Claude pool succeeds cleanly after rollback!
+                self.assertNotIn("BROKEN_PARTIAL_SYNTAX", app_py.read_text(encoding="utf-8"))
+                app_py.write_text(
+                    "def add(a: int, b: int) -> int:\n    return a + b\n\ndef sub(a: int, b: int) -> int:\n    return a - b\n",
+                    encoding="utf-8",
+                )
+                return AgentResult(
+                    ok=True,
+                    model=profile.model,
+                    effort=profile.effort,
+                    summary="Added sub() on Claude pool",
+                    changed_files=["src/app.py"],
+                    duration_sec=28.0,
+                    usage=TokenUsage(input_tokens=60000, output_tokens=8000, total_tokens=68000),
+                )
+
+            orch.runner.run_prompt = fake_run_prompt  # type: ignore[method-assign]
+            res = orch.run(
+                max_tasks=3,
+                pool_name="gemini",
+                shift_name="Shift1_Gemini",
+                failover_on_quota=True,
+                keep_awake=False,
+            )
+
+            # First attempt ran on Gemini (quota hit -> rolled back), second ran on Claude and passed!
+            self.assertEqual(seen[0][1], "gemini-3.8-flash-medium")
+            self.assertEqual(seen[1][1], "claude-sonnet-5-5-low")
+            final_tasks = {t.id: t for t in store.load()}
+            self.assertEqual(final_tasks["T001"].status, "done")
+            self.assertEqual(orch.pool_manager.get_remaining_pct("gemini"), 0.0)
+            self.assertLess(orch.pool_manager.get_remaining_pct("claude"), 100.0)
+
+            brief = (root / "auto_dev" / "MORNING_BRIEF.md").read_text(encoding="utf-8")
+            self.assertIn("Shift1_Gemini", brief)
+            self.assertIn("claude-sonnet-5-5-low", brief)
+            self.assertIn("Kalan Kota (%)", brief)
+            self.assertEqual(res["stop_reason"], "queue_drained")
+
+    def test_all_pools_exhausted_keeps_task_pending(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = _init_temp_git_repo(Path(td))
+            cfg = AutoDevConfig.load(repo_root=root)
+            store = TaskStore(cfg.tasks_file, cfg.board_file)
+            store.add_task(title="Wait for renewal", description="x", target_files=["src/app.py"], status="pending")
+
+            orch = Orchestrator(cfg, GenericAdapter(cfg))
+
+            def always_quota(prompt, profile, schema=None, tag="task", run_dir=None, read_only=False):
+                return AgentResult(
+                    ok=False,
+                    model=profile.model,
+                    effort=profile.effort,
+                    summary="",
+                    duration_sec=3.0,
+                    exit_code=1,
+                    error="429 quota exceeded",
+                    is_quota_error=True,
+                    quota_reset_hint_sec=3600,
+                )
+
+            orch.runner.run_prompt = always_quota  # type: ignore[method-assign]
+            res = orch.run(max_tasks=0, pool_name="gemini", failover_on_quota=True, keep_awake=False)
+            self.assertEqual(res["stop_reason"], "all_pools_exhausted")
+            self.assertIsNotNone(res["next_available_at"])
+            t = store.load()[0]
+            self.assertEqual(t.status, "pending")
+            self.assertEqual(t.retries, 0)
+
+    def test_auto_promote_drafts_and_resolve_midnight_shifts(self) -> None:
+        from datetime import datetime, timezone
+        from auto_dev.night_runner import parse_shift_specs, resolve_shift_schedule
+
+        specs = parse_shift_specs("22:00-03:00:gemini,03:00-08:00:claude")
+        tz = timezone.utc
+
+        # Case 1: 20:30 -> both shifts upcoming starting tonight 22:00
+        s1 = resolve_shift_schedule(specs, now=datetime(2026, 11, 26, 20, 30, tzinfo=tz))
+        self.assertEqual(len(s1), 2)
+        self.assertEqual((s1[0].start_dt.day, s1[0].start_dt.hour, s1[0].end_dt.day, s1[0].end_dt.hour), (26, 22, 27, 3))
+        self.assertEqual((s1[1].start_dt.day, s1[1].start_dt.hour, s1[1].end_dt.day, s1[1].end_dt.hour), (27, 3, 27, 8))
+
+        # Case 2: 23:15 -> currently inside Shift 1, followed by Shift 2
+        s2 = resolve_shift_schedule(specs, now=datetime(2026, 11, 26, 23, 15, tzinfo=tz))
+        self.assertEqual(len(s2), 2)
+        self.assertEqual(s2[0].pool, "gemini")
+        self.assertEqual(s2[0].end_dt.hour, 3)
+
+        # Case 3: 03:20 AM -> Shift 1 finished, currently inside Shift 2 (03:00-08:00 today)
+        s3 = resolve_shift_schedule(specs, now=datetime(2026, 11, 27, 3, 20, tzinfo=tz))
+        self.assertEqual(len(s3), 1)
+        self.assertEqual(s3[0].pool, "claude")
+        self.assertEqual((s3[0].start_dt.day, s3[0].start_dt.hour, s3[0].end_dt.hour), (27, 3, 8))
+
+        # Auto-promote drafts test
+        with tempfile.TemporaryDirectory() as td:
+            root = _init_temp_git_repo(Path(td))
+            cfg = AutoDevConfig.load(repo_root=root)
+            store = TaskStore(cfg.tasks_file, cfg.board_file)
+            store.add_task(title="Draft 1", description="d1", status="draft")
+            store.add_task(title="Draft 2", description="d2", depends_on=["T001"], status="draft")
+            orch = Orchestrator(cfg, GenericAdapter(cfg))
+            orch._sync_pending_state_files()
+            promoted = orch._try_promote_drafts(batch_size=2)
+            self.assertEqual(promoted, ["T001", "T002"])
+            self.assertEqual([t.status for t in store.load()], ["pending", "pending"])
 
 
 if __name__ == "__main__":

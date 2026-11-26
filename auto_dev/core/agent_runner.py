@@ -9,9 +9,59 @@ from pathlib import Path
 from typing import Any
 
 from .config import AgentCliConfig, ModelProfile
-from .models import AgentResult
+from .models import AgentResult, TokenUsage
 
 _JSON_BLOCK_RE = re.compile(r"```(?:json)?\s*(\{.*?\}|\[.*?\])\s*```", re.DOTALL)
+_QUOTA_ERROR_RE = re.compile(
+    r"(resource_exhausted|quota\s*(exceeded|exhausted|limit|reached)|rate[\s_-]*limit|"
+    r"too\s+many\s+requests|\b429\b|five[\s_-]*hour\s+limit|weekly\s+limit|"
+    r"insufficient\s+quota|model\s+capacity|overloaded|usage\s+limit\s+reached|"
+    r"exhausted\s+your\s+capacity|no\s+quota)",
+    re.IGNORECASE,
+)
+_REFRESH_HM_RE = re.compile(
+    r"(?:refreshes?|resets?|try\s+again|retry)\s+(?:in\s+)?(?:(\d+)\s*d(?:ays?)?\s*)?"
+    r"(?:(\d+)\s*h(?:ours?|r)?\s*)?(?:(\d+)\s*m(?:in(?:utes?)?)?\s*)?(?:(\d+)\s*s(?:ec(?:onds?)?)?)?",
+    re.IGNORECASE,
+)
+
+
+def detect_quota_error(text: str) -> tuple[bool, int | None]:
+    if not text or not _QUOTA_ERROR_RE.search(text):
+        return False, None
+    hint_sec: int | None = None
+    m = _REFRESH_HM_RE.search(text)
+    if m and any(m.groups()):
+        days = int(m.group(1) or 0)
+        hours = int(m.group(2) or 0)
+        mins = int(m.group(3) or 0)
+        secs = int(m.group(4) or 0)
+        total = days * 86400 + hours * 3600 + mins * 60 + secs
+        if total > 0:
+            hint_sec = total
+    return True, hint_sec
+
+
+def _parse_outer_envelope(raw_text: str) -> dict[str, Any]:
+    text = raw_text.strip()
+    if not text:
+        return {}
+    try:
+        parsed = json.loads(text)
+        if isinstance(parsed, dict):
+            return parsed
+    except json.JSONDecodeError:
+        pass
+    for line in reversed(text.splitlines()):
+        line = line.strip()
+        if line.startswith("{"):
+            try:
+                parsed = json.loads(line)
+                if isinstance(parsed, dict):
+                    return parsed
+            except json.JSONDecodeError:
+                continue
+    return {}
 
 
 def _extract_json_payload(raw_text: str) -> dict[str, Any]:
@@ -22,7 +72,6 @@ def _extract_json_payload(raw_text: str) -> dict[str, Any]:
     try:
         parsed = json.loads(text)
         if isinstance(parsed, dict):
-            # Unwrap common CLI envelopes (e.g. {"result": "..."} or {"response": {...}})
             for key in ("structured_output", "result", "response", "output", "text", "content"):
                 val = parsed.get(key)
                 if isinstance(val, dict):
@@ -71,7 +120,7 @@ def _extract_json_payload(raw_text: str) -> dict[str, Any]:
 
 
 class AgentRunner:
-    """Spawns a fresh headless `agy -p` session per task/turn to prevent context bloat."""
+    """Spawns a fresh headless `agy -p` session per task/turn with usage & quota telemetry."""
 
     def __init__(self, repo_root: Path, cli_cfg: AgentCliConfig, runtime_dir: Path) -> None:
         self.repo_root = repo_root
@@ -101,7 +150,6 @@ class AgentRunner:
         prompt_file = audit_dir / f"{tag}_prompt.md"
         prompt_file.write_text(prompt, encoding="utf-8")
 
-        # Keep command line well below Windows 32KB CreateProcess limit
         cli_prompt = prompt
         if len(prompt) > 10000:
             rel_prompt = prompt_file.resolve().relative_to(self.repo_root.resolve()).as_posix()
@@ -184,6 +232,11 @@ class AgentRunner:
             encoding="utf-8",
         )
 
+        envelope = _parse_outer_envelope(stdout)
+        usage = TokenUsage.from_dict(envelope.get("usage") if isinstance(envelope, dict) else None)
+        envelope_error = str(envelope.get("error", "") or "") if isinstance(envelope, dict) else ""
+        envelope_status = str(envelope.get("status", "") or "").upper() if isinstance(envelope, dict) else ""
+
         structured = _extract_json_payload(stdout)
         summary = str(structured.get("summary", "")).strip()
         if not summary and stdout.strip():
@@ -193,13 +246,20 @@ class AgentRunner:
         if not isinstance(changed_files, list):
             changed_files = []
 
-        ok = proc.returncode == 0
+        ok = proc.returncode == 0 and envelope_status != "ERROR"
         error_msg = ""
         if not ok:
-            error_msg = (stderr.strip() or stdout.strip() or f"Exit code {proc.returncode}")[-600:]
+            error_msg = (
+                envelope_error
+                or stderr.strip()
+                or stdout.strip()
+                or f"Exit code {proc.returncode}"
+            )[-600:]
         elif schema is not None and not structured:
-            # Non-fatal if files were edited, but note parse miss for planner/visual calls
             error_msg = "JSON cikti ayristirilamadi."
+
+        combined_err = "\n".join(x for x in (envelope_error, stderr, error_msg) if x)
+        is_quota, quota_hint = (False, None) if ok else detect_quota_error(combined_err)
 
         return AgentResult(
             ok=ok,
@@ -212,4 +272,7 @@ class AgentRunner:
             duration_sec=elapsed,
             exit_code=proc.returncode,
             error=error_msg,
+            usage=usage,
+            is_quota_error=is_quota,
+            quota_reset_hint_sec=quota_hint,
         )

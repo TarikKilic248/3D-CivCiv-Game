@@ -145,6 +145,19 @@ public static class AutoDevBridge
             return;
         }
 
+        // If Unity was accidentally left in Play Mode overnight, exit Play Mode cleanly before running scene commands
+        string actUpper = (cmd.action ?? "").Trim().ToUpperInvariant();
+        bool needsEditMode = actUpper == "VERIFY" || actUpper == "SNAPSHOT" || actUpper == "SCREENSHOT";
+        if (needsEditMode && (EditorApplication.isPlaying || EditorApplication.isPlayingOrWillChangePlaymode))
+        {
+            if (EditorApplication.isPlaying)
+            {
+                Debug.Log("[AutoDevBridge] Unity Play modunda tespit edildi — Edit moduna otomatik cikiliyor...");
+                EditorApplication.isPlaying = false;
+            }
+            return;
+        }
+
         DeleteCommandSafe();
         ExecuteCommand(cmd);
     }

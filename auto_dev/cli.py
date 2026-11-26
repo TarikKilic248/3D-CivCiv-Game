@@ -128,12 +128,28 @@ def _cmd_unblock(cfg: AutoDevConfig, args: argparse.Namespace) -> int:
 
 
 def _cmd_run(cfg: AutoDevConfig, args: argparse.Namespace) -> int:
+    from datetime import datetime, timedelta
+
     adapter = load_adapter(cfg)
     orch = Orchestrator(cfg, adapter)
-    result = orch.run(max_tasks=args.max_tasks, dry_run=args.dry_run)
+    deadline = None
+    if args.until:
+        parts = args.until.strip().split(":")
+        h, m = int(parts[0]), int(parts[1])
+        now = datetime.now().astimezone()
+        deadline = now.replace(hour=h, minute=m, second=0, microsecond=0)
+        if deadline <= now:
+            deadline += timedelta(days=1)
+
+    result = orch.run(
+        max_tasks=args.max_tasks,
+        dry_run=args.dry_run,
+        pool_name=args.pool or None,
+        deadline=deadline,
+    )
     if args.dry_run:
         ready = result.get("ready_tasks", [])
-        print(f"[DRY-RUN] Calistirilacak {len(ready)} hazir gorev:")
+        print(f"[DRY-RUN] Havuz: {result.get('pool', 'gemini')} | Calistirilacak {len(ready)} hazir gorev:")
         for t in ready:
             print(f"  - {t['id']} [{t['tier']}]: {t['title']}")
         return 0
@@ -142,10 +158,33 @@ def _cmd_run(cfg: AutoDevConfig, args: argparse.Namespace) -> int:
     print(f"Kosu ID     : {result['run_id']}")
     print(f"Bitis Nedeni: {result['stop_reason']}")
     print(f"Rapor       : {result['report_path']}")
+    print(f"Sabah Ozeti : {result.get('brief_path', '')}")
     for r in result.get("records", []):
         sha = f" ({r['commit_sha']})" if r.get("commit_sha") else ""
         print(f"  - {r['task_id']}: {r['outcome'].upper()}{sha} [{r['duration_sec']}s]")
     return 0
+
+
+def _cmd_night(cfg: AutoDevConfig, args: argparse.Namespace) -> int:
+    from auto_dev.night_runner import parse_shift_specs, run_night_session
+
+    specs = parse_shift_specs(args.shifts) if args.shifts else None
+    return run_night_session(
+        cfg=cfg,
+        shifts_spec=specs,
+        start_now=args.start_now,
+        until_hhmm=args.until or None,
+        initial_pool=args.pool or None,
+        max_tasks_per_shift=args.max_tasks_per_shift,
+        no_failover=args.no_failover,
+        no_auto_promote=args.no_auto_promote,
+        no_auto_plan=args.no_auto_plan,
+        gemini_pct=args.gemini_pct,
+        gemini_refresh_min=args.gemini_refresh_min,
+        claude_pct=args.claude_pct,
+        claude_refresh_min=args.claude_refresh_min,
+        dry_run=args.dry_run,
+    )
 
 
 def _cmd_verify(cfg: AutoDevConfig, args: argparse.Namespace) -> int:
@@ -265,9 +304,27 @@ def build_parser() -> argparse.ArgumentParser:
     p_unb.set_defaults(func=_cmd_unblock)
 
     p_run = sub.add_parser("run", help="Onayli gorevleri otonom olarak calistir")
-    p_run.add_argument("--max-tasks", type=int, default=None, help="Bu kosudaki maksimum gorev")
+    p_run.add_argument("--max-tasks", type=int, default=None, help="Bu kosudaki maksimum gorev (0=sinirsiz)")
+    p_run.add_argument("--pool", default="", help="Kullanilacak kota havuzu (gemini|claude)")
+    p_run.add_argument("--until", default="", help="Bitis saati (HH:MM)")
     p_run.add_argument("--dry-run", action="store_true", help="Sadece calisacak gorevleri listele")
     p_run.set_defaults(func=_cmd_run)
+
+    p_night = sub.add_parser("night", help="Cift havuzlu zaman ayarli gece vardiyasini baslat")
+    p_night.add_argument("--shifts", default="", help="Vardiya listesi (or. 22:00-03:00:gemini,03:00-08:00:claude)")
+    p_night.add_argument("--start-now", action="store_true", help="Beklemeden hemen basla")
+    p_night.add_argument("--until", default="", help="--start-now ile bitis saati (HH:MM)")
+    p_night.add_argument("--pool", default="", help="--start-now ile baslangic havuzu")
+    p_night.add_argument("--max-tasks-per-shift", type=int, default=0)
+    p_night.add_argument("--no-failover", action="store_true")
+    p_night.add_argument("--no-auto-promote", action="store_true")
+    p_night.add_argument("--no-auto-plan", action="store_true")
+    p_night.add_argument("--gemini-pct", type=float, default=None)
+    p_night.add_argument("--gemini-refresh-min", type=int, default=None)
+    p_night.add_argument("--claude-pct", type=float, default=None)
+    p_night.add_argument("--claude-refresh-min", type=int, default=None)
+    p_night.add_argument("--dry-run", action="store_true")
+    p_night.set_defaults(func=_cmd_night)
 
     p_ver = sub.add_parser("verify", help="Adaptor derleme ve dogrulama koprusunu test et (0 token)")
     p_ver.add_argument("--check", default="SMOKE", help="Calistirilacak dogrulama ID'si (varsayilan: SMOKE)")

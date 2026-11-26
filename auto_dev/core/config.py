@@ -14,6 +14,36 @@ class ModelProfile:
 
 
 @dataclass
+class ShiftWindowConfig:
+    name: str
+    start: str  # "HH:MM"
+    end: str    # "HH:MM"
+    pool: str   # "gemini" | "claude"
+
+
+@dataclass
+class NightShiftConfig:
+    shifts: list[ShiftWindowConfig] = field(
+        default_factory=lambda: [
+            ShiftWindowConfig("Shift1_Gemini", "22:00", "03:00", "gemini"),
+            ShiftWindowConfig("Shift2_Claude", "03:00", "08:00", "claude"),
+        ]
+    )
+    failover_on_quota: bool = True
+    quota_cooldown_minutes: int = 305
+    cutoff_buffer_minutes: int = 10
+    auto_promote_drafts: bool = True
+    auto_promote_batch_size: int = 3
+    auto_plan_when_empty: bool = True
+    auto_plan_batch_size: int = 3
+    max_auto_plan_batches_per_night: int = 2
+    keep_awake: bool = True
+    pool_5h_budgets: dict[str, int] = field(
+        default_factory=lambda: {"gemini": 2_500_000, "claude": 1_500_000}
+    )
+
+
+@dataclass
 class GitConfig:
     protected_branches: list[str] = field(default_factory=lambda: ["main", "master"])
     dev_branch: str = "auto-dev"
@@ -82,6 +112,8 @@ class AutoDevConfig:
     scope: ScopeConfig
     agent_cli: AgentCliConfig
     models: dict[str, ModelProfile]
+    model_pools: dict[str, dict[str, ModelProfile]]
+    night_shift: NightShiftConfig
     adapter: dict[str, Any]
     auto_dev_dir: Path
     runtime_dir: Path
@@ -89,6 +121,23 @@ class AutoDevConfig:
     board_file: Path
     index_file: Path
     report_file: Path
+    brief_file: Path
+
+    @classmethod
+    def _parse_model_map(
+        cls,
+        raw_map: dict[str, Any],
+        defaults: dict[str, ModelProfile],
+    ) -> dict[str, ModelProfile]:
+        out: dict[str, ModelProfile] = {}
+        for key, default_prof in defaults.items():
+            m = raw_map.get(key, {}) if isinstance(raw_map, dict) else {}
+            out[key] = ModelProfile(
+                model=str(m.get("model", default_prof.model)),
+                effort=str(m.get("effort", default_prof.effort)),
+                timeout_sec=int(m.get("timeout_sec", default_prof.timeout_sec)),
+            )
+        return out
 
     @classmethod
     def load(cls, config_path: Path | None = None, repo_root: Path | None = None) -> "AutoDevConfig":
@@ -147,21 +196,66 @@ class AutoDevConfig:
             extra_args=list(cli_raw.get("extra_args", [])),
         )
 
-        default_models = {
-            "planner": ModelProfile("gemini-4-neon-xhigh", "xhigh", 300),
+        default_gemini = {
+            "planner": ModelProfile("gemini-4-neon-medium", "medium", 300),
             "fast": ModelProfile("gemini-3.8-flash-medium", "medium", 300),
             "smart": ModelProfile("gemini-4-neon-medium", "medium", 420),
             "visual": ModelProfile("gemini-3.8-flash-low", "low", 90),
         }
-        models_raw = raw.get("models", {})
-        models_map: dict[str, ModelProfile] = {}
-        for key, default_prof in default_models.items():
-            m = models_raw.get(key, {})
-            models_map[key] = ModelProfile(
-                model=str(m.get("model", default_prof.model)),
-                effort=str(m.get("effort", default_prof.effort)),
-                timeout_sec=int(m.get("timeout_sec", default_prof.timeout_sec)),
-            )
+        default_claude = {
+            "planner": ModelProfile("claude-opus-5-5-medium", "medium", 360),
+            "fast": ModelProfile("claude-sonnet-5-5-low", "low", 300),
+            "smart": ModelProfile("claude-opus-5-5-medium", "medium", 420),
+            "visual": ModelProfile("claude-sonnet-5-5-low", "low", 90),
+        }
+
+        models_map = cls._parse_model_map(raw.get("models", {}), default_gemini)
+
+        pools_raw = raw.get("model_pools", {})
+        model_pools: dict[str, dict[str, ModelProfile]] = {}
+        if isinstance(pools_raw, dict) and pools_raw:
+            for pname, pval in pools_raw.items():
+                base_def = default_claude if pname.lower().startswith("claude") else models_map
+                model_pools[pname] = cls._parse_model_map(pval, base_def)
+        else:
+            model_pools["gemini"] = dict(models_map)
+            model_pools["claude"] = dict(default_claude)
+
+        ns_raw = raw.get("night_shift", {})
+        shifts_raw = ns_raw.get("shifts", [])
+        shifts: list[ShiftWindowConfig] = []
+        if isinstance(shifts_raw, list) and shifts_raw:
+            for item in shifts_raw:
+                shifts.append(
+                    ShiftWindowConfig(
+                        name=str(item.get("name", "Shift")),
+                        start=str(item.get("start", "22:00")),
+                        end=str(item.get("end", "03:00")),
+                        pool=str(item.get("pool", "gemini")),
+                    )
+                )
+        else:
+            shifts = NightShiftConfig().shifts
+
+        budgets_raw = ns_raw.get("pool_5h_budgets", {})
+        budgets = {"gemini": 2_500_000, "claude": 1_500_000}
+        if isinstance(budgets_raw, dict):
+            for k, v in budgets_raw.items():
+                budgets[str(k)] = int(v)
+
+        night_cfg = NightShiftConfig(
+            shifts=shifts,
+            failover_on_quota=bool(ns_raw.get("failover_on_quota", True)),
+            quota_cooldown_minutes=int(ns_raw.get("quota_cooldown_minutes", 305)),
+            cutoff_buffer_minutes=int(ns_raw.get("cutoff_buffer_minutes", 10)),
+            auto_promote_drafts=bool(ns_raw.get("auto_promote_drafts", True)),
+            auto_promote_batch_size=int(ns_raw.get("auto_promote_batch_size", 3)),
+            auto_plan_when_empty=bool(ns_raw.get("auto_plan_when_empty", True)),
+            auto_plan_batch_size=int(ns_raw.get("auto_plan_batch_size", 3)),
+            max_auto_plan_batches_per_night=int(ns_raw.get("max_auto_plan_batches_per_night", 2)),
+            keep_awake=bool(ns_raw.get("keep_awake", True)),
+            pool_5h_budgets=budgets,
+        )
 
         auto_dev_dir = root / "auto_dev"
         runtime_dir = root / ".autodev"
@@ -175,6 +269,8 @@ class AutoDevConfig:
             scope=scope_cfg,
             agent_cli=cli_cfg,
             models=models_map,
+            model_pools=model_pools,
+            night_shift=night_cfg,
             adapter=dict(raw.get("adapter", {"type": "generic"})),
             auto_dev_dir=auto_dev_dir,
             runtime_dir=runtime_dir,
@@ -182,4 +278,5 @@ class AutoDevConfig:
             board_file=root / str(paths_raw.get("board_file", "auto_dev/BOARD.md")),
             index_file=root / str(paths_raw.get("index_file", "auto_dev/PROJECT_INDEX.md")),
             report_file=root / str(paths_raw.get("report_file", "auto_dev/RUN_REPORT.md")),
+            brief_file=root / str(paths_raw.get("brief_file", "auto_dev/MORNING_BRIEF.md")),
         )

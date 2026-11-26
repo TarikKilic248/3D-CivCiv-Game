@@ -47,18 +47,30 @@ python auto_dev/cli.py unblock T003
 - 2 denemede başarısız olan görev tamamen geri alınır (`git reset --hard && git clean -fd`), geçici dal silinir ve görev `blocked` işaretlenir.
 - Commitler lokalde `auto-dev` dalında birikir; `git push` ve `main`'e merge/PR kararı her zaman sendedir.
 
-## Gece Vardiyası (Windows Task Scheduler)
+## Gece Vardiyası (Saf Python Zamanlayıcı — Çift Kota Havuzu)
+
+Windows Task Scheduler kurmadan, istediğin gecelerde doğrudan tek Python komutuyla çalıştırabilirsin:
 
 ```powershell
-# Gece 02:30'da her gün max 3 görev çalışacak şekilde kur
-powershell -ExecutionPolicy Bypass -File auto_dev\scripts\setup_scheduler.ps1 -Action Install -Time 02:30 -MaxTasks 3
+# Varsayılan: 22:00-03:00 (Gemini havuzu) + 03:00-08:00 (Claude Opus/Sonnet havuzu)
+# Kota dolarsa yarım kalan görev geri alınıp `pending` korunur ve hemen diğer havuza geçer;
+# kuyruk biterse önce taslaklar terfi eder, sonra sınırlı yeni görev üretilir; sabah `auto_dev/MORNING_BRIEF.md` hazırdır.
+python auto_dev/night_runner.py
 
-# Durumu kontrol et
-powershell -ExecutionPolicy Bypass -File auto_dev\scripts\setup_scheduler.ps1 -Action Status
+# /models ekranındaki anlık kalan yüzdeleri vererek tam hizalamak istersen:
+python auto_dev/night_runner.py --gemini-pct 74 --gemini-refresh-min 223 --claude-pct 100
 
-# Kaldır
-powershell -ExecutionPolicy Bypass -File auto_dev\scripts\setup_scheduler.ps1 -Action Remove
+# Beklemeden hemen şimdi başlayıp sabah 08:00'a kadar çalıştırmak için:
+python auto_dev/night_runner.py --start-now --until 08:00
+
+# Özel saat ve havuzlarla:
+python auto_dev/night_runner.py --shifts "22:00-03:00:gemini,03:00-08:00:claude"
+
+# Kuru kontrol (0 token):
+python auto_dev/night_runner.py --dry-run
 ```
+
+> **Sabah Özeti:** [MORNING_BRIEF.md](MORNING_BRIEF.md) dosyasında her oturum ve her görev için hangi modelin yüzde kaç süre/token ile çalıştığı, toplam çalışma süreleri ve görev sonu havuzlarda kalan kota yüzdeleri yer alır.
 
 ## Başka Bir Projeye Taşıma (Taşınabilirlik)
 1. Yeni projeye yalnızca `auto_dev/` klasörünü (ve istersen `.agents/rules/autodev.md` dosyasını) kopyala.

@@ -4,6 +4,7 @@ import ctypes
 import json
 import os
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -37,15 +38,19 @@ def _is_pid_running(pid: int) -> bool:
 
 
 class RunnerLock:
-    """Single-instance PID lockfile with automatic stale-lock recovery."""
+    """Single-instance PID lockfile with stale-lock recovery and optional handover wait."""
 
-    def __init__(self, lock_path: Path) -> None:
+    def __init__(self, lock_path: Path, wait_timeout_sec: int = 0) -> None:
         self.lock_path = lock_path
+        self.wait_timeout_sec = max(0, int(wait_timeout_sec))
         self._acquired = False
 
-    def acquire(self) -> None:
+    def acquire(self, wait_timeout_sec: int | None = None) -> None:
+        wait_sec = self.wait_timeout_sec if wait_timeout_sec is None else max(0, int(wait_timeout_sec))
+        deadline = time.monotonic() + wait_sec
         self.lock_path.parent.mkdir(parents=True, exist_ok=True)
-        for _ in range(2):
+
+        while True:
             try:
                 fd = os.open(
                     str(self.lock_path),
@@ -68,11 +73,13 @@ class RunnerLock:
                     except OSError as exc:
                         raise LockError(f"Eski kilit dosyasi silinemedi: {exc}") from exc
                     continue
+                if time.monotonic() < deadline:
+                    time.sleep(1.0)
+                    continue
                 owner = self._read_owner()
                 raise LockError(
                     f"Baska bir AutoDev kosusu zaten aktif ({owner}). Kilit: {self.lock_path}"
                 )
-        raise LockError(f"Kilit alinamadi: {self.lock_path}")
 
     def release(self) -> None:
         if self._acquired:
