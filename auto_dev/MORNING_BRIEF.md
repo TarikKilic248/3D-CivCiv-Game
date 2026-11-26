@@ -1,7 +1,7 @@
 # AutoDev Sabah Ozet Raporu (MORNING_BRIEF) — 3D CivCiv Game
 
-- Guncelleme (UTC): `2026-11-26T22:16:47+00:00`
-- Son 16 Saat Ozeti: **Tamamlanan `17`** | Kota Ertelenen (`pending` korundu): `0` | Bloklanan: `6` | Otomatik Push (`origin/auto-dev`): `Hayir`
+- Guncelleme (UTC): `2026-11-26T22:16:57+00:00`
+- Son 16 Saat Ozeti: **Tamamlanan `17`** | Kota Ertelenen (`pending` korundu): `0` | Bloklanan: `6` | Otomatik Push (`origin/auto-dev`): `Evet`
 
 ## 1. Kota Havuzlari Son Durumu (5 Saatlik Pencere — Tahmini)
 | Havuz | Durum | Kalan Kota (%) | Bu Pencerede Harcanan Token | Soguma / Yenilenme |
