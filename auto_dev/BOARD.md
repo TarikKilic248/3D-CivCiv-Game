@@ -1,6 +1,6 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 20** | Taslak (Onay Bekleyen): `16` | Sirada: `2` (Calismaya Hazir: `0`) | Tamamlanan: `1` | Bloklanan: `1`
+- Ozet: **Toplam 20** | Taslak (Onay Bekleyen): `16` | Sirada: `3` (Calismaya Hazir: `1`) | Tamamlanan: `1` | Bloklanan: `0`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
@@ -25,13 +25,12 @@
 ## Siradaki Gorevler (`pending`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
+| `T001` | Veri Mimarisi (PlayerStatsSO) ve PlayerController Temel Düzeltmeleri | - | `smart` | - | Hazir |
 | `T003` | Stamina Tabanlı İleri Atılma Yeteneği (DashController) | T001 | `fast` | - | Bagimlilik bekliyor |
 | `T004` | Oyun İçi Enerji Çubuğu ve Oyun Sonu Ekranı (GameplayHUD) | T002, T003 | `fast` | Evet | Bagimlilik bekliyor |
 
 ## Bloklanan Gorevler (`blocked`)
-| ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
-| --- | --- | --- | --- | --- | --- |
-| `T001` | Veri Mimarisi (PlayerStatsSO) ve PlayerController Temel Düzeltmeleri | - | `smart` | - | Deneme: 2 — agent_exec: Ajan oturumu basarisiz (kod 1). |
+_Yok._
 
 ## Tamamlanan Gorevler (`done`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |

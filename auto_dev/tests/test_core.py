@@ -283,6 +283,34 @@ class TestAutoDevCore(unittest.TestCase):
             self.assertTrue(passed)
             self.assertEqual(data["summary"], "OK")
 
+    def test_agent_runner_omits_conflicting_effort_for_suffixed_model(self) -> None:
+        from unittest.mock import patch
+        from auto_dev.core.agent_runner import AgentRunner
+        from auto_dev.core.config import AgentCliConfig, ModelProfile
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            runner = AgentRunner(root, AgentCliConfig(executable="agy"), root / ".autodev")
+            captured_cmd: list[str] = []
+
+            class DummyProc:
+                returncode = 0
+                stdout = '{"summary": "ok", "changed_files": []}'
+                stderr = ""
+
+            def fake_run(cmd, **kwargs):
+                captured_cmd.extend(cmd)
+                return DummyProc()
+
+            with patch("subprocess.run", side_effect=fake_run):
+                res = runner.run_prompt(
+                    "hi",
+                    ModelProfile("gemini-4-neon-xhigh", "medium", 60),
+                    tag="effort_test",
+                )
+            self.assertTrue(res.ok)
+            self.assertNotIn("--effort", captured_cmd)
+
 
 if __name__ == "__main__":
     unittest.main()

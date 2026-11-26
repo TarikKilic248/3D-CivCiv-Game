@@ -116,13 +116,15 @@ class AgentRunner:
             cli_prompt,
             "--model",
             profile.model,
-            "--effort",
-            profile.effort,
             "--output-format",
             "json",
             "--print-timeout",
             f"{profile.timeout_sec}s",
         ]
+
+        effort_suffixes = ("-low", "-medium", "-high", "-xhigh", "-max")
+        if profile.effort and not profile.model.lower().endswith(effort_suffixes):
+            cmd.extend(["--effort", profile.effort])
 
         if read_only:
             cmd.extend(["--mode", "plan"])

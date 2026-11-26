@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-26T17:48:50+00:00",
+  "updated_at": "2026-11-26T17:54:09+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -13,7 +13,7 @@
         "Harici hareket override aktifken FixedUpdate (LimitSpeed/ApplyDrag) yüksek yatay hızı MaxSpeed sınırına ezmez; Check_T001 bunu Physics.Simulate ile sayısal doğrular.",
         "TargetJump düşen oyuncuya temas ettiğinde önce y hızını sıfırlayıp tutarlı dikey hız uygular."
       ],
-      "status": "blocked",
+      "status": "pending",
       "depends_on": [],
       "target_files": [
         "Assets/_GameAssets/Scripts/Data/PlayerStatsSO.cs",
@@ -30,11 +30,11 @@
       "tier": "smart",
       "visual_check": false,
       "verify_check": "T001",
-      "retries": 2,
-      "last_error": "agent_exec: Ajan oturumu basarisiz (kod 1).\nwarning: --mode auto is not available because the terminal sandbox is not available on this host; continuing in the default mode.\nerror: invalid model selection (--model \"gemini-4-neon-xhigh\" --effort \"medium\"): --model gemini-4-neon-xhigh conflicts with --effort=medium",
+      "retries": 0,
+      "last_error": "",
       "commit_sha": "",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T17:44:03+00:00"
+      "updated_at": "2026-11-26T17:54:09+00:00"
     },
     {
       "id": "T002",

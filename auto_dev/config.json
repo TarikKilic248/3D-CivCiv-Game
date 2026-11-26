@@ -11,7 +11,7 @@
   "models": {
     "planner": {
       "model": "gemini-4-neon-xhigh",
-      "effort": "medium",
+      "effort": "xhigh",
       "timeout_sec": 300
     },
     "fast": {
@@ -21,7 +21,7 @@
     },
     "smart": {
       "model": "gemini-4-neon-xhigh",
-      "effort": "medium",
+      "effort": "xhigh",
       "timeout_sec": 420
     },
     "visual": {

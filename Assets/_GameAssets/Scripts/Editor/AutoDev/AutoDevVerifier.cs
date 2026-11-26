@@ -238,6 +238,12 @@ public static class AutoDevVerifier
         CoinCollect[] coins = UnityEngine.Object.FindObjectsByType<CoinCollect>(FindObjectsInactive.Include);
         sb.AppendLine($"[Collectables] CoinCollect: {(coins != null ? coins.Length : 0)}");
 
+        sb.AppendLine(
+            $"[Managers] GameManager={(UnityEngine.Object.FindAnyObjectByType<GameManager>() != null ? "OK" : "MISSING")}, " +
+            $"CoinManager={(UnityEngine.Object.FindAnyObjectByType<CoinManager>() != null ? "OK" : "MISSING")}, " +
+            $"ClockUI={(UnityEngine.Object.FindAnyObjectByType<ClockUI>() != null ? "OK" : "MISSING")}, " +
+            $"SettingsUI={(UnityEngine.Object.FindAnyObjectByType<SettingsUI>() != null ? "OK" : "MISSING")}");
+
         Camera mainCam = Camera.main ?? UnityEngine.Object.FindAnyObjectByType<Camera>();
         sb.AppendLine($"[Camera] {(mainCam != null ? mainCam.gameObject.name : "NONE")}");
 

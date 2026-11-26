@@ -56,7 +56,7 @@ public class GameManager : MonoBehaviour
 
     public void CountTargetCoinsInScene()
     {
-        CoinCollect[] coins = UnityEngine.Object.FindObjectsByType<CoinCollect>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        CoinCollect[] coins = UnityEngine.Object.FindObjectsByType<CoinCollect>(FindObjectsInactive.Exclude);
         if (coins != null && coins.Length > 0)
         {
             targetCoins = coins.Length;

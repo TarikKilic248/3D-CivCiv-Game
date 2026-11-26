@@ -197,6 +197,15 @@ public static class AutoDevBridge
 
                 case "VERIFY":
                 {
+                    if (EditorApplication.isPlaying || EditorApplication.isPlayingOrWillChangePlaymode)
+                    {
+                        WriteResult(
+                            cmd.id,
+                            false,
+                            "Unity Play modunda — dogrulama ve sahne kaydi icin once Play modunu durdurun.",
+                            "EditorApplication.isPlaying == true");
+                        break;
+                    }
                     string checkId = string.IsNullOrEmpty(cmd.arg) ? "SMOKE" : cmd.arg.Trim();
                     AutoDevCheckResult res = AutoDevVerifier.RunCheck(checkId, scenePath);
                     WriteResult(cmd.id, res.Passed, res.Summary, res.Details);
