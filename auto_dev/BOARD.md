@@ -1,6 +1,6 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `10` | Sirada: `2` (Calismaya Hazir: `2`) | Tamamlanan: `10` | Bloklanan: `0`
+- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `10` | Sirada: `1` (Calismaya Hazir: `1`) | Tamamlanan: `10` | Bloklanan: `1`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
@@ -19,11 +19,12 @@
 ## Siradaki Gorevler (`pending`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
-| `T009` | Kalp ve Can Göstergesi HUD Bileşeni (HealthUI) | T008, T007A | `fast` | Evet | Hazir |
 | `T010` | Kombo Çarpanı (ComboManager & ComboUI) ve Altın Mıknatısı (CoinMagnet) | T002, T005, T008, T007A | `fast` | Evet | Hazir |
 
 ## Bloklanan Gorevler (`blocked`)
-_Yok._
+| ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
+| --- | --- | --- | --- | --- | --- |
+| `T009` | Kalp ve Can Göstergesi HUD Bileşeni (HealthUI) | T008, T007A | `fast` | Evet | Deneme: 2 — unity_verify:T009: TakeDamage(40) sonrasi can 40, aktif kalp 2 olmaliydi. Curr=80, Hearts= |
 
 ## Tamamlanan Gorevler (`done`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |

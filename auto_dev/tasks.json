@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-26T21:04:41+00:00",
+  "updated_at": "2026-11-26T21:10:28+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -353,7 +353,7 @@
         "Görsel kontrolde HealthUI ekranda net ve diğer HUD öğeleriyle çakışmadan görünür.",
         "UI bileşenleri UIThemeSO/UIStyleHelper temasını kullanır; düz gri/varsayılan Unity slider/panel bırakılmaz."
       ],
-      "status": "pending",
+      "status": "blocked",
       "depends_on": [
         "T008",
         "T007A"
@@ -370,11 +370,11 @@
       "tier": "fast",
       "visual_check": true,
       "verify_check": "T009",
-      "retries": 0,
-      "last_error": "",
+      "retries": 2,
+      "last_error": "unity_verify:T009: TakeDamage(40) sonrasi can 40, aktif kalp 2 olmaliydi. Curr=80, Hearts=4\n",
       "commit_sha": "",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T18:56:40+00:00"
+      "updated_at": "2026-11-26T21:10:28+00:00"
     },
     {
       "id": "T010",
