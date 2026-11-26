@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-26T18:55:13+00:00",
+  "updated_at": "2026-11-26T18:56:40+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -145,7 +145,7 @@
         "PowerUpCollectable üç türü (ExtraTime, SpeedBoost, StaminaRefill) destekler ve ilgili sistemlere gerçekten etki eder.",
         "Check_T005 her üç güçlendiricinin ClockUI süresini, PlayerController hız çarpanını ve DashController staminasını sayısal olarak değiştirdiğini doğrular."
       ],
-      "status": "draft",
+      "status": "pending",
       "depends_on": [
         "T001",
         "T002",
@@ -169,7 +169,7 @@
       "last_error": "",
       "commit_sha": "",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T16:00:00+00:00"
+      "updated_at": "2026-11-26T18:56:40+00:00"
     },
     {
       "id": "T006",
@@ -180,7 +180,7 @@
         "HazardZone oyuncuyu aktif Checkpoint konumuna ışınlar ve Rigidbody hızını sıfırlar.",
         "Check_T006 oyuncuyu tehlike alanına sokup hızın sıfırlandığını ve pozisyonun Checkpoint noktasına döndüğünü sayısal olarak doğrular."
       ],
-      "status": "draft",
+      "status": "pending",
       "depends_on": [
         "T001",
         "T002"
@@ -201,7 +201,7 @@
       "last_error": "",
       "commit_sha": "",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T16:00:00+00:00"
+      "updated_at": "2026-11-26T18:56:40+00:00"
     },
     {
       "id": "T007",
@@ -212,7 +212,7 @@
         "Süzülme aktifken dikey düşüş hızı maxGlideFallSpeed sınırını aşmaz.",
         "Check_T007 havada ExecuteAirJump() sonrası pozitif dikey hız oluştuğunu ve düşüş sırasında süzülme aktifken düşüş hızının limitlendiğini Physics.Simulate ile doğrular."
       ],
-      "status": "draft",
+      "status": "pending",
       "depends_on": [
         "T001"
       ],
@@ -233,7 +233,7 @@
       "last_error": "",
       "commit_sha": "",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T16:00:00+00:00"
+      "updated_at": "2026-11-26T18:56:40+00:00"
     },
     {
       "id": "T008",
@@ -245,7 +245,7 @@
         "Can 0 olduğunda GameManager.CurrentState GameOver olur.",
         "Check_T008 hasar, i-frame engeli, iyileşme ve ölümde GameOver geçişini doğrular."
       ],
-      "status": "draft",
+      "status": "pending",
       "depends_on": [
         "T001",
         "T002"
@@ -266,7 +266,7 @@
       "last_error": "",
       "commit_sha": "",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T16:00:00+00:00"
+      "updated_at": "2026-11-26T18:56:40+00:00"
     },
     {
       "id": "T009",
@@ -278,7 +278,7 @@
         "Check_T009 PlayerHealth.TakeDamage ve Heal çağrıları sonrası HealthUI metin ve aktif ikon sayısının doğru güncellendiğini doğrular.",
         "Görsel kontrolde HealthUI ekranda net ve diğer HUD öğeleriyle çakışmadan görünür."
       ],
-      "status": "draft",
+      "status": "pending",
       "depends_on": [
         "T008"
       ],
@@ -297,7 +297,7 @@
       "last_error": "",
       "commit_sha": "",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T16:00:00+00:00"
+      "updated_at": "2026-11-26T18:56:40+00:00"
     },
     {
       "id": "T010",
@@ -309,7 +309,7 @@
         "CoinMagnet belirli yarıçaptaki CoinCollect nesnelerini karaktere doğru hareket ettirir.",
         "Check_T010 ardışık altın toplama ile çarpan artışını, hasarda sıfırlanmayı ve CoinMagnet'in yakındaki bir altını oyuncuya yaklaştırdığını sayısal doğrular."
       ],
-      "status": "draft",
+      "status": "pending",
       "depends_on": [
         "T002",
         "T005",
@@ -333,7 +333,7 @@
       "last_error": "",
       "commit_sha": "",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T16:00:00+00:00"
+      "updated_at": "2026-11-26T18:56:40+00:00"
     },
     {
       "id": "T011",

@@ -1,16 +1,10 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 20** | Taslak (Onay Bekleyen): `16` | Sirada: `0` (Calismaya Hazir: `0`) | Tamamlanan: `4` | Bloklanan: `0`
+- Ozet: **Toplam 20** | Taslak (Onay Bekleyen): `10` | Sirada: `6` (Calismaya Hazir: `4`) | Tamamlanan: `4` | Bloklanan: `0`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
-| `T005` | Gelişmiş Altın Geri Bildirimi ve Güçlendirici Sistemi (CoinCollect & PowerUpCollectable) | T001, T002, T003 | `fast` | - | `approve` bekliyor |
-| `T006` | Kontrol Noktası ve Tehlike/Düşme Alanları (Checkpoint & HazardZone) | T001, T002 | `fast` | - | `approve` bekliyor |
-| `T007` | Çift Zıplama ve Kanatla Süzülme (ChickGlideController) | T001 | `fast` | - | `approve` bekliyor |
-| `T008` | Hasar Arayüzü ve Oyuncu Can Sistemi (IDamageable & PlayerHealth) | T001, T002 | `fast` | - | `approve` bekliyor |
-| `T009` | Kalp ve Can Göstergesi HUD Bileşeni (HealthUI) | T008 | `fast` | Evet | `approve` bekliyor |
-| `T010` | Kombo Çarpanı (ComboManager & ComboUI) ve Altın Mıknatısı (CoinMagnet) | T002, T005, T008 | `fast` | Evet | `approve` bekliyor |
 | `T011` | Dinamik Parkur Öğeleri (MovingPlatform, FallingPlatform & WindCurrentZone) | T007 | `fast` | - | `approve` bekliyor |
 | `T012` | CivCiv Gaga Saldırısı ve Havadan Yere Çakılma (ChickPeckAttack) | T001, T008 | `fast` | - | `approve` bekliyor |
 | `T013` | Kırılabilir Sandık ve Ganimet Sistemi (LootTableSO & BreakableCrate) | T005, T012 | `fast` | - | `approve` bekliyor |
@@ -23,7 +17,14 @@
 | `T020` | Dinamik Gece/Gündüz Döngüsü, Başarım Sistemi ve Bütünlük Doğrulayıcı | T017 | `smart` | Evet | `approve` bekliyor |
 
 ## Siradaki Gorevler (`pending`)
-_Yok._
+| ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
+| --- | --- | --- | --- | --- | --- |
+| `T005` | Gelişmiş Altın Geri Bildirimi ve Güçlendirici Sistemi (CoinCollect & PowerUpCollectable) | T001, T002, T003 | `fast` | - | Hazir |
+| `T006` | Kontrol Noktası ve Tehlike/Düşme Alanları (Checkpoint & HazardZone) | T001, T002 | `fast` | - | Hazir |
+| `T007` | Çift Zıplama ve Kanatla Süzülme (ChickGlideController) | T001 | `fast` | - | Hazir |
+| `T008` | Hasar Arayüzü ve Oyuncu Can Sistemi (IDamageable & PlayerHealth) | T001, T002 | `fast` | - | Hazir |
+| `T009` | Kalp ve Can Göstergesi HUD Bileşeni (HealthUI) | T008 | `fast` | Evet | Bagimlilik bekliyor |
+| `T010` | Kombo Çarpanı (ComboManager & ComboUI) ve Altın Mıknatısı (CoinMagnet) | T002, T005, T008 | `fast` | Evet | Bagimlilik bekliyor |
 
 ## Bloklanan Gorevler (`blocked`)
 _Yok._
