@@ -145,11 +145,15 @@ Fix the issues cleanly and return ONLY JSON matching the schema (`summary`, `cha
 
         screenshot = cap.artifacts[0]
         criteria = "\n".join(f"- {c}" for c in task.acceptance_criteria)
-        prompt = f"""Inspect the screenshot image at `{screenshot}` for task `{task.id}` ({task.title}).
-Check ONLY for obvious visual defects (missing UI, overlapping text, broken camera, pitch-black screen) against these criteria:
-{criteria}
+        prompt = f"""Visual QA for task `{task.id}` ({task.title}).
+STRICT RULES (low-token fast check):
+1. Call `read_file` ONCE on this exact PNG image ONLY: `{screenshot}`
+2. Do NOT read any C# or text files. Do NOT run any shell commands. Do NOT explore the repo.
+3. Evaluate ONLY obvious visual defects in the image (pitch-black/broken camera, visibly broken/overlapping HUD text, missing always-visible HUD widget). Note: panels that start hidden (e.g. EndGamePanel) are EXPECTED to be hidden, and the pre-existing centered Settings popup may appear visible in Edit Mode because SettingsUI.Start() hides it at runtime (ignore it).
+4. Immediately return ONLY JSON matching the schema (`passed`, `summary`, `issues`).
 
-Do NOT edit any files. Return ONLY JSON matching the schema (`passed`, `summary`, `issues`).
+Task criteria context:
+{criteria}
 """
         res = self.runner.run_prompt(
             prompt=prompt,

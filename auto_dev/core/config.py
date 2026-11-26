@@ -148,10 +148,10 @@ class AutoDevConfig:
         )
 
         default_models = {
-            "planner": ModelProfile("gemini-4-neon-xhigh", "medium", 300),
+            "planner": ModelProfile("gemini-4-neon-xhigh", "xhigh", 300),
             "fast": ModelProfile("gemini-3.8-flash-medium", "medium", 300),
-            "smart": ModelProfile("gemini-4-neon-xhigh", "medium", 420),
-            "visual": ModelProfile("gemini-3.8-flash-medium", "low", 180),
+            "smart": ModelProfile("gemini-4-neon-medium", "medium", 420),
+            "visual": ModelProfile("gemini-3.8-flash-low", "low", 90),
         }
         models_raw = raw.get("models", {})
         models_map: dict[str, ModelProfile] = {}

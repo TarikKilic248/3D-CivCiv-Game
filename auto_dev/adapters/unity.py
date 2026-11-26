@@ -202,11 +202,13 @@ class UnityAdapter(ProjectAdapter):
         return f"""### Unity 6 Specific Instructions
 - Active scene: `{self.scene_path}` (NEVER read or edit `.unity`, `.prefab`, `.asset`, `.csproj` as text!).
 - Place runtime C# scripts under `Assets/_GameAssets/Scripts/` (global namespace matching existing scripts).
+- Unity 6000.6 API: use `FindObjectsByType<T>(FindObjectsInactive.Include)` (NEVER pass `FindObjectsSortMode` — obsolete CS0618).
 - Do NOT create Editor menu boilerplate (`Uygula`/`Geri cek`/`Detay`); Git handles rollback.
-- Create a small standalone behavioral verification check at `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_{check_id}.cs` decorated with `[AutoDevCheck("{check_id}")]`:
+- Do NOT run `python auto_dev/cli.py verify`, `Unity.exe`, or shell build commands inside your turn — the orchestrator compiles and runs `Check_{check_id}` automatically at 0 tokens right after you finish! Running verify yourself prematurely modifies `Demo.unity` and triggers `scope_diff_guard` failure.
+- Create a concise standalone behavioral check (~60-150 lines max) at `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_{check_id}.cs` decorated with `[AutoDevCheck("{check_id}")]`:
   - Signature: `public static AutoDevCheckResult Run()`
-  - If this task requires scene/asset wiring, perform it idempotently inside `Run()` using Unity Editor API (`SerializedObject`, `AssetDatabase`, `Undo`, `AutoDevVerifier.EnsureSceneOpen`), and set `SaveSceneOnPass = true` ONLY when scene changes must persist.
-  - Behavioral rule: Do NOT stop at `GetComponent != null`! Trigger the actual mechanic / invoke `Awake`/`FixedUpdate`/`Physics.Simulate` or events and assert real numeric/state outcomes."""
+  - Perform any required scene/asset wiring idempotently inside `Run()` via Unity Editor API (`SerializedObject`, `AssetDatabase`, `Undo`, `AutoDevVerifier.EnsureSceneOpen`), and set `SaveSceneOnPass = true` ONLY when scene changes must persist (restore any physics test displacement before returning!).
+  - Behavioral rule: Do NOT stop at `GetComponent != null`! Trigger the actual mechanic (`Awake`/`FixedUpdate`/`Physics.Simulate`/events) and assert real numeric/state outcomes."""
 
     def verify_compile(self, task: Task) -> GateResult:
         started = time.monotonic()

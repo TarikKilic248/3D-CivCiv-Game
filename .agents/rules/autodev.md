@@ -15,6 +15,7 @@ trigger: always_on
 3. **Unity 6 Geliştirme ve Davranışsal Doğrulama**
    - Çalışma zamanı scriptlerini `Assets/_GameAssets/Scripts/` altına, mevcut projeyle uyumlu (global namespace) biçimde yaz.
    - Unity `6000.6` API uyumu için `FindObjectsByType<T>(FindObjectsInactive.Include)` kullan (`FindObjectsSortMode` parametresini KULLANMA; `CS0618` uyarısı üretir).
+   - Otonom görev turu içinde `python auto_dev/cli.py verify` veya `Unity.exe` ÇALIŞTIRMA; derleme ve doğrulama orkestratör tarafından senin turundan hemen sonra 0 tokenla çalıştırılır.
    - Gereksiz Editör menüsü (`Uygula`/`Geri çek`/`Detay`) şablon kodu üretme; geri alma işlemi Git üzerinden yapılır.
    - Sahne veya `ScriptableObject` bağlantıları gerekiyorsa yalnızca C# Unity Editor API (`SerializedObject`, `AssetDatabase`, `Undo`) kullan.
-   - Her görev için `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_<ID>.cs` altında `[AutoDevCheck("<ID>")]` ile işaretli kısa bir davranışsal doğrulama yaz. Sadece `GetComponent != null` kontrolü yeterli değildir; mekanik gerçekten tetiklenip (`Awake`/`FixedUpdate`/`Physics.Simulate`/event) sayısal veya durum bazlı doğrulanmalıdır.
+   - Her görev için `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_<ID>.cs` altında `[AutoDevCheck("<ID>")]` ile işaretli kısa (en fazla ~150 satır) bir davranışsal doğrulama yaz. Sadece `GetComponent != null` kontrolü yeterli değildir; mekanik gerçekten tetiklenip (`Awake`/`FixedUpdate`/`Physics.Simulate`/event) sayısal veya durum bazlı doğrulanmalıdır.

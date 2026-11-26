@@ -276,20 +276,50 @@ public static class AutoDevVerifier
             RenderTexture prevCamRt = cam.targetTexture;
             RenderTexture prevActive = RenderTexture.active;
 
-            cam.targetTexture = rt;
-            cam.Render();
+            // Temporarily switch ScreenSpaceOverlay canvases to ScreenSpaceCamera so HUD renders into cam.Render()
+            Canvas[] allCanvases = UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsInactive.Exclude);
+            var savedCanvases = new System.Collections.Generic.List<(Canvas canvas, RenderMode mode, Camera worldCam, float planeDist)>();
+            foreach (Canvas c in allCanvases)
+            {
+                if (c != null && c.isRootCanvas && c.renderMode == RenderMode.ScreenSpaceOverlay)
+                {
+                    savedCanvases.Add((c, c.renderMode, c.worldCamera, c.planeDistance));
+                    c.renderMode = RenderMode.ScreenSpaceCamera;
+                    c.worldCamera = cam;
+                    c.planeDistance = Mathf.Max(cam.nearClipPlane + 0.5f, 1f);
+                }
+            }
+            Canvas.ForceUpdateCanvases();
 
-            RenderTexture.active = rt;
-            Texture2D tex = new Texture2D(width, height, TextureFormat.RGB24, false);
-            tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-            tex.Apply();
+            try
+            {
+                cam.targetTexture = rt;
+                cam.Render();
 
-            cam.targetTexture = prevCamRt;
-            RenderTexture.active = prevActive;
+                RenderTexture.active = rt;
+                Texture2D tex = new Texture2D(width, height, TextureFormat.RGB24, false);
+                tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+                tex.Apply();
 
-            File.WriteAllBytes(outputPath, tex.EncodeToPNG());
-            UnityEngine.Object.DestroyImmediate(tex);
-            UnityEngine.Object.DestroyImmediate(rt);
+                File.WriteAllBytes(outputPath, tex.EncodeToPNG());
+                UnityEngine.Object.DestroyImmediate(tex);
+            }
+            finally
+            {
+                cam.targetTexture = prevCamRt;
+                RenderTexture.active = prevActive;
+                foreach (var item in savedCanvases)
+                {
+                    if (item.canvas != null)
+                    {
+                        item.canvas.renderMode = item.mode;
+                        item.canvas.worldCamera = item.worldCam;
+                        item.canvas.planeDistance = item.planeDist;
+                    }
+                }
+                Canvas.ForceUpdateCanvases();
+                UnityEngine.Object.DestroyImmediate(rt);
+            }
             return true;
         }
         catch (Exception ex)

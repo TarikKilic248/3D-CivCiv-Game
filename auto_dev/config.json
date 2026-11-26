@@ -20,14 +20,14 @@
       "timeout_sec": 300
     },
     "smart": {
-      "model": "gemini-4-neon-xhigh",
-      "effort": "xhigh",
+      "model": "gemini-4-neon-medium",
+      "effort": "medium",
       "timeout_sec": 420
     },
     "visual": {
-      "model": "gemini-3.8-flash-medium",
+      "model": "gemini-3.8-flash-low",
       "effort": "low",
-      "timeout_sec": 180
+      "timeout_sec": 90
     }
   },
   "limits": {
