@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-26T21:19:51+00:00",
+  "updated_at": "2026-11-26T21:19:52+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -426,7 +426,7 @@
         "Check_T011 her üç mekaniği adım adım simüle ederek pozisyon/hız ve durum geçişlerini sayısal doğrular.",
         "Mekanik tetiklendiğinde görsel/prosedürel geri bildirim veya ParticleSystem efekti ve SFX kancası çalışır."
       ],
-      "status": "draft",
+      "status": "pending",
       "depends_on": [
         "T007"
       ],
@@ -447,7 +447,7 @@
       "last_error": "",
       "commit_sha": "",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T16:00:00+00:00"
+      "updated_at": "2026-11-26T21:19:52+00:00"
     },
     {
       "id": "T012",
@@ -459,7 +459,7 @@
         "Check_T012 sahte bir IDamageable hedefle hem gaga vuruşunun hem yere çakılma darbesinin gerçek hasar ilettiğini doğrular.",
         "Mekanik tetiklendiğinde görsel/prosedürel geri bildirim veya ParticleSystem efekti ve SFX kancası çalışır."
       ],
-      "status": "draft",
+      "status": "pending",
       "depends_on": [
         "T001",
         "T008"
@@ -479,7 +479,7 @@
       "last_error": "",
       "commit_sha": "",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T16:00:00+00:00"
+      "updated_at": "2026-11-26T21:19:52+00:00"
     },
     {
       "id": "T013",
@@ -491,7 +491,7 @@
         "Check_T013 BreakableCrate'e ChickPeckAttack/TakeDamage uygulayıp kırıldığını ve ödül üretildiğini doğrular.",
         "Mekanik tetiklendiğinde görsel/prosedürel geri bildirim veya ParticleSystem efekti ve SFX kancası çalışır."
       ],
-      "status": "draft",
+      "status": "pending",
       "depends_on": [
         "T005",
         "T012"
@@ -513,7 +513,7 @@
       "last_error": "",
       "commit_sha": "",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T16:00:00+00:00"
+      "updated_at": "2026-11-26T21:19:52+00:00"
     },
     {
       "id": "T014",

@@ -1,13 +1,10 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `10` | Sirada: `0` (Calismaya Hazir: `0`) | Tamamlanan: `11` | Bloklanan: `1`
+- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `7` | Sirada: `3` (Calismaya Hazir: `2`) | Tamamlanan: `11` | Bloklanan: `1`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
-| `T011` | Dinamik Parkur Öğeleri (MovingPlatform, FallingPlatform & WindCurrentZone) | T007 | `fast` | - | `approve` bekliyor |
-| `T012` | CivCiv Gaga Saldırısı ve Havadan Yere Çakılma (ChickPeckAttack) | T001, T008 | `fast` | - | `approve` bekliyor |
-| `T013` | Kırılabilir Sandık ve Ganimet Sistemi (LootTableSO & BreakableCrate) | T005, T012 | `fast` | - | `approve` bekliyor |
 | `T014` | Devriye Düşman Yapay Zekası (EnemyStatsSO & PatrolEnemyAI) | T008, T012 | `fast` | - | `approve` bekliyor |
 | `T015` | Etkileşim Sistemi ve Basınç Plakası Bulmacası (IInteractable, PlayerInteractor & PressurePlateSwitch) | T001 | `fast` | - | `approve` bekliyor |
 | `T016` | Kayıp CivCiv Kurtarma Görevi ve Hedef Pusulası (LostChickNPC, ChickRescueManager & WaypointIndicatorUI) | T015, T007A | `fast` | Evet | `approve` bekliyor |
@@ -17,7 +14,11 @@
 | `T020` | Dinamik Gece/Gündüz Döngüsü, Başarım Sistemi ve Bütünlük Doğrulayıcı | T017, T007A | `smart` | Evet | `approve` bekliyor |
 
 ## Siradaki Gorevler (`pending`)
-_Yok._
+| ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
+| --- | --- | --- | --- | --- | --- |
+| `T011` | Dinamik Parkur Öğeleri (MovingPlatform, FallingPlatform & WindCurrentZone) | T007 | `fast` | - | Hazir |
+| `T012` | CivCiv Gaga Saldırısı ve Havadan Yere Çakılma (ChickPeckAttack) | T001, T008 | `fast` | - | Hazir |
+| `T013` | Kırılabilir Sandık ve Ganimet Sistemi (LootTableSO & BreakableCrate) | T005, T012 | `fast` | - | Bagimlilik bekliyor |
 
 ## Bloklanan Gorevler (`blocked`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
