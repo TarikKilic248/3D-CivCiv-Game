@@ -17,3 +17,4 @@
 - **Görev 6.2: Oyuncu Can, Dokunulmazlık ve Geri Tepme Bileşeni (`PlayerHealth`)** tamamlandı (`Assets/_GameAssets/Scripts/Player/PlayerHealth.cs`, `ARCHITECTURE.md`, `TASKS.md`).
 - **Görev 6.3: Kalp / Can Göstergesi HUD Bileşeni (`HealthUI`)** tamamlandı (`Assets/_GameAssets/Scripts/UI/HealthUI.cs`, `ARCHITECTURE.md`, `TASKS.md`).
 - **Görev 7.1: Kombo ve Skor Çarpanı Yöneticisi (`ComboManager`)** tamamlandı (`Assets/_GameAssets/Scripts/Core/ComboManager.cs`, `ARCHITECTURE.md`, `TASKS.md`).
+- **Görev 7.2: Kombo Arayüz Bileşeni (`ComboUI`)** tamamlandı (`Assets/_GameAssets/Scripts/UI/ComboUI.cs`, `ARCHITECTURE.md`, `TASKS.md`).

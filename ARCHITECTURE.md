@@ -47,6 +47,7 @@
 - `SettingsUI.cs` : Oyun içi ayarlar menüsü ve ses/müzik yöneticisi Singleton sınıfı (`SettingsUI.Instance`). PopUp açma/kapama animasyonu, oyun duraklatma (`Time.timeScale`), `PlayerPrefs` ile müzik/SFX kaydetme (`CivCiv_MusicEnabled`, `CivCiv_SoundEnabled`), `SettingsUI.PlaySFX` genel ses çalma, yeniden başlatma ve çıkış işlevlerini barındırır.
 - `GameplayHUD.cs` : `DashController.OnStaminaChanged` ile enerji çubuğunu (`Slider`) ve `GameManager.OnGameStateChanged` ile oyun sonu (`Victory` / `GameOver`) ekranını yöneten HUD bileşeni.
 - `HealthUI.cs` : `PlayerHealth.OnHealthChanged` event'ini dinleyerek ekrandaki kalp ikonlarını (`_heartIcons`) ve can metnini (`_healthText`) güncelleyen HUD bileşeni.
+- `ComboUI.cs` : `ComboManager.Instance.OnComboUpdated` event'ini dinleyerek kombo çarpan metnini (`_comboText`), ölçek sıçrama animasyonunu ve süre çubuğunu (`_comboTimerFill`) güncelleyen HUD bileşeni.
 
 ### 4. Editör Araçları (`Assets/_GameAssets/Scripts/Editor/`)
 - `CivCivAutoSetup.cs` : `Tools/CivCiv/` menüsü altında karakter, fizik, TPS/FPS Cinemachine kameraları (`Ctrl+Shift+K`), `SettingsUI` buton/referans hiyerarşisini (`Ctrl+Shift+U`) ve `DefaultPlayerStats` / `DashController` / `GameManager` / `GameplayHUD` bileşenlerini (`Ctrl+Shift+G`) sahnede otomatik kuran editör aracı.

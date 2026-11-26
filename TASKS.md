@@ -13,14 +13,6 @@
 
 ## Faz 7: Kombo, Çarpan ve Mıknatıs Sistemi (Score & Combo Mechanics)
 
-- [ ] **Görev 7.2: Kombo Arayüz Bileşeni (`ComboUI`)**
-  - **Dosya Yolu:** `Assets/_GameAssets/Scripts/UI/ComboUI.cs`
-  - **Sınıf Adı:** `ComboUI : MonoBehaviour`
-  - **Alanlar ve Metodlar:**
-    - `[SerializeField] private TMPro.TextMeshProUGUI _comboText;`
-    - `[SerializeField] private UnityEngine.UI.Image _comboTimerFill;`
-    - `private void UpdateComboView(int streak, int multiplier, float normalizedTime)` : `ComboManager.Instance.OnComboUpdated` event'ini dinler; çarpan > 1 ise `"x{multiplier} COMBO ({streak})"` metnini gösterir ve ölçek sıçrama (punch scale) efekti uygular.
-
 - [ ] **Görev 7.3: Altın Mıknatısı Alanı (`CoinMagnet`)**
   - **Dosya Yolu:** `Assets/_GameAssets/Scripts/Collectables/CoinMagnet.cs`
   - **Sınıf Adı:** `CoinMagnet : MonoBehaviour`
