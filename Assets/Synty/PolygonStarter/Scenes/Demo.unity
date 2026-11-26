@@ -28831,7 +28831,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3205359828049052056, guid: 0187b4beb65fade429f7addf253582a1, type: 3}
       propertyPath: _jumpForce
-      value: 5.5
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3205359828049052056, guid: 0187b4beb65fade429f7addf253582a1, type: 3}
+      propertyPath: _moveSpeed
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 3205359828049052056, guid: 0187b4beb65fade429f7addf253582a1, type: 3}
+      propertyPath: _playerStats
+      value: 
+      objectReference: {fileID: 11400000, guid: 3c5883762f6ba5c4a922c41e0324a334, type: 2}
+    - target: {fileID: 3205359828049052056, guid: 0187b4beb65fade429f7addf253582a1, type: 3}
+      propertyPath: _groundCheckDistance
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 3205359828049052056, guid: 0187b4beb65fade429f7addf253582a1, type: 3}
       propertyPath: _playerOrientationTransform
