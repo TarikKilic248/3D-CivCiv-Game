@@ -2,12 +2,17 @@
 
 | Kosu ID | Tarih (UTC) | Tamamlanan | Bloklanan | Sure (sn) | Bitis Nedeni |
 | --- | --- | --- | --- | --- | --- |
+| `run_20261126_193400` | `2026-11-26T19:34:00+00:00` | `2` | `0` | `959.93` | completed |
 | `run_20261126_185640` | `2026-11-26T18:56:40+00:00` | `3` | `0` | `887.3` | completed |
 | `run_20261126_185001` | `2026-11-26T18:50:01+00:00` | `1` | `0` | `310.3` | completed |
 | `run_20261126_175609` | `2026-11-26T17:56:09+00:00` | `2` | `1` | `2122.07` | completed |
 | `run_20261126_174353` | `2026-11-26T17:43:53+00:00` | `1` | `1` | `294.58` | queue_drained |
 
 ## Son Kosu Detaylari
+
+### Kosu `run_20261126_193400` (2026-11-26T19:34:00+00:00)
+- **T007A** — Merkezi UI Tasarım Sistemi (UIThemeSO & UIStyleHelper) ve GameplayHUD Stil Yenilemesi: **DONE** (`dfbebdc`) [479.15s | modeller: `gemini-3.8-flash-medium, gemini-4-neon-medium`]
+- **T007B** — Karakter Yetenek Cilası: Süzülme, Çift Zıplama ve Dash Hibrit Animasyon/VFX/SFX: **DONE** (`ea0f0e4`) [480.78s | modeller: `gemini-3.8-flash-medium, gemini-4-neon-medium`]
 
 ### Kosu `run_20261126_185640` (2026-11-26T18:56:40+00:00)
 - **T005** — Gelişmiş Altın Geri Bildirimi ve Güçlendirici Sistemi (CoinCollect & PowerUpCollectable): **DONE** (`cef8f19`) [318.4s | modeller: `gemini-3.8-flash-medium, gemini-4-neon-medium`]
