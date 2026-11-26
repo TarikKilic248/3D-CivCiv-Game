@@ -35,6 +35,10 @@ public class ChickGlideController : MonoBehaviour
     private int _remainingAirJumps = 1;
     private bool _isGliding = false;
 
+    // Olaylar (Events)
+    public event Action OnAirJumpExecuted;
+    public event Action<bool> OnGlideStateChanged;
+
     // Public Ozellikler (Properties)
     public bool IsGliding => _isGliding;
     public int RemainingAirJumps => _remainingAirJumps;
@@ -247,6 +251,8 @@ public class ChickGlideController : MonoBehaviour
             _stateController.ChangeState(PlayerState.Jump);
         }
 
+        OnAirJumpExecuted?.Invoke();
+
         return true;
     }
 
@@ -272,6 +278,8 @@ public class ChickGlideController : MonoBehaviour
             _stateController.ChangeState(PlayerState.Glide);
         }
 
+        OnGlideStateChanged?.Invoke(true);
+
         return true;
     }
 
@@ -288,6 +296,8 @@ public class ChickGlideController : MonoBehaviour
                 : PlayerState.Jump;
             _stateController.ChangeState(returnState);
         }
+
+        OnGlideStateChanged?.Invoke(false);
     }
 
     public void ResetAirJumps()

@@ -52,6 +52,8 @@ public class DashController : MonoBehaviour
 
     // Olaylar (Events)
     public event Action<float, float> OnStaminaChanged;
+    public event Action OnDashStarted;
+    public event Action OnDashEnded;
 
     // Public Özellikler (Properties)
     public bool IsDashing => _isDashing;
@@ -281,6 +283,8 @@ public class DashController : MonoBehaviour
             }
         }
 
+        OnDashStarted?.Invoke();
+
         return true;
     }
 
@@ -303,6 +307,8 @@ public class DashController : MonoBehaviour
                 : PlayerState.Jump;
             _stateController.ChangeState(returnState);
         }
+
+        OnDashEnded?.Invoke();
     }
 
     public void ResetStamina()
