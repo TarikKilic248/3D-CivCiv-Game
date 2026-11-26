@@ -26,6 +26,7 @@
 - `Data/PlayerStatsSO.cs` : Karakterin hareket, zıplama, kayma (slide), ileri atılma (dash) ve stamina parametrelerini tutan `ScriptableObject` veri sınıfı.
 - `DashController.cs` : Karakterin ileri atılma (`Dash`) yeteneğini, bekleme süresini (cooldown) ve enerji (`Stamina`) tüketim/yenilenme döngüsünü yöneten bileşen.
 - `Player/ChickGlideController.cs` : Karakterin havada çift zıplama (`ExecuteAirJump`) ve kanat çırparak süzülme (`IsGliding`, `ApplyGlidePhysics`) mekaniklerini yöneten bileşen.
+- `Player/ChickPeckAttack.cs` : Karakterin yakın mesafe gaga saldırısı (`PerformPeck`) ve havadan yere sert çakılma (`StartGroundPound`, `OnGroundPoundImpact`) yeteneklerini yöneten bileşen.
 - `Core/GameManager.cs` : Oyun döngüsünü (`GameState`), zafer/yenilgi koşullarını ve bölüm yeniden başlatma akışını yöneten merkezi Singleton sınıfı.
 - `Core/IDamageable.cs` : Hasar alabilen karakter, düşman ve kırılabilir nesneler için ortak arayüz (`TakeDamage`, `IsAlive`).
 - `Collectables/PowerUpCollectable.cs` : Ekstra süre (`ExtraTime`), hız artışı (`SpeedBoost`) ve enerji yenileme (`StaminaRefill`) sağlayan toplanabilir güçlendirici bileşeni.

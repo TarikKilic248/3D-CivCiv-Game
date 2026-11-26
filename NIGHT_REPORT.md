@@ -13,3 +13,4 @@
 - **Görev 4.2: `CivCivAutoSetup` Editör Aracının Yeni Sistemlerle Güncellenmesi** tamamlandı (`Assets/_GameAssets/Scripts/Editor/CivCivAutoSetup.cs`, `ARCHITECTURE.md`, `TASKS.md`).
 - **Görev 5.1: Çift Zıplama ve Kanat Çırparak Süzülme (`ChickGlideController`)** tamamlandı (`Assets/_GameAssets/Scripts/Player/ChickGlideController.cs`, `ARCHITECTURE.md`, `TASKS.md`).
 - **Görev 6.1: Hasar Alabilirlik Arayüzü (`IDamageable`)** tamamlandı (`Assets/_GameAssets/Scripts/Core/IDamageable.cs`, `ARCHITECTURE.md`, `TASKS.md`).
+- **Görev 5.2: Gaga Vuruşu ve Yere Çakılma (`ChickPeckAttack`)** tamamlandı (`Assets/_GameAssets/Scripts/Player/ChickPeckAttack.cs`, `ARCHITECTURE.md`, `TASKS.md`).

@@ -11,22 +11,6 @@
 
 ---
 
-## Faz 5: Gelişmiş CivCiv Hareket Mekanikleri (Kanat Çırpma, Süzülme & Gaga Hamlesi)
-
-- [ ] **Görev 5.2: Gaga Vuruşu ve Yere Çakılma (`ChickPeckAttack`)**
-  - **Dosya Yolu:** `Assets/_GameAssets/Scripts/Player/ChickPeckAttack.cs`
-  - **Sınıf Adı:** `ChickPeckAttack : MonoBehaviour`
-  - **Alanlar ve Eventler:**
-    - `[SerializeField] private float _peckRange = 1.8f;`, `[SerializeField] private float _peckRadius = 0.8f;`, `[SerializeField] private int _peckDamage = 1;`
-    - `[SerializeField] private float _groundPoundForce = 25f;`
-    - `public event System.Action OnPeckPerformed;`
-    - `public event System.Action<Vector3> OnGroundPoundImpact;`
-  - **Metodlar:**
-    - `public void PerformPeck()` : Sol fare tuşu veya `F` tuşu ile karakterin önünde `Physics.OverlapSphere` taraması yapar, `IDamageable` veya kırılabilir nesnelere (`BreakableCrate`) hasar verir.
-    - `public void StartGroundPound()` : Havadayken `LeftControl` tuşuna basıldığında yatay hızı sıfırlayıp aşağı yönlü `Vector3.down * _groundPoundForce` (`ForceMode.VelocityChange`) uygular; yere değdiği anda `OnGroundPoundImpact` tetikler.
-
----
-
 ## Faz 6: Can, Hasar ve Savunma Sistemi (Health & Damage Architecture)
 
 - [ ] **Görev 6.2: Oyuncu Can, Dokunulmazlık ve Geri Tepme Bileşeni (`PlayerHealth`)**
