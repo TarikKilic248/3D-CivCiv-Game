@@ -1,5 +1,5 @@
 # Compact Project Code Index (Auto-Generated, 0 Tokens)
-Indexed files: `21`
+Indexed files: `23`
 
 - `Assets/_GameAssets/Scripts/Core/GameManager.cs` (175L): types: class GameManager: MonoBehaviour | events: OnGameStateChanged | api: CountTargetCoinsInScene(), SubscribeEvents(), SubscribeToCoinManager(CoinManager cm), SubscribeToClock(ClockUI clock), SetState(GameState newState), TriggerVictory(), TriggerGameOver(), RestartLevel() | fields: currentState, targetCoins, autoDetectTargetCoins
 - `Assets/_GameAssets/Scripts/Data/PlayerStatsSO.cs` (116L): types: class PlayerStatsSO: ScriptableObject
@@ -8,6 +8,7 @@ Indexed files: `21`
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T001.cs` (543L): types: class Check_T001 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T002.cs` (163L): types: class Check_T002 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T003.cs` (322L): types: class Check_T003 | api: Run()
+- `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T004.cs` (163L): types: class Check_T004 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/CivCivAutoSetup.cs` (265L): types: class CivCivAutoSetup | api: SetupAll(), SetupSettingsUI()
 - `Assets/_GameAssets/Scripts/Enums/GameState.cs` (8L): types: enum GameState
 - `Assets/_GameAssets/Scripts/Enums/PlayerState.cs` (17L): types: enum PlayerState
@@ -21,4 +22,5 @@ Indexed files: `21`
 - `Assets/_GameAssets/Scripts/UI/CoinCollect.cs` (28L): types: class CoinCollect: MonoBehaviour, ICollectable | api: Collect() | fields: value
 - `Assets/_GameAssets/Scripts/UI/CoinManager.cs` (85L): types: class CoinManager: MonoBehaviour | events: CoinsChanged, CoinsCollected, HighScoreChanged | api: LoadHighScore(), AddCoins(int amount), ResetCoins(), ResetHighScore()
 - `Assets/_GameAssets/Scripts/UI/CoinUI.cs` (69L): types: class CoinUI: MonoBehaviour | fields: coinValueText
+- `Assets/_GameAssets/Scripts/UI/GameplayHUD.cs` (286L): types: class GameplayHUD: MonoBehaviour | api: SubscribeEvents(), UnsubscribeEvents(), UpdateStaminaBar(float currentStamina, float maxStamina), HandleGameStateChanged(GameState state), OnRestartButtonClicked(), AutoResolveReferences() | fields: _staminaSlider, _staminaFillImage, _staminaText, _endGamePanel, _titleText, _scoreText, _highScoreText, _restartButton, _dashController, _gameManager
 - `Assets/_GameAssets/Scripts/UI/SettingsUI.cs` (848L): types: class SettingsUI: MonoBehaviour | events: OnMusicToggled, OnSoundToggled, OnMenuStateChanged | api: ToggleSettings(), OpenSettings(), CloseSettings(), ToggleMusic(), ToggleSound(), RestartGame(), QuitGame(), PlayClickSound(), PlaySFX(AudioClip clip, float volume = 1f), AutoResolveReferences() | fields: _settingsButton, _popUpPanel, _closeButton, _musicButton, _soundButton, _restartButton, _quitButton, _musicImage, _soundImage, _activeColor

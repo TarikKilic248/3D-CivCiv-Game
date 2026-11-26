@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-26T18:34:19+00:00",
+  "updated_at": "2026-11-26T18:55:13+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -112,7 +112,7 @@
         "Check_T004 stamina değişiminde Slider değerinin güncellendiğini ve TriggerVictory/TriggerGameOver sonrası panelin aktif olup skor metninin dolduğunu doğrular.",
         "Görsel kontrolde HUD mevcut Clock/Coin/Settings öğeleriyle çakışmadan temiz görünür."
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [
         "T002",
         "T003"
@@ -130,11 +130,11 @@
       "tier": "fast",
       "visual_check": true,
       "verify_check": "T004",
-      "retries": 0,
+      "retries": 1,
       "last_error": "",
-      "commit_sha": "",
+      "commit_sha": "ee6f253",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T18:34:19+00:00"
+      "updated_at": "2026-11-26T18:55:13+00:00"
     },
     {
       "id": "T005",
