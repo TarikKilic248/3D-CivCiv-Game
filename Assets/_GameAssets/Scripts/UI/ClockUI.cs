@@ -1,21 +1,33 @@
+using System;
 using UnityEngine;
 using TMPro;
 
 public class ClockUI : MonoBehaviour
 {
+    public static ClockUI Instance { get; private set; }
+
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private RectTransform stick;
     [SerializeField] private float startingSeconds = 60f;
     [SerializeField] private float secondsAddedPerCoinValue = 5f;
     [SerializeField] private float stickMoveSpeed = 12f;
 
+    public event Action OnTimerExpired;
+
     private float remainingSeconds;
     private float currentStickAngle;
     private bool isSubscribed;
+    private bool hasExpired;
+
+    public float RemainingSeconds => remainingSeconds;
+    public float StartingSeconds => startingSeconds;
+    public bool HasExpired => hasExpired;
 
     private void Awake()
     {
+        Instance = this;
         remainingSeconds = startingSeconds;
+        hasExpired = false;
 
         if (timerText == null)
             timerText = GetComponentInChildren<TextMeshProUGUI>(true);
@@ -30,6 +42,17 @@ public class ClockUI : MonoBehaviour
         currentStickAngle = GetTargetAngle();
         if (stick != null)
             stick.localRotation = Quaternion.Euler(0f, 0f, currentStickAngle);
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.SubscribeToClock(this);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 
     private void OnEnable()
@@ -54,9 +77,47 @@ public class ClockUI : MonoBehaviour
 
     private void Update()
     {
-        if (remainingSeconds > 0f)
-            remainingSeconds = Mathf.Max(0f, remainingSeconds - Time.deltaTime);
+        Tick(Time.deltaTime);
+    }
 
+    public void Tick(float deltaTime)
+    {
+        if (remainingSeconds > 0f)
+        {
+            remainingSeconds = Mathf.Max(0f, remainingSeconds - deltaTime);
+            if (remainingSeconds <= 0f && !hasExpired)
+            {
+                hasExpired = true;
+                OnTimerExpired?.Invoke();
+            }
+        }
+
+        UpdateTimerUI();
+    }
+
+    public void AddBonusTime(float seconds)
+    {
+        if (seconds <= 0f) return;
+        remainingSeconds += seconds;
+        if (remainingSeconds > 0f)
+        {
+            hasExpired = false;
+        }
+        UpdateTimerUI();
+    }
+
+    public void SetRemainingSeconds(float seconds)
+    {
+        remainingSeconds = Mathf.Max(0f, seconds);
+        if (remainingSeconds <= 0f && !hasExpired)
+        {
+            hasExpired = true;
+            OnTimerExpired?.Invoke();
+        }
+        else if (remainingSeconds > 0f)
+        {
+            hasExpired = false;
+        }
         UpdateTimerUI();
     }
 
@@ -72,8 +133,7 @@ public class ClockUI : MonoBehaviour
 
     private void AddCoinTime(int coinValue)
     {
-        remainingSeconds += coinValue * secondsAddedPerCoinValue;
-        UpdateTimerUI();
+        AddBonusTime(coinValue * secondsAddedPerCoinValue);
     }
 
     private void UpdateTimerUI()
