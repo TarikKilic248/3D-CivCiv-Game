@@ -1,6 +1,6 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `4` | Sirada: `3` (Calismaya Hazir: `2`) | Tamamlanan: `13` | Bloklanan: `2`
+- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `4` | Sirada: `2` (Calismaya Hazir: `1`) | Tamamlanan: `14` | Bloklanan: `2`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
@@ -13,7 +13,6 @@
 ## Siradaki Gorevler (`pending`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
-| `T014` | Devriye Düşman Yapay Zekası (EnemyStatsSO & PatrolEnemyAI) | T008, T012 | `fast` | - | Hazir |
 | `T015` | Etkileşim Sistemi ve Basınç Plakası Bulmacası (IInteractable, PlayerInteractor & PressurePlateSwitch) | T001 | `fast` | - | Hazir |
 | `T016` | Kayıp CivCiv Kurtarma Görevi ve Hedef Pusulası (LostChickNPC, ChickRescueManager & WaypointIndicatorUI) | T015, T007A | `fast` | Evet | Bagimlilik bekliyor |
 
@@ -39,3 +38,4 @@
 | `T010` | Kombo Çarpanı (ComboManager & ComboUI) ve Altın Mıknatısı (CoinMagnet) | T002, T005, T008, T007A | `fast` | Evet | Commit `fcdb050` |
 | `T012` | CivCiv Gaga Saldırısı ve Havadan Yere Çakılma (ChickPeckAttack) | T001, T008 | `fast` | - | Commit `0e42997` |
 | `T013` | Kırılabilir Sandık ve Ganimet Sistemi (LootTableSO & BreakableCrate) | T005, T012 | `fast` | - | Commit `030af2b` |
+| `T014` | Devriye Düşman Yapay Zekası (EnemyStatsSO & PatrolEnemyAI) | T008, T012 | `fast` | - | Commit `7c028e0` |

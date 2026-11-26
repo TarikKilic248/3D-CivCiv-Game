@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-26T21:36:43+00:00",
+  "updated_at": "2026-11-26T21:41:53+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -525,7 +525,7 @@
         "Check_T014 devriye hareketini, menzilde Chase geçişini, yandan hasarı ve üstten/saldırıyla yenilmeyi doğrular.",
         "Mekanik tetiklendiğinde görsel/prosedürel geri bildirim veya ParticleSystem efekti ve SFX kancası çalışır."
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [
         "T008",
         "T012"
@@ -543,11 +543,11 @@
       "tier": "fast",
       "visual_check": false,
       "verify_check": "T014",
-      "retries": 0,
+      "retries": 1,
       "last_error": "",
-      "commit_sha": "",
+      "commit_sha": "7c028e0",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T21:36:43+00:00"
+      "updated_at": "2026-11-26T21:41:53+00:00"
     },
     {
       "id": "T015",
