@@ -1,6 +1,6 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 20** | Taslak (Onay Bekleyen): `10` | Sirada: `4` (Calismaya Hazir: `2`) | Tamamlanan: `6` | Bloklanan: `0`
+- Ozet: **Toplam 20** | Taslak (Onay Bekleyen): `10` | Sirada: `3` (Calismaya Hazir: `1`) | Tamamlanan: `7` | Bloklanan: `0`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
@@ -19,7 +19,6 @@
 ## Siradaki Gorevler (`pending`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
-| `T007` | Çift Zıplama ve Kanatla Süzülme (ChickGlideController) | T001 | `fast` | - | Hazir |
 | `T008` | Hasar Arayüzü ve Oyuncu Can Sistemi (IDamageable & PlayerHealth) | T001, T002 | `fast` | - | Hazir |
 | `T009` | Kalp ve Can Göstergesi HUD Bileşeni (HealthUI) | T008 | `fast` | Evet | Bagimlilik bekliyor |
 | `T010` | Kombo Çarpanı (ComboManager & ComboUI) ve Altın Mıknatısı (CoinMagnet) | T002, T005, T008 | `fast` | Evet | Bagimlilik bekliyor |
@@ -36,3 +35,4 @@ _Yok._
 | `T004` | Oyun İçi Enerji Çubuğu ve Oyun Sonu Ekranı (GameplayHUD) | T002, T003 | `fast` | Evet | Commit `ee6f253` |
 | `T005` | Gelişmiş Altın Geri Bildirimi ve Güçlendirici Sistemi (CoinCollect & PowerUpCollectable) | T001, T002, T003 | `fast` | - | Commit `cef8f19` |
 | `T006` | Kontrol Noktası ve Tehlike/Düşme Alanları (Checkpoint & HazardZone) | T001, T002 | `fast` | - | Commit `1e11fcd` |
+| `T007` | Çift Zıplama ve Kanatla Süzülme (ChickGlideController) | T001 | `fast` | - | Commit `fb739cd` |
