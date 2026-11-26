@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-26T19:50:02+00:00",
+  "updated_at": "2026-11-26T21:04:41+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -319,7 +319,7 @@
         "Check_T008 hasar, i-frame engeli, iyileşme ve ölümde GameOver geçişini doğrular.",
         "Mekanik tetiklendiğinde görsel/prosedürel geri bildirim veya ParticleSystem efekti ve SFX kancası çalışır."
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [
         "T001",
         "T002"
@@ -338,9 +338,9 @@
       "verify_check": "T008",
       "retries": 0,
       "last_error": "",
-      "commit_sha": "",
+      "commit_sha": "0915a10",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T18:56:40+00:00"
+      "updated_at": "2026-11-26T21:04:41+00:00"
     },
     {
       "id": "T009",

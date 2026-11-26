@@ -1,8 +1,9 @@
 # Compact Project Code Index (Auto-Generated, 0 Tokens)
-Indexed files: `35`
+Indexed files: `38`
 
 - `Assets/_GameAssets/Scripts/Collectables/PowerUpCollectable.cs` (236L): types: enum PowerUpType, class PowerUpCollectable: MonoBehaviour, ICollectable | api: UpdateMotion(float deltaTime), Collect(), Collect(PlayerController player), ApplyPowerUp(PlayerController player) | fields: powerUpType, extraTimeAmount, speedMultiplier, speedBoostDuration, staminaRefillAmount, rotateSpeed, bobAmplitude, bobFrequency, shrinkDuration, collectSound
 - `Assets/_GameAssets/Scripts/Core/GameManager.cs` (175L): types: class GameManager: MonoBehaviour | events: OnGameStateChanged | api: CountTargetCoinsInScene(), SubscribeEvents(), SubscribeToCoinManager(CoinManager cm), SubscribeToClock(ClockUI clock), SetState(GameState newState), TriggerVictory(), TriggerGameOver(), RestartLevel() | fields: currentState, targetCoins, autoDetectTargetCoins
+- `Assets/_GameAssets/Scripts/Core/IDamageable.cs` (14L): types: interface IDamageable
 - `Assets/_GameAssets/Scripts/Data/PlayerStatsSO.cs` (116L): types: class PlayerStatsSO: ScriptableObject
 - `Assets/_GameAssets/Scripts/Data/UIThemeSO.cs` (86L): types: class UIThemeSO: ScriptableObject
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/AutoDevBridge.cs` (304L): types: class AutoDevBridge, class BridgeCommand, class BridgeResult | api: RunFromCommandLine()
@@ -16,6 +17,7 @@ Indexed files: `35`
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T007.cs` (172L): types: class Check_T007 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T007A.cs` (149L): types: class Check_T007A | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T007B.cs` (158L): types: class Check_T007B | api: Run()
+- `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T008.cs` (171L): types: class Check_T008 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/CivCivAutoSetup.cs` (265L): types: class CivCivAutoSetup | api: SetupAll(), SetupSettingsUI()
 - `Assets/_GameAssets/Scripts/Enums/GameState.cs` (8L): types: enum GameState
 - `Assets/_GameAssets/Scripts/Enums/PlayerState.cs` (19L): types: enum PlayerState
@@ -25,6 +27,7 @@ Indexed files: `35`
 - `Assets/_GameAssets/Scripts/Player/ChickGlideController.cs` (308L): types: class ChickGlideController: MonoBehaviour | events: OnAirJumpExecuted, OnGlideStateChanged | api: ResolveDependencies(), Step(float deltaTime), ExecuteAirJump(), StartGlide(), StopGlide(), ResetAirJumps() | fields: _playerStats, _maxAirJumps, _airJumpForce, _maxGlideFallSpeed, _glideKey
 - `Assets/_GameAssets/Scripts/Player/DashController.cs` (368L): types: class DashController: MonoBehaviour | events: OnStaminaChanged, OnDashStarted, OnDashEnded | api: ApplyStatsFromSO(PlayerStatsSO stats), SyncFieldsFromSO(PlayerStatsSO stats), Step(float deltaTime), ExecuteDash(), EndDash(), ResetStamina(), SetStamina(float amount) | fields: _playerStats, _dashSpeed, _dashDuration, _dashCooldown, _dashKey, _maxStamina, _dashStaminaCost, _staminaRegenRate, _staminaRegenDelay
 - `Assets/_GameAssets/Scripts/Player/PlayerAbilityFeedback.cs` (679L): types: class PlayerAbilityFeedback: MonoBehaviour | api: ResolveDependencies(), SubscribeEvents(), UnsubscribeEvents(), EnsureVFXSetup(), StepFeedback(float deltaTime), ResetVisualPoseImmediate() | fields: _dashController, _glideController, _playerController, _animator, _visualRoot, _dashTrail, _dashBurstVFX, _airJumpRingVFX, _glideFeatherVFX, _dashSfx
+- `Assets/_GameAssets/Scripts/Player/PlayerHealth.cs` (557L): types: class PlayerHealth: MonoBehaviour, IDamageable | events: OnHealthChanged, OnDied | api: ResolveDependencies(), SetInvincible(bool invincible), TakeDamage(int damage), TakeDamage(int damage, Vector3 hitDirection), TakeDamage(float damage), TakeDamage(float damage, Vector3 hitDirection), Heal(int amount), Heal(float amount), ResetHealth(), StepFeedback(float deltaTime) | fields: _maxHealth, _currentHealth, _invincibilityDuration, _knockbackForce, _knockbackDuration, _hurtParticles, _healParticles, _visualRoot, _hurtTiltAngle, _hurtSquashFactor
 - `Assets/_GameAssets/Scripts/PlayerController.cs` (922L): types: class PlayerController: MonoBehaviour | api: ApplyStatsFromSO(PlayerStatsSO stats), SetSpeedMultiplier(float multiplier), SetExternalMovementOverride(bool isOverridden), GetRigidbody(), IsInputBlocked(), RefreshGroundState(), StepTimers(float deltaTime), ProcessInputs(float horizontal, float vertical, boo...), SetMovementReference(Transform movementReference) | fields: _playerStats, _playerOrientationTransform, _moveSpeed, _maxSpeed, _groundDrag, _airDrag, _airMultiplier, _jumpForce, _jumpCooldown, _coyoteTime
 - `Assets/_GameAssets/Scripts/StateController.cs` (25L): types: class StateController: MonoBehaviour | api: ChangeState(PlayerState newState), GetCurrentState()
 - `Assets/_GameAssets/Scripts/TargetJump.cs` (42L): types: class TargetJump: MonoBehaviour | api: LaunchRigidbody(Rigidbody playerRigidbody) | fields: jumpForce, jumpHeight
