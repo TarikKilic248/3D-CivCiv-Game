@@ -1,6 +1,6 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 20** | Taslak (Onay Bekleyen): `16` | Sirada: `1` (Calismaya Hazir: `1`) | Tamamlanan: `3` | Bloklanan: `0`
+- Ozet: **Toplam 20** | Taslak (Onay Bekleyen): `16` | Sirada: `0` (Calismaya Hazir: `0`) | Tamamlanan: `3` | Bloklanan: `1`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
@@ -23,12 +23,12 @@
 | `T020` | Dinamik Gece/Gündüz Döngüsü, Başarım Sistemi ve Bütünlük Doğrulayıcı | T017 | `smart` | Evet | `approve` bekliyor |
 
 ## Siradaki Gorevler (`pending`)
-| ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
-| --- | --- | --- | --- | --- | --- |
-| `T004` | Oyun İçi Enerji Çubuğu ve Oyun Sonu Ekranı (GameplayHUD) | T002, T003 | `fast` | Evet | Hazir |
+_Yok._
 
 ## Bloklanan Gorevler (`blocked`)
-_Yok._
+| ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
+| --- | --- | --- | --- | --- | --- |
+| `T004` | Oyun İçi Enerji Çubuğu ve Oyun Sonu Ekranı (GameplayHUD) | T002, T003 | `fast` | Evet | Deneme: 2 — visual_check: Gorsel dogrulama modeli calistirilamadi. |
 
 ## Tamamlanan Gorevler (`done`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
