@@ -26,3 +26,6 @@ Assets/_GameAssets/
 *.unity
 *.prefab
 *.meta
+
+!TestScreenshots/
+!TestScreenshots/*.png
