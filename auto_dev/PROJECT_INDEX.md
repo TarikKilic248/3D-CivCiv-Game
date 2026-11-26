@@ -1,8 +1,8 @@
 # Compact Project Code Index (Auto-Generated, 0 Tokens)
 Indexed files: `14`
 
-- `Assets/_GameAssets/Scripts/Editor/AutoDev/AutoDevBridge.cs` (281L): types: class AutoDevBridge, class BridgeCommand, class BridgeResult | api: RunFromCommandLine()
-- `Assets/_GameAssets/Scripts/Editor/AutoDev/AutoDevVerifier.cs` (298L): types: class AutoDevCheckAttribute: Attribute, struct AutoDevCheckResult, class AutoDevVerifier | api: Pass(string summary, string details = "", ...), Fail(string summary, string details = ""), EnsureSceneOpen(string scenePath), SaveActiveScene(), ReloadCleanScene(string scenePath), InvokeLifecycle(MonoBehaviour target, string methodName), SimulatePhysicsSteps(int steps, float fixedDeltaTime, Acti...), RunCheck(string checkId, string scenePath), RunSmokeCheck(), ExportSceneHierarchySnapshot(string outputPath)
+- `Assets/_GameAssets/Scripts/Editor/AutoDev/AutoDevBridge.cs` (282L): types: class AutoDevBridge, class BridgeCommand, class BridgeResult | api: RunFromCommandLine()
+- `Assets/_GameAssets/Scripts/Editor/AutoDev/AutoDevVerifier.cs` (296L): types: class AutoDevCheckAttribute: Attribute, struct AutoDevCheckResult, class AutoDevVerifier | api: Pass(string summary, string details = "", ...), Fail(string summary, string details = ""), EnsureSceneOpen(string scenePath), SaveActiveScene(), ReloadCleanScene(string scenePath), InvokeLifecycle(MonoBehaviour target, string methodName), SimulatePhysicsSteps(int steps, float fixedDeltaTime, Acti...), RunCheck(string checkId, string scenePath), RunSmokeCheck(), ExportSceneHierarchySnapshot(string outputPath)
 - `Assets/_GameAssets/Scripts/Editor/CivCivAutoSetup.cs` (265L): types: class CivCivAutoSetup | api: SetupAll(), SetupSettingsUI()
 - `Assets/_GameAssets/Scripts/Enums/PlayerState.cs` (15L): types: enum PlayerState
 - `Assets/_GameAssets/Scripts/ICollectable.cs` (5L): types: interface ICollectable

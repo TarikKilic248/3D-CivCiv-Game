@@ -97,31 +97,35 @@ class UnityAdapter(ProjectAdapter):
         self.cmd_file.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
         if self.is_unity_editor_open():
+            print(f"[AutoDev/Unity] Acik Editor koprusune gonderiliyor: {action} {arg}".strip(), flush=True)
             return self._wait_live_editor(cmd_id)
+        print(f"[AutoDev/Unity] Unity kapali — batchmode baslatiliyor: {action} {arg}".strip(), flush=True)
         return self._run_batchmode(cmd_id, needs_graphics=needs_graphics)
 
     def _wait_live_editor(self, cmd_id: str) -> tuple[bool, dict]:
         deadline = time.monotonic() + self.bridge_timeout_sec
+        last_parse_err = ""
         while time.monotonic() < deadline:
             if self.result_file.exists():
                 try:
-                    data = json.loads(self.result_file.read_text(encoding="utf-8"))
+                    data = json.loads(self.result_file.read_text(encoding="utf-8-sig"))
                     if data.get("id") == cmd_id:
                         return bool(data.get("passed", False)), data
-                except (json.JSONDecodeError, OSError):
-                    pass
-            time.sleep(0.5)
+                except (json.JSONDecodeError, OSError) as exc:
+                    last_parse_err = str(exc)
+            time.sleep(0.35)
 
         try:
             self.cmd_file.unlink(missing_ok=True)
         except OSError:
             pass
+        extra = f" Son okuma hatasi: {last_parse_err}" if last_parse_err else ""
         return False, {
             "passed": False,
             "summary": f"Unity acik koprusu {self.bridge_timeout_sec}s icinde yanit vermedi.",
             "details": (
                 "Unity Editor acik gorunuyor ancak AutoDevBridge.cs henuz derlenmemis veya "
-                "Editor odak/modal bir pencerede takili olabilir."
+                f"Editor odak/modal bir pencerede takili olabilir.{extra}"
             ),
         }
 
@@ -167,7 +171,7 @@ class UnityAdapter(ProjectAdapter):
 
         if self.result_file.exists():
             try:
-                data = json.loads(self.result_file.read_text(encoding="utf-8"))
+                data = json.loads(self.result_file.read_text(encoding="utf-8-sig"))
                 if data.get("id") == cmd_id:
                     return bool(data.get("passed", False)), data
             except (json.JSONDecodeError, OSError):

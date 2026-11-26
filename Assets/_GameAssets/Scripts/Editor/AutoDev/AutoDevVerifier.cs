@@ -222,8 +222,7 @@ public static class AutoDevVerifier
             sb.AppendLine("[Player] NOT FOUND");
         }
 
-        Canvas[] canvases = UnityEngine.Object.FindObjectsByType<Canvas>(
-            FindObjectsInactive.Include, FindObjectsSortMode.None);
+        Canvas[] canvases = UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsInactive.Include);
         foreach (Canvas c in canvases)
         {
             sb.Append($"[Canvas] '{c.gameObject.name}' children: ");
@@ -236,15 +235,14 @@ public static class AutoDevVerifier
             sb.AppendLine();
         }
 
-        CoinCollect[] coins = UnityEngine.Object.FindObjectsByType<CoinCollect>(
-            FindObjectsInactive.Include, FindObjectsSortMode.None);
+        CoinCollect[] coins = UnityEngine.Object.FindObjectsByType<CoinCollect>(FindObjectsInactive.Include);
         sb.AppendLine($"[Collectables] CoinCollect: {(coins != null ? coins.Length : 0)}");
 
         Camera mainCam = Camera.main ?? UnityEngine.Object.FindAnyObjectByType<Camera>();
         sb.AppendLine($"[Camera] {(mainCam != null ? mainCam.gameObject.name : "NONE")}");
 
         string content = sb.ToString();
-        File.WriteAllText(outputPath, content, Encoding.UTF8);
+        File.WriteAllText(outputPath, content, new UTF8Encoding(false));
         return content;
     }
 

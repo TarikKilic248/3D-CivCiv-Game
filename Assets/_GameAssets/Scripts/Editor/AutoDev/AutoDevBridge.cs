@@ -15,6 +15,7 @@ public static class AutoDevBridge
     public const string DefaultSnapshotPath = ".autodev/scene_hierarchy.txt";
 
     private static readonly List<string> CompileErrors = new List<string>();
+    private static readonly Encoding Utf8NoBom = new UTF8Encoding(false);
     private static double _nextPollTime;
 
     [Serializable]
@@ -119,7 +120,7 @@ public static class AutoDevBridge
             cmd.phase = "REFRESHED";
             try
             {
-                File.WriteAllText(CmdFilePath, JsonUtility.ToJson(cmd, true), Encoding.UTF8);
+                File.WriteAllText(CmdFilePath, JsonUtility.ToJson(cmd, true), Utf8NoBom);
                 AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
             }
             catch (Exception ex)
@@ -269,7 +270,7 @@ public static class AutoDevBridge
         };
         string json = JsonUtility.ToJson(result, true);
         string tmp = ResultFilePath + ".tmp";
-        File.WriteAllText(tmp, json, Encoding.UTF8);
+        File.WriteAllText(tmp, json, Utf8NoBom);
         if (File.Exists(ResultFilePath))
         {
             File.Delete(ResultFilePath);

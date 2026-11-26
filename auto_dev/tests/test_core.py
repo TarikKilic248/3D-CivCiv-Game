@@ -13,6 +13,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from auto_dev.adapters.generic import GenericAdapter
+from auto_dev.adapters.unity import UnityAdapter
 from auto_dev.core.config import AutoDevConfig
 from auto_dev.core.git_ops import GitError, GitOps
 from auto_dev.core.indexer import CodeIndexer
@@ -269,6 +270,20 @@ class TestAutoDevCore(unittest.TestCase):
             self.assertNotIn("return 0", final_code)
             self.assertTrue((root / "auto_dev" / "RUN_REPORT.md").exists())
             self.assertEqual(res["stop_reason"], "queue_drained")
+
+    def test_unity_adapter_reads_utf8_bom_result(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            cfg = AutoDevConfig.load(repo_root=root)
+            cfg.adapter = {"type": "unity", "bridge_timeout_sec": 3}
+            adapter = UnityAdapter(cfg)
+            cfg.runtime_dir.mkdir(parents=True, exist_ok=True)
+            payload = json.dumps({"id": "abc123", "passed": True, "summary": "OK", "details": ""})
+            # Write with UTF-8 BOM to guarantee utf-8-sig decoding works
+            adapter.result_file.write_bytes(b"\xef\xbb\xbf" + payload.encode("utf-8"))
+            passed, data = adapter._wait_live_editor("abc123")
+            self.assertTrue(passed)
+            self.assertEqual(data["summary"], "OK")
 
 
 if __name__ == "__main__":
