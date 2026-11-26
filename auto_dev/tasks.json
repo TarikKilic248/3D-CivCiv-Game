@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-26T21:56:39+00:00",
+  "updated_at": "2026-11-26T21:56:40+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -627,7 +627,7 @@
         "LevelProgressionManager toplanan altın ve kalan süreye göre 0-3 arası yıldız hesaplayıp SaveManager üzerinden kalıcı kaydeder.",
         "Check_T017 geçici bir JSON yoluna kayıt/okuma döngüsünü ve 1/2/3 yıldız eşik hesabını sayısal doğrular."
       ],
-      "status": "draft",
+      "status": "pending",
       "depends_on": [
         "T002",
         "T016"
@@ -650,7 +650,7 @@
       "last_error": "",
       "commit_sha": "",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T16:00:00+00:00"
+      "updated_at": "2026-11-26T21:56:40+00:00"
     },
     {
       "id": "T018",
@@ -661,7 +661,7 @@
         "PlayerVFXController Dash/Jump/Land olaylarına bağlanıp efekt tetikler ve eksik prefab durumunda hata fırlatmaz.",
         "Check_T018 havuzdan nesne alma-iade etme yeniden kullanımını ve PlayerVFXController tetikleme sayacını doğrular."
       ],
-      "status": "draft",
+      "status": "pending",
       "depends_on": [
         "T003",
         "T007"
@@ -683,7 +683,7 @@
       "last_error": "",
       "commit_sha": "",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T16:00:00+00:00"
+      "updated_at": "2026-11-26T21:56:40+00:00"
     },
     {
       "id": "T019",
@@ -694,7 +694,7 @@
         "SpatialAudioManager SettingsUI.IsSoundEnabled kapalıyken ses çalmaz, açıkken pitch varyasyonuyla oynatır.",
         "Check_T019 FOV değişimini, sarsıntı sönümlemesini ve ses yöneticisinin mute/unmute davranışını sayısal doğrular."
       ],
-      "status": "draft",
+      "status": "pending",
       "depends_on": [
         "T003",
         "T008"
@@ -719,7 +719,7 @@
       "last_error": "",
       "commit_sha": "",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T16:00:00+00:00"
+      "updated_at": "2026-11-26T21:56:40+00:00"
     },
     {
       "id": "T020",
