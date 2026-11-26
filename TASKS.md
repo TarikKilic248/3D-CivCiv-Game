@@ -11,18 +11,6 @@
 
 ---
 
-## Faz 6: Can, Hasar ve Savunma Sistemi (Health & Damage Architecture)
-
-- [ ] **Görev 6.3: Kalp / Can Göstergesi HUD Bileşeni (`HealthUI`)**
-  - **Dosya Yolu:** `Assets/_GameAssets/Scripts/UI/HealthUI.cs`
-  - **Sınıf Adı:** `HealthUI : MonoBehaviour`
-  - **Alanlar ve Metodlar:**
-    - `[SerializeField] private TMPro.TextMeshProUGUI _healthText;`
-    - `[SerializeField] private UnityEngine.UI.Image[] _heartIcons;`
-    - `private void HandleHealthChanged(int current, int max)` : `PlayerHealth.OnHealthChanged` event'ini dinleyerek `_heartIcons` dizisindeki kalp görsellerinin doluluk/renk durumunu ve `_healthText` metnini günceller.
-
----
-
 ## Faz 7: Kombo, Çarpan ve Mıknatıs Sistemi (Score & Combo Mechanics)
 
 - [ ] **Görev 7.1: Kombo ve Skor Çarpanı Yöneticisi (`ComboManager`)**
