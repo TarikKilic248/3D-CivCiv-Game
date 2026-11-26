@@ -109,6 +109,7 @@ public class PlayerController : MonoBehaviour
     public float JumpBufferTime => _jumpBufferTime;
     public float HorizontalInput => _horizontalInput;
     public float VerticalInput => _verticalInput;
+    public Transform OrientationTransform => _playerOrientationTransform != null ? _playerOrientationTransform : transform;
 
     // Collider orijinal boyutları
     private CapsuleCollider _capsuleCollider;
@@ -774,8 +775,13 @@ public class PlayerController : MonoBehaviour
     {
         if (_stateController == null) return;
 
-        var movementDirection = GetMovementDirection();
         var currentState = _stateController.GetCurrentState();
+        if (currentState == PlayerState.Dash)
+        {
+            return;
+        }
+
+        var movementDirection = GetMovementDirection();
 
         var newStateToSet = currentState switch
         {
@@ -890,6 +896,7 @@ public class PlayerController : MonoBehaviour
     {
         string stateName = state switch
         {
+            PlayerState.Dash => _slideAnimation,
             PlayerState.Move => _moveAnimation,
             PlayerState.Jump => _jumpAnimation,
             PlayerState.Slide => _slideAnimation,

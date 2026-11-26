@@ -56,6 +56,28 @@ public class PlayerStatsSO : ScriptableObject
     [Range(0.2f, 1f)]
     public float slideColliderMultiplier = 0.5f;
 
+    [Header("--- Dash & Stamina Settings ---")]
+    [Tooltip("Dash anında uygulanan yatay hız")]
+    public float dashSpeed = 20f;
+
+    [Tooltip("Dash etki süresi (saniye)")]
+    public float dashDuration = 0.2f;
+
+    [Tooltip("Dash yeteneği tekrar kullanım bekleme süresi (saniye)")]
+    public float dashCooldown = 1f;
+
+    [Tooltip("Maksimum stamina")]
+    public float maxStamina = 100f;
+
+    [Tooltip("Dash kullanımında tüketilen stamina")]
+    public float dashStaminaCost = 30f;
+
+    [Tooltip("Saniye başına stamina yenilenme miktarı")]
+    public float staminaRegenRate = 15f;
+
+    [Tooltip("Dash bittikten sonra stamina yenilenmesinin başlaması için bekleme süresi (saniye)")]
+    public float staminaRegenDelay = 0.5f;
+
     [Header("--- Ground Check Settings ---")]
     [Tooltip("Zemin algılama ekstra mesafe toleransı")]
     public float groundCheckDistance = 0.25f;
@@ -80,6 +102,13 @@ public class PlayerStatsSO : ScriptableObject
         slideDrag = Mathf.Max(0f, slideDrag);
         maxSlideDuration = Mathf.Max(0f, maxSlideDuration);
         slideColliderMultiplier = Mathf.Clamp(slideColliderMultiplier, 0.2f, 1f);
+        dashSpeed = Mathf.Max(0.1f, dashSpeed);
+        dashDuration = Mathf.Max(0.01f, dashDuration);
+        dashCooldown = Mathf.Max(0f, dashCooldown);
+        maxStamina = Mathf.Max(1f, maxStamina);
+        dashStaminaCost = Mathf.Max(0f, dashStaminaCost);
+        staminaRegenRate = Mathf.Max(0f, staminaRegenRate);
+        staminaRegenDelay = Mathf.Max(0f, staminaRegenDelay);
         groundCheckDistance = Mathf.Max(0.01f, groundCheckDistance);
         groundCheckRadius = Mathf.Max(0.01f, groundCheckRadius);
     }
