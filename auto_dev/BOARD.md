@@ -1,6 +1,6 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `7` | Sirada: `2` (Calismaya Hazir: `1`) | Tamamlanan: `11` | Bloklanan: `2`
+- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `7` | Sirada: `1` (Calismaya Hazir: `1`) | Tamamlanan: `12` | Bloklanan: `2`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
@@ -16,8 +16,7 @@
 ## Siradaki Gorevler (`pending`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
-| `T012` | CivCiv Gaga Saldırısı ve Havadan Yere Çakılma (ChickPeckAttack) | T001, T008 | `fast` | - | Hazir |
-| `T013` | Kırılabilir Sandık ve Ganimet Sistemi (LootTableSO & BreakableCrate) | T005, T012 | `fast` | - | Bagimlilik bekliyor |
+| `T013` | Kırılabilir Sandık ve Ganimet Sistemi (LootTableSO & BreakableCrate) | T005, T012 | `fast` | - | Hazir |
 
 ## Bloklanan Gorevler (`blocked`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
@@ -39,3 +38,4 @@
 | `T007B` | Karakter Yetenek Cilası: Süzülme, Çift Zıplama ve Dash Hibrit Animasyon/VFX/SFX | T003, T007 | `fast` | - | Commit `ea0f0e4` |
 | `T008` | Hasar Arayüzü ve Oyuncu Can Sistemi (IDamageable & PlayerHealth) | T001, T002 | `fast` | - | Commit `0915a10` |
 | `T010` | Kombo Çarpanı (ComboManager & ComboUI) ve Altın Mıknatısı (CoinMagnet) | T002, T005, T008, T007A | `fast` | Evet | Commit `fcdb050` |
+| `T012` | CivCiv Gaga Saldırısı ve Havadan Yere Çakılma (ChickPeckAttack) | T001, T008 | `fast` | - | Commit `0e42997` |
