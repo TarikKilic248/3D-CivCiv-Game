@@ -29,13 +29,6 @@
 
 ## Faz 6: Can, Hasar ve Savunma Sistemi (Health & Damage Architecture)
 
-- [ ] **Görev 6.1: Hasar Alabilirlik Arayüzü (`IDamageable`)**
-  - **Dosya Yolu:** `Assets/_GameAssets/Scripts/Core/IDamageable.cs`
-  - **Arayüz Adı:** `IDamageable`
-  - **Metodlar:**
-    - `void TakeDamage(int amount, Vector3 hitPoint, Vector3 hitNormal);`
-    - `bool IsAlive { get; }`
-
 - [ ] **Görev 6.2: Oyuncu Can, Dokunulmazlık ve Geri Tepme Bileşeni (`PlayerHealth`)**
   - **Dosya Yolu:** `Assets/_GameAssets/Scripts/Player/PlayerHealth.cs`
   - **Sınıf Adı:** `PlayerHealth : MonoBehaviour, IDamageable`
