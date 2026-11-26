@@ -52,6 +52,8 @@
 
 ### 4. Editör Araçları (`Assets/_GameAssets/Scripts/Editor/`)
 - `CivCivAutoSetup.cs` : `Tools/CivCiv/` menüsü altında karakter, fizik, TPS/FPS Cinemachine kameraları (`Ctrl+Shift+K`), `SettingsUI` buton/referans hiyerarşisini (`Ctrl+Shift+U`) ve `DefaultPlayerStats` / `DashController` / `GameManager` / `GameplayHUD` bileşenlerini (`Ctrl+Shift+G`) sahnede otomatik kuran editör aracı.
+- `NightAgentMenu.cs` : `Tools/Night Agent/` menüsü altında her faz için standart `Uygula`, `Geri çek` ve `Detay` aksiyonlarını yöneten editör aracı.
+- `Tests/PlayMode/Phase1Tests.cs` : Faz 1 (`PlayerStatsSO`, `PlayerController`, `DashController`) mekaniklerini ve görsel çıktısını geçici sahnede doğrulayan Play Mode testi.
 
 ## Mimari Kurallar ve İletişim Akışı
 - **İsim Alanı (Namespace):** Mevcut scriptler global namespace (root) altında tanımlıdır.

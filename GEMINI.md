@@ -11,6 +11,12 @@
 - Ara adımlarda sadece `dotnet build Assembly-CSharp.csproj` çalıştır. Hata 2 denemede çözülmezse `git checkout -- . && git clean -fd` ile geri al, görevi atla ve `NIGHT_REPORT.md` dosyasına yaz.
 - Sadece **0 hata** alındığında `git add . && git commit -m "feat: <kısa özet>"` çalıştır.
 
+## Night Agent Editör Menü Standardı
+- Tamamlanan her faz için `Assets/_GameAssets/Scripts/Editor/NightAgentMenu.cs` dosyasına aşağıdaki menü yapısını ekle:
+  - `[MenuItem("Tools/Night Agent/Faz <No>: <Faz Başlığı>/Uygula")]` -> İlgili fazın bileşenlerini ve UI elemanlarını sahneye kurar/bağlar ve `EditorSceneManager.MarkSceneDirty` çağırır.
+  - `[MenuItem("Tools/Night Agent/Faz <No>: <Faz Başlığı>/Geri çek")]` -> İlgili fazın sahneye eklediği bileşenleri (`DestroyImmediate`) ve oluşturduğu UI/sahne objelerini temizler.
+  - `[MenuItem("Tools/Night Agent/Faz <No>: <Faz Başlığı>/Detay")]` -> `EditorUtility.DisplayDialog` ile bu fazda hangi scriptlerin eklendiğini, sahnede nelerin değiştiğini ve nasıl test edileceğini özetleyen Türkçe bir pencere açar.
+
 ## Faz Sonu Play Mode Test ve Görsel İnceleme Kuralı
 - Her fazın en son görevinde `Assets/_GameAssets/Tests/PlayMode/` altında bir Unity Test Framework (`[UnityTest]`) scripti yaz.
 - Test içinde `EditorSceneManager.NewScene` veya boş sahne kurulumuyla ilgili tüm bileşenleri (UI dahil) kodla oluştur, mekanikleri çalıştırarak `Assert` ile doğrula ve `ScreenCapture.CaptureScreenshot("TestScreenshots/faz_sonucu.png")` ile ekran görüntüsü al.

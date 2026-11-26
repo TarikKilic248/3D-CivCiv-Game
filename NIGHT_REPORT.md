@@ -19,3 +19,4 @@
 - **Görev 7.1: Kombo ve Skor Çarpanı Yöneticisi (`ComboManager`)** tamamlandı (`Assets/_GameAssets/Scripts/Core/ComboManager.cs`, `ARCHITECTURE.md`, `TASKS.md`).
 - **Görev 7.2: Kombo Arayüz Bileşeni (`ComboUI`)** tamamlandı (`Assets/_GameAssets/Scripts/UI/ComboUI.cs`, `ARCHITECTURE.md`, `TASKS.md`).
 - **Görev 7.3: Altın Mıknatısı Alanı (`CoinMagnet`)** tamamlandı (`Assets/_GameAssets/Scripts/Collectables/CoinMagnet.cs`, `ARCHITECTURE.md`, `TASKS.md`).
+- **Faz 1 (Görev 1.1, 1.2, 1.3 ve Görev 1.Son): Veri Mimarisi ve Dash Sistemi** standart yapıda doğrulandı, `NightAgentMenu.cs` (`Faz 1: Veri Mimarisi ve Dash Sistemi/Uygula, Geri çek, Detay`) ve `Phase1Tests.cs` eklendi (Unity açık olduğu için Play Mode testi gece vardiyasına bırakıldı).
