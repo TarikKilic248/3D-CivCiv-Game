@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 #if UNITY_INCLUDE_TESTS
-using NUnit.Framework;
+using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 #endif
 
@@ -93,7 +93,7 @@ public class Phase1Tests
         float initialStamina = dashCtrl.CurrentStamina;
         Vector3 initialPos = playerObj.transform.position;
 
-        Assert.AreEqual(100f, initialStamina, 0.1f, "Başlangıç staminası 100 olmalı.");
+        Assert.AreApproximatelyEqual(100f, initialStamina, 0.1f, "Başlangıç staminası 100 olmalı.");
         Assert.IsTrue(dashCtrl.CanDash(), "Karakter başlangıçta dash atabilmeli.");
 
         // 2. Dash mekaniğini tetikle
@@ -101,13 +101,13 @@ public class Phase1Tests
 
         fillRect.anchorMax = new Vector2(dashCtrl.CurrentStamina / dashCtrl.MaxStamina, 1f);
 
-        Assert.Less(dashCtrl.CurrentStamina, initialStamina, "Dash sonrası stamina azalmalı.");
+        Assert.IsTrue(dashCtrl.CurrentStamina < initialStamina, "Dash sonrası stamina azalmalı.");
         Assert.AreEqual(PlayerState.Dash, stateCtrl.GetCurrentState(), "Durum PlayerState.Dash olmalı.");
 
         yield return new WaitForFixedUpdate();
         yield return new WaitForSeconds(0.1f);
 
-        Assert.Greater(playerObj.transform.position.z, initialPos.z + 0.05f, "Karakter ileri yönde (Z+) hareket etmiş olmalı.");
+        Assert.IsTrue(playerObj.transform.position.z > initialPos.z + 0.05f, "Karakter ileri yönde (Z+) hareket etmiş olmalı.");
 
         // 3. Ekran görüntüsü al
         if (!Directory.Exists("TestScreenshots"))
