@@ -1,6 +1,6 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `7` | Sirada: `3` (Calismaya Hazir: `2`) | Tamamlanan: `11` | Bloklanan: `1`
+- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `7` | Sirada: `2` (Calismaya Hazir: `1`) | Tamamlanan: `11` | Bloklanan: `2`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
@@ -16,7 +16,6 @@
 ## Siradaki Gorevler (`pending`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
-| `T011` | Dinamik Parkur Öğeleri (MovingPlatform, FallingPlatform & WindCurrentZone) | T007 | `fast` | - | Hazir |
 | `T012` | CivCiv Gaga Saldırısı ve Havadan Yere Çakılma (ChickPeckAttack) | T001, T008 | `fast` | - | Hazir |
 | `T013` | Kırılabilir Sandık ve Ganimet Sistemi (LootTableSO & BreakableCrate) | T005, T012 | `fast` | - | Bagimlilik bekliyor |
 
@@ -24,6 +23,7 @@
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
 | `T009` | Kalp ve Can Göstergesi HUD Bileşeni (HealthUI) | T008, T007A | `fast` | Evet | Deneme: 2 — unity_verify:T009: TakeDamage(40) sonrasi can 40, aktif kalp 2 olmaliydi. Curr=80, Hearts= |
+| `T011` | Dinamik Parkur Öğeleri (MovingPlatform, FallingPlatform & WindCurrentZone) | T007 | `fast` | - | Deneme: 2 — unity_verify:T011: Dogrulama istisnasi (T011): Do not create your own module instances, ge |
 
 ## Tamamlanan Gorevler (`done`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |

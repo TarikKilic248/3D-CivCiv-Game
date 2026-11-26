@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-26T21:19:52+00:00",
+  "updated_at": "2026-11-26T21:26:31+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -426,7 +426,7 @@
         "Check_T011 her üç mekaniği adım adım simüle ederek pozisyon/hız ve durum geçişlerini sayısal doğrular.",
         "Mekanik tetiklendiğinde görsel/prosedürel geri bildirim veya ParticleSystem efekti ve SFX kancası çalışır."
       ],
-      "status": "pending",
+      "status": "blocked",
       "depends_on": [
         "T007"
       ],
@@ -443,11 +443,11 @@
       "tier": "fast",
       "visual_check": false,
       "verify_check": "T011",
-      "retries": 0,
-      "last_error": "",
+      "retries": 2,
+      "last_error": "unity_verify:T011: Dogrulama istisnasi (T011): Do not create your own module instances, get them from a ParticleSystem instance\n  at (wrapper managed-to-native) UnityEngine.ParticleSystem+MainModule.set_playOnAwake(UnityEngine.ParticleSystem/MainModule&,bool)\r\n  at FallingPlatform.EnsureVFXSetup () [0x0009c] in C:\\Users\\batma\\Unity Projects\\3D CivCiv Game\\Assets\\_GameAssets\\Scripts\\Gameplay\\FallingPlatform.cs:308 \r\n  at Check_T011.Run () [0x00122] in C:\\Users\\batma\\Unity Projects\\3D CivCiv Game\\Assets\\_GameAssets\\Scripts\\Editor\\AutoDev\\Checks\\Check_T011.cs:43 \r\n  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)\r\n  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.R",
       "commit_sha": "",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T21:19:52+00:00"
+      "updated_at": "2026-11-26T21:26:31+00:00"
     },
     {
       "id": "T012",
