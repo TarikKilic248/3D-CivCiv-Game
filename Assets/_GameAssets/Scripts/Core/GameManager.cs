@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private int _targetCoinsForVictory = 0;
 
+    public int TargetCoinsForVictory => _targetCoinsForVictory;
+
     private bool _isSubscribedToCoins;
 
     private void Awake()
@@ -39,6 +41,19 @@ public class GameManager : MonoBehaviour
         }
 
         TrySubscribeToCoins();
+    }
+
+    private void Update()
+    {
+        if (!_isSubscribedToCoins)
+        {
+            TrySubscribeToCoins();
+        }
+    }
+
+    public void SetTargetCoinsForVictory(int target)
+    {
+        _targetCoinsForVictory = Mathf.Max(0, target);
     }
 
     private void OnDisable()

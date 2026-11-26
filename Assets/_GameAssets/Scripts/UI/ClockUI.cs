@@ -95,6 +95,13 @@ public class ClockUI : MonoBehaviour
         UpdateTimerUI();
     }
 
+    public void SetRemainingTime(float seconds)
+    {
+        remainingSeconds = Mathf.Max(0f, seconds);
+        hasExpired = false;
+        UpdateTimerUI();
+    }
+
     private void Subscribe()
     {
         if (isSubscribed || CoinManager.Instance == null)

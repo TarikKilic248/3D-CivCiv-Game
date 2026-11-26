@@ -10,20 +10,6 @@ Her faz aşağıdaki standart akışla tamamlanır:
 
 ---
 
-## Faz 2: Çekirdek Oyun Döngüsü ve Skor Yönetimi
-- **Amacı:** Oyunun başlama, duraklatılma, kazanma ve kaybetme akışını merkezi bir yapıya kavuşturmak ve en yüksek skoru kalıcı olarak saklamak.
-- **İstenilenler:**
-  - [ ] **Görev 2.1: Oyun Durumu ve Merkezi Yönetici (`GameState` & `GameManager`)**
-    - Oyun durumlarını (`Playing`, `Paused`, `Victory`, `GameOver`) tanımla.
-    - Sahnedeki hedef altın toplandığında zafer (`Victory`), süre veya can bittiğinde yenilgi (`GameOver`) durumunu tetikleyen ve bölümü yeniden başlatabilen merkezi yöneticiyi kur.
-  - [ ] **Görev 2.2: Süre Bitimi ve Yüksek Skor Kaydı (`ClockUI` & `CoinManager`)**
-    - Geri sayım sayacı sıfırlandığında oyun sonunu tetikle ve dışarıdan bonus süre eklenebilmesini sağla.
-    - Toplanan en yüksek altın skorunu (`HighScore`) cihazda kalıcı olarak kaydet.
-  - [ ] **Görev 2.3: Faz 2 Night Agent Menüsü ve Play Mode Testi**
-    - Faz 2 için `Uygula`, `Geri çek`, `Detay` editör menülerini ve oyun döngüsünü doğrulayan Play Mode testini oluştur.
-
----
-
 ## Faz 3: Toplanabilir Öğeler, Güçlendiriciler ve Kontrol Noktaları
 - **Amacı:** Seviye içi etkileşimi zenginleştirmek için altınlara görsel/işitsel efekt kazandırmak, karaktere geçici güçlendiriciler sunmak ve tehlike anında kontrol noktasında yeniden doğmasını sağlamak.
 - **İstenilenler:**
