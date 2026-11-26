@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-26T21:48:52+00:00",
+  "updated_at": "2026-11-26T21:56:39+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -592,7 +592,7 @@
         "Görsel kontrolde WaypointIndicatorUI HUD üzerinde temiz görünür.",
         "UI bileşenleri UIThemeSO/UIStyleHelper temasını kullanır; düz gri/varsayılan Unity slider/panel bırakılmaz."
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [
         "T015",
         "T007A"
@@ -612,11 +612,11 @@
       "tier": "fast",
       "visual_check": true,
       "verify_check": "T016",
-      "retries": 0,
+      "retries": 1,
       "last_error": "",
-      "commit_sha": "",
+      "commit_sha": "0751228",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-26T21:36:43+00:00"
+      "updated_at": "2026-11-26T21:56:39+00:00"
     },
     {
       "id": "T017",
