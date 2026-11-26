@@ -6,9 +6,9 @@
 1. **0-Token Deterministik Orkestrasyon:** Git dallanması, görev kuyruğu, bağımlılık (DAG) takibi, kapsam/diff koruması, kompakt kod indeksleme (`PROJECT_INDEX.md`), derleme/test doğrulaması ve raporlama tamamen Python ile çalışır — **hiç LLM tokenı harcamaz**.
 2. **Görev Başına Taze Oturum:** Her atomik görev temiz bir `agy -p` oturumunda çalışır; sohbet geçmişi şişmez.
 3. **Kademeli Model Yönlendirme:**
-   - Planlama (`plan`): Güçlü model (`gemini-4-neon-medium`)
+   - Planlama (`plan`): Güçlü model (`gemini-4-neon-high`)
    - Rutin atomik görevler (1. deneme): Hızlı/ucuz model (`gemini-3.8-flash-medium`)
-   - Yalnızca 1. deneme hata alırsa (2. deneme): Sadece filtrelenmiş hata satırlarıyla güçlü modele yükseltme (`gemini-4-neon-medium`)
+   - Yalnızca 1. deneme hata alırsa (2. deneme): Sadece filtrelenmiş hata satırlarıyla güçlü modele yükseltme (`gemini-4-neon-xhigh`)
 4. **Koşullu Görsel Kontrol:** Ekran görüntüsü ve görsel model yalnızca `visual_check: true` olan UI/sahne görevlerinde devreye girer.
 
 ## Günlük Kullanım Akışı

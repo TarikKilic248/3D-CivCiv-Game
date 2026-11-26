@@ -255,9 +255,9 @@ class TestAutoDevCore(unittest.TestCase):
 
             # Verify escalation occurred: T001_a1 used Flash, T001_a2 used Neon
             self.assertEqual(calls[0], ("T001_a1", "gemini-3.8-flash-medium"))
-            self.assertEqual(calls[1], ("T001_a2", "gemini-4-neon-medium"))
+            self.assertEqual(calls[1], ("T001_a2", "gemini-4-neon-xhigh"))
             self.assertEqual(calls[2], ("T002_a1", "gemini-3.8-flash-medium"))
-            self.assertEqual(calls[3], ("T002_a2", "gemini-4-neon-medium"))
+            self.assertEqual(calls[3], ("T002_a2", "gemini-4-neon-xhigh"))
 
             final_tasks = {t.id: t for t in store.load()}
             self.assertEqual(final_tasks["T001"].status, "done")

@@ -10,7 +10,7 @@
   },
   "models": {
     "planner": {
-      "model": "gemini-4-neon-medium",
+      "model": "gemini-4-neon-xhigh",
       "effort": "medium",
       "timeout_sec": 300
     },
@@ -20,7 +20,7 @@
       "timeout_sec": 300
     },
     "smart": {
-      "model": "gemini-4-neon-medium",
+      "model": "gemini-4-neon-xhigh",
       "effort": "medium",
       "timeout_sec": 420
     },
@@ -56,9 +56,7 @@
       ".png",
       ".jpg"
     ],
-    "index_include_roots": [
-      "Assets/_GameAssets/Scripts"
-    ],
+    "index_include_roots": ["Assets/_GameAssets/Scripts"],
     "index_extensions": [".cs"]
   },
   "adapter": {

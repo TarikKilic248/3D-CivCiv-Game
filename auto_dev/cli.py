@@ -181,9 +181,9 @@ def _cmd_init_generic(cfg: AutoDevConfig, args: argparse.Namespace) -> int:
             "state_commit_enabled": True,
         },
         "models": {
-            "planner": {"model": "gemini-4-neon-medium", "effort": "medium", "timeout_sec": 300},
-            "fast": {"model": "gemini-3.8-flash-medium", "effort": "medium", "timeout_sec": 300},
-            "smart": {"model": "gemini-4-neon-medium", "effort": "medium", "timeout_sec": 420},
+            "planner": {"model": "gemini-4-high", "effort": "medium", "timeout_sec": 300},
+            "fast": {"model": "gemini-3.8-flash-high", "effort": "medium", "timeout_sec": 300},
+            "smart": {"model": "gemini-4-neon-xhigh", "effort": "medium", "timeout_sec": 420},
             "visual": {"model": "gemini-3.8-flash-medium", "effort": "low", "timeout_sec": 180},
         },
         "limits": {
