@@ -11,19 +11,6 @@
 
 ---
 
-## Faz 7: Kombo, Çarpan ve Mıknatıs Sistemi (Score & Combo Mechanics)
-
-- [ ] **Görev 7.3: Altın Mıknatısı Alanı (`CoinMagnet`)**
-  - **Dosya Yolu:** `Assets/_GameAssets/Scripts/Collectables/CoinMagnet.cs`
-  - **Sınıf Adı:** `CoinMagnet : MonoBehaviour`
-  - **Alanlar ve Metodlar:**
-    - `[SerializeField] private float _defaultMagnetRadius = 3f;`, `[SerializeField] private float _pullSpeed = 14f;`
-    - `private bool _isSuperMagnetActive;`
-    - `public void ActivateSuperMagnet(float radius, float duration)` : Belirtilen süre boyunca çekim yarıçapını büyütür.
-    - `private void PullNearbyCoins()` : `Update()` içinde `Physics.OverlapSphere(transform.position, currentRadius)` ile yakındaki `CoinCollect` nesnelerini bulur ve oyuncuya doğru `Vector3.MoveTowards` ile çeker.
-
----
-
 ## Faz 8: Dinamik Platformlar ve Fiziksel Seviye Öğeleri
 
 - [ ] **Görev 8.1: Noktalar Arası Hareketli Platform (`MovingPlatform`)**

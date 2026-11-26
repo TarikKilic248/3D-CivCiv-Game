@@ -32,6 +32,7 @@
 - `Core/IDamageable.cs` : Hasar alabilen karakter, düşman ve kırılabilir nesneler için ortak arayüz (`TakeDamage`, `IsAlive`).
 - `Core/ComboManager.cs` : Ardışık altın toplama serisini (`CurrentStreak`), skor çarpanını (`CurrentMultiplier`) ve süre/hasar kaynaklı sıfırlamayı (`ResetCombo`) yöneten Singleton sınıfı.
 - `Collectables/PowerUpCollectable.cs` : Ekstra süre (`ExtraTime`), hız artışı (`SpeedBoost`) ve enerji yenileme (`StaminaRefill`) sağlayan toplanabilir güçlendirici bileşeni.
+- `Collectables/CoinMagnet.cs` : Karakterin çevresindeki `CoinCollect` nesnelerini çekim yarıçapına (`_defaultMagnetRadius`, `ActivateSuperMagnet`) göre oyuncuya doğru çeken mıknatıs bileşeni.
 - `Gameplay/Checkpoint.cs` : Oyuncu temas ettiğinde aktif yeniden doğma noktasını (`ActiveRespawnPoint`) kaydeden kontrol noktası bileşeni.
 - `Gameplay/HazardZone.cs` : Oyuncu tehlikeli alana veya boşluğa düştüğünde hızını sıfırlayarak aktif `Checkpoint` noktasına ışınlayan bileşen.
 

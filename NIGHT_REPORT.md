@@ -18,3 +18,4 @@
 - **Görev 6.3: Kalp / Can Göstergesi HUD Bileşeni (`HealthUI`)** tamamlandı (`Assets/_GameAssets/Scripts/UI/HealthUI.cs`, `ARCHITECTURE.md`, `TASKS.md`).
 - **Görev 7.1: Kombo ve Skor Çarpanı Yöneticisi (`ComboManager`)** tamamlandı (`Assets/_GameAssets/Scripts/Core/ComboManager.cs`, `ARCHITECTURE.md`, `TASKS.md`).
 - **Görev 7.2: Kombo Arayüz Bileşeni (`ComboUI`)** tamamlandı (`Assets/_GameAssets/Scripts/UI/ComboUI.cs`, `ARCHITECTURE.md`, `TASKS.md`).
+- **Görev 7.3: Altın Mıknatısı Alanı (`CoinMagnet`)** tamamlandı (`Assets/_GameAssets/Scripts/Collectables/CoinMagnet.cs`, `ARCHITECTURE.md`, `TASKS.md`).
