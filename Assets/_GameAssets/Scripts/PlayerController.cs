@@ -6,6 +6,10 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
+    [Header("--- Data (ScriptableObject) ---")]
+    [Tooltip("Karakter hareket parametrelerini içeren merkezi ScriptableObject varlığı")]
+    [SerializeField] private PlayerStatsSO _playerStats;
+
     [Header("--- Orientation & Movement ---")]
     [Tooltip("Karakterin baktığı / yönlendiği Transform (Boş bırakılırsa bu nesnenin transformu kullanılır)")]
     [SerializeField] private Transform _playerOrientationTransform;
@@ -27,7 +31,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _jumpForce = 7f;
     [Tooltip("Zıplamalar arası bekleme süresi (saniye)")]
     [SerializeField] private float _jumpCooldown = 0.25f;
+    [Tooltip("Platform kenarından ayrıldıktan sonra zıplamaya izin verilen tolerans süresi (Coyote Time, saniye)")]
+    [SerializeField] private float _coyoteTime = 0.15f;
+    [Tooltip("Yere inmeden hemen önce basılan zıplama tuşunu hafızada tutma süresi (Jump Buffering, saniye)")]
+    [SerializeField] private float _jumpBufferTime = 0.15f;
     private bool _canJump = true;
+    private float _jumpCooldownTimer = 0f;
+    private float _coyoteTimeCounter = 0f;
+    private float _jumpBufferCounter = 0f;
 
     [Header("--- Sliding (Kayma) Settings ---")]
     [Tooltip("Slide tuşu (Eski Input / Inspector seçimi için)")]
@@ -82,6 +93,34 @@ public class PlayerController : MonoBehaviour
     private float _slideTimer = 0f;
     private Vector3 _slideDirection;
     private PlayerState _lastAnimatedState = (PlayerState)(-1);
+    private float _speedMultiplier = 1f;
+    private bool _externalMovementOverride = false;
+
+    // Public Erişimler
+    public PlayerStatsSO PlayerStats => _playerStats;
+    public bool IsGrounded => _isGrounded;
+    public float SpeedMultiplier => _speedMultiplier;
+    public bool IsExternalMovementOverridden => _externalMovementOverride;
+    public bool IsSliding => _isSliding;
+    public float MoveSpeed => _moveSpeed;
+    public float MaxSpeed => _maxSpeed;
+    public float JumpForce => _jumpForce;
+    public float CoyoteTime => _coyoteTime;
+    public float JumpBufferTime => _jumpBufferTime;
+    public float HorizontalInput => _horizontalInput;
+    public float VerticalInput => _verticalInput;
+    public Transform OrientationTransform => _playerOrientationTransform != null ? _playerOrientationTransform : transform;
+
+    // Olaylar (Events)
+    public event System.Action OnJump;
+    public event System.Action OnLanded;
+    public event System.Action OnSlideStarted;
+    public event System.Action OnSlideEnded;
+
+    public void TriggerJumpEvent() => OnJump?.Invoke();
+    public void TriggerLandedEvent() => OnLanded?.Invoke();
+    public void TriggerSlideStartedEvent() => OnSlideStarted?.Invoke();
+    public void TriggerSlideEndedEvent() => OnSlideEnded?.Invoke();
 
     // Collider orijinal boyutları
     private CapsuleCollider _capsuleCollider;
@@ -102,6 +141,10 @@ public class PlayerController : MonoBehaviour
         }
         if (_stateController == null) _stateController = GetComponent<StateController>();
         if (_animator == null) _animator = GetComponentInChildren<Animator>();
+        if (_playerStats != null)
+        {
+            SyncFieldsFromSO(_playerStats);
+        }
     }
 
     private void Reset()
@@ -116,6 +159,12 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+        // 0. Merkezi ScriptableObject verilerini uygula
+        if (_playerStats != null)
+        {
+            SyncFieldsFromSO(_playerStats);
+        }
+
         // 1. Rigidbody Kurulumu
         _playerRigidbody = GetComponent<Rigidbody>();
         if (_playerRigidbody == null)
@@ -162,6 +211,166 @@ public class PlayerController : MonoBehaviour
         CacheAnimatorParameters();
 
         CacheColliderProperties();
+
+        _canJump = true;
+        _jumpCooldownTimer = 0f;
+        _coyoteTimeCounter = 0f;
+        _jumpBufferCounter = 0f;
+        _externalMovementOverride = false;
+    }
+
+    private void SyncFieldsFromSO(PlayerStatsSO stats)
+    {
+        if (stats == null) return;
+
+        _moveSpeed = stats.moveSpeed;
+        _maxSpeed = stats.maxSpeed;
+        _groundDrag = stats.groundDrag;
+        _airDrag = stats.airDrag;
+        _airMultiplier = stats.airMultiplier;
+        _jumpForce = stats.jumpForce;
+        _jumpCooldown = stats.jumpCooldown;
+        _coyoteTime = stats.coyoteTime;
+        _jumpBufferTime = stats.jumpBufferTime;
+        _maxSlideSpeed = stats.maxSlideSpeed;
+        _slideImpulseForce = stats.slideImpulseForce;
+        _slideSustainForce = stats.slideSustainForce;
+        _slideDrag = stats.slideDrag;
+        _maxSlideDuration = stats.maxSlideDuration;
+        _adjustColliderOnSlide = stats.adjustColliderOnSlide;
+        _slideColliderMultiplier = stats.slideColliderMultiplier;
+        _groundCheckDistance = stats.groundCheckDistance;
+        _groundCheckRadius = stats.groundCheckRadius;
+    }
+
+    public void ApplyStatsFromSO(PlayerStatsSO stats)
+    {
+        if (stats == null) return;
+
+        _playerStats = stats;
+        SyncFieldsFromSO(stats);
+
+        if (_playerRigidbody == null)
+        {
+            _playerRigidbody = GetComponent<Rigidbody>();
+        }
+
+        if (_playerRigidbody != null && !_externalMovementOverride)
+        {
+            if (_isSliding)
+            {
+                _playerRigidbody.linearDamping = _slideDrag;
+            }
+            else
+            {
+                _playerRigidbody.linearDamping = _groundDrag;
+            }
+        }
+    }
+
+    public void SetSpeedMultiplier(float multiplier)
+    {
+        _speedMultiplier = Mathf.Max(0f, multiplier);
+    }
+
+    public void SetExternalMovementOverride(bool isOverridden)
+    {
+        if (_externalMovementOverride == isOverridden)
+            return;
+
+        _externalMovementOverride = isOverridden;
+
+        if (_playerRigidbody == null)
+        {
+            _playerRigidbody = GetComponent<Rigidbody>();
+        }
+
+        if (_externalMovementOverride)
+        {
+            if (_isSliding)
+            {
+                StopSlide();
+            }
+
+            if (_playerRigidbody != null)
+            {
+                _playerRigidbody.linearDamping = 0f;
+            }
+        }
+        else
+        {
+            if (_playerRigidbody != null)
+            {
+                ApplyDrag();
+            }
+        }
+    }
+
+    public Rigidbody GetRigidbody()
+    {
+        if (_playerRigidbody == null)
+        {
+            _playerRigidbody = GetComponent<Rigidbody>();
+        }
+        return _playerRigidbody;
+    }
+
+    public bool IsInputBlocked()
+    {
+        if (StartMenuUI.IsOpen || SettingsUI.IsOpen)
+            return true;
+
+        if (Time.timeScale <= 0f || Mathf.Approximately(Time.timeScale, 0f))
+            return true;
+
+        if (GameManager.Instance != null && GameManager.Instance.CurrentState != GameState.Playing)
+            return true;
+
+        return false;
+    }
+
+    public bool RefreshGroundState()
+    {
+        bool wasGrounded = _isGrounded;
+        _isGrounded = CheckGround();
+        if (!wasGrounded && _isGrounded)
+        {
+            OnLanded?.Invoke();
+        }
+        return _isGrounded;
+    }
+
+    public void StepTimers(float deltaTime)
+    {
+        bool wasGrounded = _isGrounded;
+        _isGrounded = CheckGround();
+        if (!wasGrounded && _isGrounded)
+        {
+            OnLanded?.Invoke();
+        }
+
+        if (IsInputBlocked())
+        {
+            ClearBlockedInputs();
+            return;
+        }
+
+        UpdateJumpTimers(deltaTime);
+        TryConsumeBufferedJump();
+        UpdateSlide(deltaTime);
+    }
+
+    private void ClearBlockedInputs()
+    {
+        _horizontalInput = 0f;
+        _verticalInput = 0f;
+        _moveDirection = Vector3.zero;
+        _jumpBufferCounter = 0f;
+
+        if (_isSliding)
+        {
+            StopSlide();
+        }
     }
 
     private void CacheColliderProperties()
@@ -182,27 +391,77 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        float dt = Time.deltaTime;
+        bool wasGrounded = _isGrounded;
         _isGrounded = CheckGround();
+        if (!wasGrounded && _isGrounded)
+        {
+            OnLanded?.Invoke();
+        }
+
+        bool blocked = IsInputBlocked();
+        if (!blocked)
+        {
+            UpdateJumpTimers(dt);
+        }
 
         HandleInputs();
 
-        SetStates();
-
-        UpdateAnimation();
-
-        // Slide süresi yönetimi
-        if (_isSliding)
+        if (!blocked)
         {
-            if (_maxSlideDuration > 0f)
-            {
-                _slideTimer -= Time.deltaTime;
-                if (_slideTimer <= 0f)
-                {
-                    StopSlide();
-                }
-            }
+            TryConsumeBufferedJump();
+            UpdateSlide(dt);
+        }
 
-            // Karakter tamamen durduysa slide'ı bitir
+        SetStates();
+        UpdateAnimation();
+    }
+
+    private void UpdateJumpTimers(float deltaTime)
+    {
+        if (deltaTime < 0f) deltaTime = 0f;
+
+        if (!_canJump)
+        {
+            _jumpCooldownTimer -= deltaTime;
+            if (_jumpCooldownTimer <= 0f)
+            {
+                ResetJump();
+            }
+        }
+
+        if (_isGrounded && _canJump)
+        {
+            _coyoteTimeCounter = _coyoteTime;
+        }
+        else
+        {
+            _coyoteTimeCounter = Mathf.Max(0f, _coyoteTimeCounter - deltaTime);
+        }
+
+        if (_jumpBufferCounter > 0f)
+        {
+            _jumpBufferCounter = Mathf.Max(0f, _jumpBufferCounter - deltaTime);
+        }
+    }
+
+    private void UpdateSlide(float deltaTime)
+    {
+        if (!_isSliding) return;
+
+        if (_maxSlideDuration > 0f)
+        {
+            _slideTimer -= Mathf.Max(0f, deltaTime);
+            if (_slideTimer <= 0f)
+            {
+                StopSlide();
+                return;
+            }
+        }
+
+        // Karakter tamamen durduysa slide'ı bitir
+        if (_playerRigidbody != null)
+        {
             Vector3 flatVel = new Vector3(_playerRigidbody.linearVelocity.x, 0f, _playerRigidbody.linearVelocity.z);
             if (flatVel.magnitude < 0.5f)
             {
@@ -213,6 +472,11 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (_externalMovementOverride)
+        {
+            return;
+        }
+
         ApplyDrag();
         MovePlayer();
         LimitSpeed();
@@ -220,6 +484,12 @@ public class PlayerController : MonoBehaviour
 
     private void HandleInputs()
     {
+        if (IsInputBlocked())
+        {
+            ClearBlockedInputs();
+            return;
+        }
+
         float h = 0f;
         float v = 0f;
         bool jumpPressed = false;
@@ -259,11 +529,28 @@ public class PlayerController : MonoBehaviour
             // Input System paketi tek başına aktifse eski API sessizce atlanır
         }
 
-        _horizontalInput = h;
-        _verticalInput = v;
+        ProcessInputs(h, v, jumpPressed, slidePressed, slideHeld);
+    }
+
+    public void ProcessInputs(float horizontal, float vertical, bool jumpPressed, bool slidePressed, bool slideHeld)
+    {
+        if (IsInputBlocked())
+        {
+            ClearBlockedInputs();
+            return;
+        }
+
+        _horizontalInput = Mathf.Clamp(horizontal, -1f, 1f);
+        _verticalInput = Mathf.Clamp(vertical, -1f, 1f);
+
+        // Jump Buffering: zıplama tuşuna basıldığında tampon süresini başlat
+        if (jumpPressed)
+        {
+            _jumpBufferCounter = _jumpBufferTime;
+        }
 
         // Slide Başlatma / Durdurma
-        if (slidePressed && !_isSliding && _isGrounded)
+        if (slidePressed && !_isSliding && _isGrounded && !_externalMovementOverride)
         {
             StartSlide();
         }
@@ -272,43 +559,71 @@ public class PlayerController : MonoBehaviour
             StopSlide();
         }
 
-        // Zıplama
-        if (jumpPressed && _canJump && _isGrounded)
+        // Zıplama (Coyote Time & Jump Buffering destekli)
+        TryConsumeBufferedJump(jumpPressed);
+    }
+
+    private bool TryConsumeBufferedJump(bool jumpPressedThisFrame = false)
+    {
+        if (_externalMovementOverride || !_canJump || IsInputBlocked())
+            return false;
+
+        bool hasJumpIntent = jumpPressedThisFrame || _jumpBufferCounter > 0f;
+        bool hasGroundSupport = _isGrounded || _coyoteTimeCounter > 0f;
+
+        if (hasJumpIntent && hasGroundSupport)
         {
             if (_isSliding) StopSlide();
             Jump();
+            return true;
         }
+
+        return false;
     }
 
     private void MovePlayer()
     {
+        if (_externalMovementOverride || _playerRigidbody == null)
+            return;
+
+        if (IsInputBlocked())
+        {
+            _moveDirection = Vector3.zero;
+            return;
+        }
+
         Transform moveRef = _playerOrientationTransform != null ? _playerOrientationTransform : transform;
 
         _moveDirection = moveRef.forward * _verticalInput + moveRef.right * _horizontalInput;
 
+        float effectiveMoveSpeed = _moveSpeed * _speedMultiplier;
+
         if (_isSliding)
         {
             // Slide halindeyken slide yönünde kuvvet uygula
-            _playerRigidbody.AddForce(_slideDirection * _slideSustainForce, ForceMode.Force);
+            _playerRigidbody.AddForce(_slideDirection * (_slideSustainForce * _speedMultiplier), ForceMode.Force);
         }
         else if (_isGrounded)
         {
             // Yerde normal hareket
-            _playerRigidbody.AddForce(_moveDirection.normalized * _moveSpeed * 10f, ForceMode.Force);
+            _playerRigidbody.AddForce(_moveDirection.normalized * effectiveMoveSpeed * 10f, ForceMode.Force);
         }
         else
         {
             // Havadayken kontrollü hareket
-            _playerRigidbody.AddForce(_moveDirection.normalized * _moveSpeed * 10f * _airMultiplier, ForceMode.Force);
+            _playerRigidbody.AddForce(_moveDirection.normalized * effectiveMoveSpeed * 10f * _airMultiplier, ForceMode.Force);
         }
     }
 
     private void LimitSpeed()
     {
+        if (_externalMovementOverride || _playerRigidbody == null)
+            return;
+
         Vector3 flatVel = new Vector3(_playerRigidbody.linearVelocity.x, 0f, _playerRigidbody.linearVelocity.z);
 
-        // Slide durumuna göre uygun maksimum hız sınırı seçilir
-        float currentMaxSpeed = _isSliding ? _maxSlideSpeed : _maxSpeed;
+        // Slide durumuna ve harici hız çarpanına göre uygun maksimum hız sınırı seçilir
+        float currentMaxSpeed = (_isSliding ? _maxSlideSpeed : _maxSpeed) * _speedMultiplier;
 
         if (flatVel.magnitude > currentMaxSpeed)
         {
@@ -319,7 +634,10 @@ public class PlayerController : MonoBehaviour
 
     private void ApplyDrag()
     {
-        // Inspector'dan değiştirilen drag değerleri anında Rigidbody'ye yansıtılır
+        if (_externalMovementOverride || _playerRigidbody == null)
+            return;
+
+        // Inspector'dan veya SO'dan değiştirilen drag değerleri anında Rigidbody'ye yansıtılır
         if (_isSliding)
         {
             _playerRigidbody.linearDamping = _slideDrag;
@@ -336,7 +654,13 @@ public class PlayerController : MonoBehaviour
 
     private void Jump()
     {
+        if (_playerRigidbody == null)
+            return;
+
         _canJump = false;
+        _jumpCooldownTimer = _jumpCooldown;
+        _coyoteTimeCounter = 0f;
+        _jumpBufferCounter = 0f;
 
         // Dikey hızı sıfırlayıp net bir zıplama kuvveti uygula
         Vector3 currentVel = _playerRigidbody.linearVelocity;
@@ -345,39 +669,50 @@ public class PlayerController : MonoBehaviour
         _playerRigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
 
         SetAnimTrigger(_hashJump);
-
-        Invoke(nameof(ResetJump), _jumpCooldown);
+        OnJump?.Invoke();
     }
 
     private void ResetJump()
     {
         _canJump = true;
+        _jumpCooldownTimer = 0f;
     }
 
     private void StartSlide()
     {
+        if (_playerRigidbody == null)
+            return;
+
         _isSliding = true;
         _slideTimer = _maxSlideDuration;
 
+        Transform moveRef = _playerOrientationTransform != null ? _playerOrientationTransform : transform;
+        Vector3 inputDir = moveRef.forward * _verticalInput + moveRef.right * _horizontalInput;
+
         // Slide yönü: Karakter hareket ediyorsa hareket yönü, duruyorsa baktığı yön
-        if (_moveDirection.sqrMagnitude > 0.01f)
+        if (inputDir.sqrMagnitude > 0.01f)
+        {
+            _slideDirection = inputDir.normalized;
+        }
+        else if (_moveDirection.sqrMagnitude > 0.01f)
         {
             _slideDirection = _moveDirection.normalized;
         }
         else
         {
-            Transform moveRef = _playerOrientationTransform != null ? _playerOrientationTransform : transform;
             _slideDirection = moveRef.forward;
         }
 
         // Anlık itiş kuvveti (Impulse)
-        _playerRigidbody.AddForce(_slideDirection * _slideImpulseForce, ForceMode.Impulse);
+        _playerRigidbody.AddForce(_slideDirection * (_slideImpulseForce * _speedMultiplier), ForceMode.Impulse);
 
         // Collider boyutunu küçült
         if (_adjustColliderOnSlide)
         {
             ShrinkCollider();
         }
+
+        OnSlideStarted?.Invoke();
     }
 
     private void StopSlide()
@@ -389,6 +724,8 @@ public class PlayerController : MonoBehaviour
         {
             RestoreCollider();
         }
+
+        OnSlideEnded?.Invoke();
     }
 
     private void ShrinkCollider()
@@ -469,8 +806,13 @@ public class PlayerController : MonoBehaviour
     {
         if (_stateController == null) return;
 
-        var movementDirection = GetMovementDirection();
         var currentState = _stateController.GetCurrentState();
+        if (currentState == PlayerState.Dash || currentState == PlayerState.Glide)
+        {
+            return;
+        }
+
+        var movementDirection = GetMovementDirection();
 
         var newStateToSet = currentState switch
         {
@@ -520,7 +862,7 @@ public class PlayerController : MonoBehaviour
 
     private void CacheAnimatorParameters()
     {
-        if (_animator == null) return;
+        if (_animator == null || !_animator.isActiveAndEnabled || _animator.runtimeAnimatorController == null) return;
         _animatorParams.Clear();
         foreach (var p in _animator.parameters)
         {
@@ -530,7 +872,7 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateAnimation()
     {
-        if (_animator == null) return;
+        if (_animator == null || !_animator.isActiveAndEnabled || _animator.runtimeAnimatorController == null || _playerRigidbody == null) return;
 
         Vector3 flatVel = new Vector3(_playerRigidbody.linearVelocity.x, 0f, _playerRigidbody.linearVelocity.z);
         float speed = flatVel.magnitude;
@@ -540,11 +882,13 @@ public class PlayerController : MonoBehaviour
             ? _stateController.GetCurrentState()
             : (isMoving ? PlayerState.Move : PlayerState.Idle);
 
+        float effectiveMaxSpeed = _maxSpeed * _speedMultiplier;
+
         SetAnimBool(_hashIsMoving, isMoving);
         SetAnimBool(_hashWalking, state == PlayerState.Move);
         SetAnimBool(_hashRunning, false);
         SetAnimFloat(_hashSpeed, speed);
-        SetAnimFloat(_hashMotionScale, _maxSpeed > 0f ? speed / _maxSpeed : speed);
+        SetAnimFloat(_hashMotionScale, effectiveMaxSpeed > 0f ? speed / effectiveMaxSpeed : speed);
         SetAnimFloat(_hashDirX, _horizontalInput);
         SetAnimFloat(_hashDirZ, _verticalInput);
         SetAnimBool(_hashIsGrounded, _isGrounded);
@@ -583,8 +927,10 @@ public class PlayerController : MonoBehaviour
     {
         string stateName = state switch
         {
+            PlayerState.Dash => _slideAnimation,
             PlayerState.Move => _moveAnimation,
             PlayerState.Jump => _jumpAnimation,
+            PlayerState.Glide => _jumpAnimation,
             PlayerState.Slide => _slideAnimation,
             PlayerState.SlideIdle => _idleAnimation,
             _ => _idleAnimation

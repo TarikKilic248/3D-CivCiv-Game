@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c45974878b621024cbbd0cc8f8a6181e, type: 3}
+  m_Name: ach_chick_hero
+  m_EditorClassIdentifier: Assembly-CSharp::AchievementSO
+  _achievementId: ach_chick_hero
+  _displayName: "Civciv Kahraman\u0131"
+  _description: 2 civcivi kurtar!
+  _metric: 1
+  _targetValue: 2
+  _icon: {fileID: 0}
+  _unlockSfx: {fileID: 0}

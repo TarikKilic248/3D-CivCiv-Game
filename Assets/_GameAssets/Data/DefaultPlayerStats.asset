@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b623dbb08173e594b81d8a9ffc406728, type: 3}
+  m_Name: DefaultPlayerStats
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStatsSO
+  moveSpeed: 45
+  maxSpeed: 7
+  groundDrag: 4
+  airDrag: 0.2
+  airMultiplier: 0.4
+  jumpForce: 7
+  jumpCooldown: 0.25
+  coyoteTime: 0.15
+  jumpBufferTime: 0.15
+  maxSlideSpeed: 13
+  slideImpulseForce: 12
+  slideSustainForce: 15
+  slideDrag: 0.3
+  maxSlideDuration: 1.2
+  adjustColliderOnSlide: 1
+  slideColliderMultiplier: 0.5
+  groundCheckDistance: 0.25
+  groundCheckRadius: 0.25

@@ -112,3 +112,9 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# AutoDev runtime artifacts (locks, bridge IPC, raw logs, screenshots)
+/.autodev/
+**/__pycache__/
+*.pyc
+

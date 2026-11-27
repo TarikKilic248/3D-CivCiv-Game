@@ -192,6 +192,8 @@ public class SettingsUI : MonoBehaviour
 
     private void HandleKeyboardInput()
     {
+        if (StartMenuUI.IsOpen) return;
+
         bool toggleRequested = false;
 
 #if ENABLE_INPUT_SYSTEM

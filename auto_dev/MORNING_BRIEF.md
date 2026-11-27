@@ -1,0 +1,81 @@
+# AutoDev Sabah Ozet Raporu (MORNING_BRIEF) — 3D CivCiv Game
+
+- Guncelleme (UTC): `2026-11-27T12:02:27+00:00`
+- Son 16 Saat Ozeti: **Tamamlanan `19`** | Kota Ertelenen (`pending` korundu): `1` | Bloklanan: `7` | Otomatik Push (`origin/auto-dev`): `Evet`
+- Otomatik Uretilen Yeni Gorevler: `T021, T022, T023, T024, T025, T026`
+
+## 1. Kota Havuzlari Son Durumu (5 Saatlik Pencere — Tahmini)
+| Havuz | Durum | Kalan Kota (%) | Bu Pencerede Harcanan Token | Soguma / Yenilenme |
+| --- | --- | --- | --- | --- |
+| `gemini` | Musait | **%63.6** | `909.6K` | `-` |
+| `claude` | Musait | **%60.0** | `201.7K` | `-` |
+
+## 2. Oturum / Vardiya Bazli Model Kullanim Yuzdeleri ve Sureleri
+### Shift1_Gemini (`run_20261126_210000` — Bitis: `max_consecutive_blocks (2)`)
+| Havuz | Model | Cagri | Sure | Sure Payi (%) | Token | Token Payi (%) |
+| --- | --- | --- | --- | --- | --- | --- |
+| `gemini` | `gemini-3.8-flash-medium` | `12` | `56dk 09s` | **%79.5** | `1.59M` | **%76.2** |
+| `gemini` | `gemini-4-neon-medium` | `8` | `14dk 03s` | **%19.9** | `462.8K` | **%22.2** |
+| `gemini` | `gemini-3.8-flash-low` | `2` | `24.7s` | **%0.6** | `33.9K` | **%1.6** |
+
+> Oturum sonu havuz kalan tahmini kota: `gemini`: **%0.0** | `claude`: **%100.0**
+
+### Shift2_Claude (`run_20261127_021500` — Bitis: `queue_drained`)
+| Havuz | Model | Cagri | Sure | Sure Payi (%) | Token | Token Payi (%) |
+| --- | --- | --- | --- | --- | --- | --- |
+| `gemini` | `gemini-3.8-flash-medium` | `4` | `18dk 23s` | **%54.3** | `557.7K` | **%44.4** |
+| `gemini` | `gemini-4-neon-medium` | `3` | `6dk 56s` | **%20.5** | `159.4K` | **%12.7** |
+| `claude` | `claude-opus-5-5-medium` | `2` | `5dk 44s` | **%17.0** | `197.0K` | **%15.7** |
+| `claude` | `claude-sonnet-5-5-low` | `4` | `2dk 25s` | **%7.1** | `307.6K` | **%24.5** |
+| `gemini` | `gemini-3.8-flash-low` | `2` | `24.0s` | **%1.2** | `34.2K` | **%2.7** |
+
+> Oturum sonu havuz kalan tahmini kota: `gemini`: **%69.9** | `claude`: **%0.0**
+
+### Run (balanced) (`run_20261127_110403` — Bitis: `max_consecutive_blocks (2)`)
+| Havuz | Model | Cagri | Sure | Sure Payi (%) | Token | Token Payi (%) |
+| --- | --- | --- | --- | --- | --- | --- |
+| `gemini` | `gemini-3.8-flash-medium` | `2` | `9dk 00s` | **%93.4** | `245.6K` | **%77.4** |
+| `claude` | `claude-sonnet-5-5-medium` | `2` | `37.9s` | **%6.6** | `71.7K` | **%22.6** |
+
+> Oturum sonu havuz kalan tahmini kota: `gemini`: **%90.2** | `claude`: **%81.8**
+
+### Immediate_Balanced (`run_20261127_113159` — Bitis: `completed`)
+| Havuz | Model | Cagri | Sure | Sure Payi (%) | Token | Token Payi (%) |
+| --- | --- | --- | --- | --- | --- | --- |
+| `gemini` | `gemini-3.8-flash-medium` | `4` | `21dk 28s` | **%90.1** | `629.7K` | **%81.4** |
+| `claude` | `claude-sonnet-5-5-low` | `1` | `1dk 24s` | **%5.9** | `85.9K` | **%11.1** |
+| `gemini` | `gemini-3.8-flash-low` | `2` | `34.6s` | **%2.4** | `34.2K` | **%4.4** |
+| `claude` | `claude-sonnet-5-5-medium` | `1` | `22.0s` | **%1.5** | `23.9K` | **%3.1** |
+
+> Oturum sonu havuz kalan tahmini kota: `gemini`: **%63.6** | `claude`: **%60.0**
+
+## 3. Gorev Bazli Model Dagilimi, Sure ve Gorev Sonu Kalan Kota
+| Gorev | Vardiya | Sonuc | Commit | Kullanilan Modeller (% Sure & Sure) | Toplam Sure | Token | Gorev Sonu Havuz Kalan (%) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `T008` Hasar Arayüzü ve Oyuncu Can Sistemi (IDama | `Shift1_Gemini` | **DONE** | `0915a10` | `gemini-3.8-flash-medium`: **%100.0** (4dk 11s, 121.0K) | `4dk 39s` | `121.0K` | `gemini`: %69.2 / `claude`: %100.0 |
+| `T009` Kalp ve Can Göstergesi HUD Bileşeni (Healt | `Shift1_Gemini` | **BLOCKED** | - | `gemini-3.8-flash-medium`: **%93.5** (4dk 53s, 135.9K)<br>`gemini-4-neon-medium`: **%6.5** (20.6s, 21.8K) | `5dk 46s` | `157.7K` | `gemini`: %62.8 / `claude`: %100.0 |
+| `T010` Kombo Çarpanı (ComboManager & ComboUI) ve  | `Shift1_Gemini` | **DONE** | `fcdb050` | `gemini-3.8-flash-medium`: **%57.2** (5dk 04s, 102.0K)<br>`gemini-4-neon-medium`: **%40.6** (3dk 36s, 100.3K)<br>`gemini-3.8-flash-low`: **%2.3** (12.0s, 17.0K) | `9dk 21s` | `219.3K` | `gemini`: %54.1 / `claude`: %100.0 |
+| `T011` Dinamik Parkur Öğeleri (MovingPlatform, Fa | `Shift1_Gemini` | **BLOCKED** | - | `gemini-3.8-flash-medium`: **%82.0** (5dk 03s, 127.1K)<br>`gemini-4-neon-medium`: **%18.0** (1dk 07s, 46.5K) | `6dk 39s` | `173.6K` | `gemini`: %47.1 / `claude`: %100.0 |
+| `T012` CivCiv Gaga Saldırısı ve Havadan Yere Çakı | `Shift1_Gemini` | **DONE** | `0e42997` | `gemini-3.8-flash-medium`: **%100.0** (4dk 46s, 130.8K) | `5dk 17s` | `130.8K` | `gemini`: %41.9 / `claude`: %100.0 |
+| `T013` Kırılabilir Sandık ve Ganimet Sistemi (Loo | `Shift1_Gemini` | **DONE** | `030af2b` | `gemini-3.8-flash-medium`: **%100.0** (4dk 17s, 113.5K) | `4dk 51s` | `113.5K` | `gemini`: %37.4 / `claude`: %100.0 |
+| `T014` Devriye Düşman Yapay Zekası (EnemyStatsSO  | `Shift1_Gemini` | **DONE** | `7c028e0` | `gemini-3.8-flash-medium`: **%75.6** (3dk 13s, 135.6K)<br>`gemini-4-neon-medium`: **%24.4** (1dk 02s, 37.2K) | `5dk 09s` | `172.8K` | `gemini`: %30.5 / `claude`: %100.0 |
+| `T015` Etkileşim Sistemi ve Basınç Plakası Bulmac | `Shift1_Gemini` | **DONE** | `40a468d` | `gemini-3.8-flash-medium`: **%79.0** (5dk 04s, 146.3K)<br>`gemini-4-neon-medium`: **%21.0** (1dk 21s, 41.2K) | `6dk 57s` | `187.6K` | `gemini`: %23.0 / `claude`: %100.0 |
+| `T016` Kayıp CivCiv Kurtarma Görevi ve Hedef Pusu | `Shift1_Gemini` | **DONE** | `0751228` | `gemini-3.8-flash-medium`: **%69.7** (5dk 04s, 182.4K)<br>`gemini-4-neon-medium`: **%27.4** (1dk 59s, 60.1K)<br>`gemini-3.8-flash-low`: **%2.9** (12.6s, 17.0K) | `7dk 46s` | `259.4K` | `gemini`: %12.6 / `claude`: %100.0 |
+| `T017` JSON Kalıcı Kayıt ve Yıldız Puanlama Siste | `Shift1_Gemini` | **DONE** | `a8181ff` | `gemini-3.8-flash-medium`: **%100.0** (4dk 28s, 127.2K) | `5dk 01s` | `127.2K` | `gemini`: %7.5 / `claude`: %100.0 |
+| `T018` Nesne Havuzu ve Karakter Hareket Efektleri | `Shift1_Gemini` | **BLOCKED** | - | `gemini-3.8-flash-medium`: **%81.5** (5dk 03s, 148.7K)<br>`gemini-4-neon-medium`: **%18.5** (1dk 09s, 53.8K) | `6dk 27s` | `202.5K` | `gemini`: %0.0 / `claude`: %100.0 |
+| `T019` Kamera Hissiyatı ve 3D Ses Mimarisi (Camer | `Shift1_Gemini` | **BLOCKED** | - | `gemini-3.8-flash-medium`: **%59.2** (5dk 04s, 119.6K)<br>`gemini-4-neon-medium`: **%40.8** (3dk 29s, 101.9K) | `8dk 35s` | `221.5K` | `gemini`: %0.0 / `claude`: %100.0 |
+| `T020` Dinamik Gece/Gündüz Döngüsü, Başarım Siste | `Shift2_Claude` | **DONE** | `471e650` | `claude-opus-5-5-medium`: **%96.8** (4dk 17s, 142.4K)<br>`claude-sonnet-5-5-low`: **%3.2** (8.5s, 22.2K) | `4dk 59s` | `164.6K` | `gemini`: %100.0 / `claude`: %89.0 |
+| `T021` Zıplatma Mantarı / Trambolin Platformu (Bo | `Shift2_Claude` | **DONE** | `2185d36` | `claude-sonnet-5-5-low`: **%100.0** (1dk 04s, 103.9K) | `1dk 37s` | `103.9K` | `gemini`: %100.0 / `claude`: %78.5 |
+| `T022` Sallanan Sarkaç Tuzağı ve Geri Tepme (Swin | `Shift2_Claude` | **DONE** | `6644979` | `claude-sonnet-5-5-low`: **%100.0** (57.6s, 82.5K) | `1dk 31s` | `82.5K` | `gemini`: %100.0 / `claude`: %73.0 |
+| `T023` Uçan Geri Bildirim Yazıları (FloatingTextS | `Shift2_Claude` | **DEFERRED_QUOTA** | - | `claude-sonnet-5-5-low`: **%100.0** (15.2s, 99.0K) | `17.6s` | `99.0K` | `gemini`: %100.0 / `claude`: %0.0 |
+| `T023` Uçan Geri Bildirim Yazıları (FloatingTextS | `Shift2_Claude` | **DONE** | `cf29843` | `gemini-3.8-flash-medium`: **%61.0** (5dk 03s, 158.8K)<br>`gemini-4-neon-medium`: **%36.7** (3dk 02s, 58.2K)<br>`gemini-3.8-flash-low`: **%2.3** (11.3s, 17.1K) | `8dk 50s` | `234.0K` | `gemini`: %90.6 / `claude`: %0.0 |
+| `T024` Hizlandirma Halkasi (SpeedBoostRing) | `Shift2_Claude` | **DONE** | `d5ddca2` | `gemini-3.8-flash-medium`: **%100.0** (3dk 59s, 115.4K) | `4dk 34s` | `115.4K` | `gemini`: %84.8 / `claude`: %0.0 |
+| `T025` Yumurta Firlatma Yetenegi (EggProjectile & | `Shift2_Claude` | **DONE** | `9c4ede2` | `gemini-3.8-flash-medium`: **%100.0** (4dk 44s, 137.2K) | `5dk 18s` | `137.2K` | `gemini`: %79.3 / `claude`: %0.0 |
+| `T026` Kurtarilan CivCiv Ilerleme HUD Bileseni (R | `Shift2_Claude` | **BLOCKED** | - | `gemini-3.8-flash-medium`: **%61.0** (4dk 36s, 146.4K)<br>`gemini-4-neon-medium`: **%36.2** (2dk 44s, 70.3K)<br>`gemini-3.8-flash-low`: **%2.8** (12.7s, 17.1K) | `8dk 05s` | `233.8K` | `gemini`: %69.9 / `claude`: %0.0 |
+| `T009` Kalp ve Can Göstergesi HUD Bileşeni (Healt | `Run (balanced)` | **BLOCKED** | - | `gemini-3.8-flash-medium`: **%93.1** (5dk 05s, 148.2K)<br>`claude-sonnet-5-5-medium`: **%6.9** (22.6s, 39.7K) | `7dk 52s` | `187.9K` | `gemini`: %94.1 / `claude`: %88.1 |
+| `T011` Dinamik Parkur Öğeleri (MovingPlatform, Fa | `Run (balanced)` | **BLOCKED** | - | `gemini-3.8-flash-medium`: **%93.9** (3dk 56s, 97.5K)<br>`claude-sonnet-5-5-medium`: **%6.1** (15.3s, 32.0K) | `5dk 44s` | `129.5K` | `gemini`: %90.2 / `claude`: %81.8 |
+| `T009` Kalp ve Can Göstergesi HUD Bileşeni (Healt | `Immediate_Balanced` | **DONE** | `6b92335` | `gemini-3.8-flash-medium`: **%94.5** (4dk 29s, 133.1K)<br>`gemini-3.8-flash-low`: **%5.5** (15.8s, 17.0K) | `6dk 00s` | `150.1K` | `gemini`: %84.2 / `claude`: %81.8 |
+| `T011` Dinamik Parkur Öğeleri (MovingPlatform, Fa | `Immediate_Balanced` | **DONE** | `e49c39f` | `claude-sonnet-5-5-low`: **%100.0** (1dk 24s, 85.9K) | `3dk 01s` | `85.9K` | `gemini`: %84.2 / `claude`: %64.8 |
+| `T018` Nesne Havuzu ve Karakter Hareket Efektleri | `Immediate_Balanced` | **DONE** | `58053e0` | `gemini-3.8-flash-medium`: **%100.0** (5dk 21s, 169.2K) | `6dk 13s` | `169.2K` | `gemini`: %77.4 / `claude`: %64.8 |
+| `T019` Kamera Hissiyatı ve 3D Ses Mimarisi (Camer | `Immediate_Balanced` | **DONE** | `1f6b80d` | `gemini-3.8-flash-medium`: **%100.0** (5dk 46s, 143.4K) | `6dk 43s` | `143.4K` | `gemini`: %71.7 / `claude`: %64.8 |
+| `T026` Kurtarilan CivCiv Ilerleme HUD Bileseni (R | `Immediate_Balanced` | **DONE** | `38465e5` | `gemini-3.8-flash-medium`: **%89.6** (5dk 52s, 184.1K)<br>`claude-sonnet-5-5-medium`: **%5.6** (22.0s, 23.9K)<br>`gemini-3.8-flash-low`: **%4.8** (18.8s, 17.2K) | `7dk 46s` | `225.2K` | `gemini`: %63.6 / `claude`: %60.0 |
