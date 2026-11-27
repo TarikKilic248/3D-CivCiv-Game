@@ -1,6 +1,6 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 28** | Taslak (Onay Bekleyen): `0` | Sirada: `2` (Calismaya Hazir: `2`) | Tamamlanan: `22` | Bloklanan: `4`
+- Ozet: **Toplam 28** | Taslak (Onay Bekleyen): `0` | Sirada: `1` (Calismaya Hazir: `1`) | Tamamlanan: `23` | Bloklanan: `4`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 _Yok._
@@ -8,7 +8,6 @@ _Yok._
 ## Siradaki Gorevler (`pending`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
-| `T025` | Yumurta Firlatma Yetenegi (EggProjectile & ChickEggThrower) | T008, T013 | `fast` | - | Hazir |
 | `T026` | Kurtarilan CivCiv Ilerleme HUD Bileseni (RescueProgressUI) | T007A, T016 | `fast` | Evet | Hazir |
 
 ## Bloklanan Gorevler (`blocked`)
@@ -44,3 +43,4 @@ _Yok._
 | `T022` | Sallanan Sarkaç Tuzağı ve Geri Tepme (SwingingHazard) | - | `fast` | - | Commit `6644979` |
 | `T023` | Uçan Geri Bildirim Yazıları (FloatingTextSpawner: Altın/Hasar/Kombo) | - | `fast` | Evet | Commit `cf29843` |
 | `T024` | Hizlandirma Halkasi (SpeedBoostRing) | T010, T021 | `fast` | - | Commit `d5ddca2` |
+| `T025` | Yumurta Firlatma Yetenegi (EggProjectile & ChickEggThrower) | T008, T013 | `fast` | - | Commit `9c4ede2` |

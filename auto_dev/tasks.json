@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-27T02:39:54+00:00",
+  "updated_at": "2026-11-27T02:45:13+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -917,7 +917,7 @@
         "Firlatma ve kirilma anlarinda prosedurel squash-stretch/geri tepme animasyonu, yay boyunca TrailRenderer, kirilma aninda kabuk ParticleSystem efekti ve SettingsUI.PlaySFX ses kancalari calisir.",
         "Editor AutoDevCheck dogrulamasi (Check_<ID>.cs) firlatma, cooldown, IDamageable hasar iletimi ve efekt kurulumunu davranissal olarak dogrular."
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [
         "T008",
         "T013"
@@ -937,9 +937,9 @@
       "verify_check": "TryThrowEgg ile EggProjectile olustugunu, cooldown kontrolunun calistigini ve IDamageable hedefine carpinca hasar ile OnEggHit olayinin tetiklendigini dogrula.",
       "retries": 0,
       "last_error": "",
-      "commit_sha": "",
+      "commit_sha": "9c4ede2",
       "created_at": "2026-11-27T02:35:19+00:00",
-      "updated_at": "2026-11-27T02:35:19+00:00"
+      "updated_at": "2026-11-27T02:45:13+00:00"
     },
     {
       "id": "T026",
