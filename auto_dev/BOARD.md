@@ -1,6 +1,6 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 28** | Taslak (Onay Bekleyen): `0` | Sirada: `4` (Calismaya Hazir: `4`) | Tamamlanan: `23` | Bloklanan: `1`
+- Ozet: **Toplam 28** | Taslak (Onay Bekleyen): `0` | Sirada: `3` (Calismaya Hazir: `3`) | Tamamlanan: `23` | Bloklanan: `2`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 _Yok._
@@ -8,7 +8,6 @@ _Yok._
 ## Siradaki Gorevler (`pending`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
-| `T011` | Dinamik Parkur Öğeleri (MovingPlatform, FallingPlatform & WindCurrentZone) | T007 | `fast` | - | Hazir |
 | `T018` | Nesne Havuzu ve Karakter Hareket Efektleri (ObjectPoolManager & PlayerVFXController) | T003, T007 | `fast` | - | Hazir |
 | `T019` | Kamera Hissiyatı ve 3D Ses Mimarisi (CameraJuiceController & SpatialAudioManager) | T003, T008 | `fast` | - | Hazir |
 | `T026` | Kurtarilan CivCiv Ilerleme HUD Bileseni (RescueProgressUI) | T007A, T016 | `fast` | Evet | Hazir |
@@ -17,6 +16,7 @@ _Yok._
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
 | `T009` | Kalp ve Can Göstergesi HUD Bileşeni (HealthUI) | T008, T007A | `fast` | Evet | Deneme: 2 — unity_verify:T009: Olum sonrasi HealthUI guncellenmedi. Curr=80, Hearts=4 |
+| `T011` | Dinamik Parkur Öğeleri (MovingPlatform, FallingPlatform & WindCurrentZone) | T007 | `fast` | - | Deneme: 2 — unity_verify:T011: MovingPlatform hedefe dogru hareket etmedi. X=0 |
 
 ## Tamamlanan Gorevler (`done`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
