@@ -1,14 +1,14 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `1` | Sirada: `0` (Calismaya Hazir: `0`) | Tamamlanan: `17` | Bloklanan: `4`
+- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `0` | Sirada: `1` (Calismaya Hazir: `1`) | Tamamlanan: `17` | Bloklanan: `4`
 
 ## Onay Bekleyen Taslaklar (`draft`)
-| ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
-| --- | --- | --- | --- | --- | --- |
-| `T020` | Dinamik Gece/Gündüz Döngüsü, Başarım Sistemi ve Bütünlük Doğrulayıcı | T017, T007A | `smart` | Evet | `approve` bekliyor |
+_Yok._
 
 ## Siradaki Gorevler (`pending`)
-_Yok._
+| ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
+| --- | --- | --- | --- | --- | --- |
+| `T020` | Dinamik Gece/Gündüz Döngüsü, Başarım Sistemi ve Bütünlük Doğrulayıcı | T017, T007A | `smart` | Evet | Hazir |
 
 ## Bloklanan Gorevler (`blocked`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
