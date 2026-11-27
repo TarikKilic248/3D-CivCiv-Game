@@ -105,7 +105,7 @@ public class ThirdPersonCameraController : MonoBehaviour
 
     private void Start()
     {
-        if (_lockCursor)
+        if (_lockCursor && !StartMenuUI.IsOpen)
         {
             SetCursorLock(true);
         }
@@ -115,6 +115,8 @@ public class ThirdPersonCameraController : MonoBehaviour
 
     private void Update()
     {
+        if (StartMenuUI.IsOpen) return;
+
         HandleInputs();
         HandleMouseLook();
         UpdateCharacterRotation();

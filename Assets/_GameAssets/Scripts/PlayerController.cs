@@ -317,7 +317,7 @@ public class PlayerController : MonoBehaviour
 
     public bool IsInputBlocked()
     {
-        if (SettingsUI.IsOpen)
+        if (StartMenuUI.IsOpen || SettingsUI.IsOpen)
             return true;
 
         if (Time.timeScale <= 0f || Mathf.Approximately(Time.timeScale, 0f))

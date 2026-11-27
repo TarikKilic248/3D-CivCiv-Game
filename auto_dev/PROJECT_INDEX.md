@@ -1,5 +1,5 @@
 # Compact Project Code Index (Auto-Generated, 0 Tokens)
-Indexed files: `95`
+Indexed files: `98`
 
 - `Assets/_GameAssets/Scripts/AI/PatrolEnemyAI.cs` (725L): types: class PatrolEnemyAI: MonoBehaviour, IDamageable, enum EnemyState | events: OnStateChanged, OnHealthChanged, OnHit, OnDefeated | api: ResolveDependencies(), ApplyStats(), RefreshWaypoints(), SetState(EnemyState newState), Step(float deltaTime), StepFeedback(float deltaTime), ResetVisualPoseImmediate(), TakeDamage(int damage), TakeDamage(int damage, Vector3 hitDirection), Heal(int amount) | fields: _stats, _waypoints, _rigidbody, _collider, _visualRoot, _hitVFX, _defeatedVFX, _aggroVFX, _hitSfx, _defeatSfx
 - `Assets/_GameAssets/Scripts/Audio/FootstepAudioTrigger.cs` (147L): types: class FootstepAudioTrigger: MonoBehaviour | api: ResolveDependencies(), StepFootstep(float deltaTime, float currentSpeed, ...), TriggerFootstep(), OnFootstepAnimationEvent(), ResetCounters() | fields: _audioLibrary, _footstepClips, _stepDistance, _minSpeedThreshold, _minPitch, _maxPitch
@@ -54,7 +54,7 @@ Indexed files: `95`
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T024.cs` (170L): types: class Check_T024 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T025.cs` (212L): types: class Check_T025, class DummyDamageable: MonoBehaviour, IDamageable | api: TakeDamage(int damage), TakeDamage(int damage, Vector3 dir), Heal(int amount), Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T026.cs` (310L): types: class Check_T026 | api: Run()
+- `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T027_Polish.cs` (299L): types: class Check_T027_Polish | api: Run()
+- `Assets/_GameAssets/Scripts/Editor/AutoDev/ProjectCleanupAuditor.cs` (346L): types: class ProjectCleanupAuditor | api: RunAuditCheck(), RunApplyCleanup(), BuildPlan(out List<string> keepList, out List<s...), CheckSceneIntegrity(string scenePath), BuildWin64FromCommandLine(), CapturePortfolioScreenshots()
 - `Assets/_GameAssets/Scripts/Editor/CivCivAutoSetup.cs` (265L): types: class CivCivAutoSetup | api: SetupAll(), SetupSettingsUI()
-- `Assets/_GameAssets/Scripts/Enums/GameState.cs` (8L): types: enum GameState
-- `Assets/_GameAssets/Scripts/Enums/PlayerState.cs` (19L): types: enum PlayerState
 - _... (index truncated by max_index_chars limit)_

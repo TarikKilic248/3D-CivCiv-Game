@@ -53,7 +53,7 @@ public class ChickEggThrower : MonoBehaviour
     [SerializeField] private bool _infiniteAmmo = false;
 
     [Header("--- Controls (Input) ---")]
-    [SerializeField] private KeyCode _throwKey = KeyCode.E;
+    [SerializeField] private KeyCode _throwKey = KeyCode.Q;
 
     [Header("--- Procedural Recoil & Motion ---")]
     [Tooltip("Firlatma aninda geri tepme animasyon suresi")]
@@ -208,7 +208,7 @@ public class ChickEggThrower : MonoBehaviour
         var kb = Keyboard.current;
         if (kb != null)
         {
-            if (kb.eKey.wasPressedThisFrame || kb.qKey.wasPressedThisFrame) throwRequested = true;
+            if (kb.qKey.wasPressedThisFrame) throwRequested = true;
         }
         var mouse = Mouse.current;
         if (mouse != null)

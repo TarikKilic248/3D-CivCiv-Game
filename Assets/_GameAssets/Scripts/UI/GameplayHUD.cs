@@ -25,6 +25,7 @@ public class GameplayHUD : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _scoreText;
     [SerializeField] private TextMeshProUGUI _highScoreText;
     [SerializeField] private Button _restartButton;
+    [SerializeField] private Button _mainMenuButton;
 
     [Header("--- Target References ---")]
     [SerializeField] private DashController _dashController;
@@ -155,6 +156,11 @@ public class GameplayHUD : MonoBehaviour
         {
             UIStyleHelper.ApplyButtonStyle(_restartButton, activeTheme);
         }
+
+        if (_mainMenuButton != null)
+        {
+            UIStyleHelper.ApplyButtonStyle(_mainMenuButton, activeTheme);
+        }
     }
 
     public void SubscribeEvents()
@@ -192,6 +198,12 @@ public class GameplayHUD : MonoBehaviour
             _restartButton.onClick.RemoveListener(OnRestartButtonClicked);
             _restartButton.onClick.AddListener(OnRestartButtonClicked);
         }
+
+        if (_mainMenuButton != null)
+        {
+            _mainMenuButton.onClick.RemoveListener(OnMainMenuButtonClicked);
+            _mainMenuButton.onClick.AddListener(OnMainMenuButtonClicked);
+        }
     }
 
     public void UnsubscribeEvents()
@@ -214,6 +226,11 @@ public class GameplayHUD : MonoBehaviour
         if (_restartButton != null)
         {
             _restartButton.onClick.RemoveListener(OnRestartButtonClicked);
+        }
+
+        if (_mainMenuButton != null)
+        {
+            _mainMenuButton.onClick.RemoveListener(OnMainMenuButtonClicked);
         }
     }
 
@@ -261,14 +278,22 @@ public class GameplayHUD : MonoBehaviour
 
             CoinManager coinManager = CoinManager.Instance ?? UnityEngine.Object.FindAnyObjectByType<CoinManager>();
             GameManager gameManager = GameManager.Instance ?? _gameManager ?? UnityEngine.Object.FindAnyObjectByType<GameManager>();
+            ChickRescueManager rescueMgr = ChickRescueManager.Instance ?? UnityEngine.Object.FindAnyObjectByType<ChickRescueManager>();
+            LevelProgressionManager progMgr = LevelProgressionManager.Instance ?? UnityEngine.Object.FindAnyObjectByType<LevelProgressionManager>();
 
             int coins = coinManager != null ? coinManager.Coins : 0;
             int target = gameManager != null ? gameManager.TargetCoins : 0;
             int highScore = coinManager != null ? coinManager.HighScore : PlayerPrefs.GetInt(CoinManager.HighScoreKey, 0);
+            int stars = progMgr != null ? progMgr.EarnedStars : 0;
+            int rescued = rescueMgr != null ? rescueMgr.RescuedChickCount : 0;
+            int totalChicks = rescueMgr != null ? rescueMgr.TotalChickCount : 0;
 
             if (_scoreText != null)
             {
-                _scoreText.text = target > 0 ? $"Score: {coins} / {target}" : $"Score: {coins}";
+                string coinPart = target > 0 ? $"Score: {coins} / {target}" : $"Score: {coins}";
+                string chickPart = totalChicks > 0 ? $"  |  CivCiv: {rescued}/{totalChicks}" : "";
+                string starPart = state == GameState.Victory ? $"  |  Yildiz: {stars}/3" : "";
+                _scoreText.text = $"{coinPart}{chickPart}{starPart}";
             }
 
             if (_highScoreText != null)
@@ -292,6 +317,22 @@ public class GameplayHUD : MonoBehaviour
             SettingsUI.Instance.PlayClickSound();
         }
 
+        StartMenuUI.PrepareQuickRestart();
+        ReloadCurrentScene();
+    }
+
+    public void OnMainMenuButtonClicked()
+    {
+        if (SettingsUI.Instance != null)
+        {
+            SettingsUI.Instance.PlayClickSound();
+        }
+
+        ReloadCurrentScene();
+    }
+
+    private void ReloadCurrentScene()
+    {
         if (GameManager.Instance != null)
         {
             GameManager.Instance.RestartLevel();
@@ -366,6 +407,12 @@ public class GameplayHUD : MonoBehaviour
             {
                 Transform bTr = _endGamePanel.transform.Find("RestartButton");
                 if (bTr != null) _restartButton = bTr.GetComponent<Button>();
+            }
+
+            if (_mainMenuButton == null)
+            {
+                Transform mmTr = _endGamePanel.transform.Find("MainMenuButton");
+                if (mmTr != null) _mainMenuButton = mmTr.GetComponent<Button>();
             }
         }
 
