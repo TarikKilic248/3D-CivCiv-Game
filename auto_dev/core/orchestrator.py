@@ -74,10 +74,98 @@ class Orchestrator:
             pool_budgets=cfg.night_shift.pool_5h_budgets,
         )
         self.planner = TaskPlanner(cfg, self.store, self.runner, self.indexer, adapter)
+        self._models_synced = False
 
     def _select_model(self, task: Task, attempt: int, pool_name: str) -> ModelProfile:
         role = "smart" if (attempt >= 2 or task.tier == "smart") else "fast"
         return self.pool_manager.get_profile(pool_name, role)
+
+    def _sync_pool_models(self, force: bool = False) -> None:
+        if self._models_synced and not force:
+            return
+        self._models_synced = True
+        avail = self.runner.list_available_models(force_refresh=force)
+        if not avail:
+            return
+        remapped = self.pool_manager.set_available_models(avail)
+        for pname, role, old_m, new_m in remapped:
+            print(
+                f"[AutoDev] Model esleme (agy models): {pname}.{role} '{old_m}' -> '{new_m}'",
+                flush=True,
+            )
+
+    def _run_prompt_with_model_fallback(
+        self,
+        prompt: str,
+        initial_pool: str,
+        role: str,
+        schema: dict[str, Any] | None,
+        tag: str,
+        run_dir: Path | None,
+        read_only: bool,
+        candidate_pools: list[str] | None = None,
+        record_pool_usage: bool = True,
+    ) -> tuple[Any, str, ModelProfile]:
+        """Run `runner.run_prompt`, automatically falling back on unavailable models without burning task retries."""
+        pool_order: list[str] = [initial_pool]
+        for p in candidate_pools or []:
+            if p not in pool_order and self.pool_manager.is_available(p):
+                pool_order.append(p)
+
+        last_res = None
+        last_pool = initial_pool
+        last_profile = self.pool_manager.get_profile(initial_pool, role)
+
+        for p_idx, cur_pool in enumerate(pool_order):
+            tried_in_pool: set[str] = set()
+            cur_profile = self.pool_manager.get_profile(cur_pool, role)
+            if cur_profile.model in self.pool_manager._unavailable_models:
+                nxt = self.pool_manager.next_fallback_profile(cur_pool, role, cur_profile.model, tried_in_pool)
+                if nxt is None:
+                    continue
+                cur_profile = nxt
+
+            for step in range(4):
+                run_tag = tag if (p_idx == 0 and step == 0) else f"{tag}_fb_{cur_pool}_{step}"
+                res = self.runner.run_prompt(
+                    prompt=prompt,
+                    profile=cur_profile,
+                    schema=schema,
+                    tag=run_tag,
+                    run_dir=run_dir,
+                    read_only=read_only,
+                )
+                if record_pool_usage and res.usage.total_tokens > 0:
+                    self.pool_manager.record_usage(cur_pool, res.usage.total_tokens)
+
+                last_res = res
+                last_pool = cur_pool
+                last_profile = cur_profile
+                if not res.is_model_unavailable:
+                    return res, cur_pool, cur_profile
+
+                self.pool_manager.mark_model_unavailable(cur_profile.model)
+                tried_in_pool.add(cur_profile.model)
+                if not self.pool_manager._available_models:
+                    # Lazily query `agy models` once if a model failed at runtime
+                    self._sync_pool_models(force=True)
+                nxt = self.pool_manager.next_fallback_profile(
+                    cur_pool, role, cur_profile.model, excluded=tried_in_pool
+                )
+                if nxt is None:
+                    print(
+                        f"[AutoDev] Model kullanilamiyor ({cur_profile.model}); '{cur_pool}' havuzunda yedek kalmadi.",
+                        flush=True,
+                    )
+                    break
+                print(
+                    f"[AutoDev] Model kullanilamiyor ({cur_profile.model}) -> alternatif: {nxt.model} ({cur_pool})",
+                    flush=True,
+                )
+                cur_profile = nxt
+
+        assert last_res is not None
+        return last_res, last_pool, last_profile
 
     def _build_attempt1_prompt(
         self,
@@ -157,7 +245,13 @@ Finish by returning ONLY JSON matching the schema (`summary`, `changed_files`, `
 Fix the issues cleanly and return ONLY JSON matching the schema (`summary`, `changed_files`, `notes`).
 """
 
-    def _run_visual_gate(self, task: Task, run_dir: Path, pool_name: str) -> GateResult:
+    def _run_visual_gate(
+        self,
+        task: Task,
+        run_dir: Path,
+        pool_name: str,
+        active_pools: list[str] | None = None,
+    ) -> GateResult:
         started = time.monotonic()
         cap = self.adapter.capture_visual(task, run_dir)
         if not cap.passed:
@@ -185,19 +279,19 @@ STRICT RULES (low-token fast check):
 Task criteria context:
 {criteria}
 """
-        vis_profile = self.pool_manager.get_profile(pool_name, "visual")
-        res = self.runner.run_prompt(
+        res, used_vis_pool, vis_profile = self._run_prompt_with_model_fallback(
             prompt=prompt,
-            profile=vis_profile,
+            initial_pool=pool_name,
+            role="visual",
             schema=VISUAL_CHECK_SCHEMA,
             tag=f"{task.id}_visual",
             run_dir=run_dir,
             read_only=True,
+            candidate_pools=active_pools,
         )
-        self.pool_manager.record_usage(pool_name, res.usage.total_tokens)
         vis_metric = ModelCallMetric(
             role="visual",
-            pool=pool_name,
+            pool=used_vis_pool,
             model=vis_profile.model,
             duration_sec=res.duration_sec,
             usage=res.usage,
@@ -282,25 +376,43 @@ Task criteria context:
             f"(Havuz: {pool_name}, Model: {profile.model})...",
             flush=True,
         )
-        created, res = self.planner.plan_goal_with_result(
-            goal=goal,
-            max_tasks=batch_size,
-            profile=profile,
-            auto_approve=True,
-            run_dir=run_dir,
-        )
-        self.pool_manager.record_usage(pool_name, res.usage.total_tokens)
-        extra_calls.append(
-            ModelCallMetric(
-                role="planner",
-                pool=pool_name,
-                model=profile.model,
-                duration_sec=res.duration_sec,
-                usage=res.usage,
-                ok=res.ok,
-                is_quota_error=res.is_quota_error,
+        tried_models: set[str] = set()
+        created: list[Task] = []
+        res = None
+        for _ in range(4):
+            created, res = self.planner.plan_goal_with_result(
+                goal=goal,
+                max_tasks=batch_size,
+                profile=profile,
+                auto_approve=True,
+                run_dir=run_dir,
             )
-        )
+            self.pool_manager.record_usage(pool_name, res.usage.total_tokens)
+            extra_calls.append(
+                ModelCallMetric(
+                    role="planner",
+                    pool=pool_name,
+                    model=profile.model,
+                    duration_sec=res.duration_sec,
+                    usage=res.usage,
+                    ok=res.ok,
+                    is_quota_error=res.is_quota_error,
+                )
+            )
+            if not res.is_model_unavailable:
+                break
+            self.pool_manager.mark_model_unavailable(profile.model)
+            tried_models.add(profile.model)
+            nxt = self.pool_manager.next_fallback_profile(pool_name, "planner", profile.model, tried_models)
+            if nxt is None:
+                break
+            print(
+                f"[AutoDev] Planlayici modeli kullanilamiyor ({profile.model}) -> alternatif: {nxt.model}",
+                flush=True,
+            )
+            profile = nxt
+
+        assert res is not None
         if res.is_quota_error:
             return [], True, res.quota_reset_hint_sec
         if not created:
@@ -398,6 +510,7 @@ Task criteria context:
                     "ready_tasks": [t.to_dict() for t in ready],
                 }
 
+            self._sync_pool_models()
             self._sync_pending_state_files()
             self.git.ensure_safe_dev_branch()
             index_text = self.indexer.build_index(self.cfg.index_file)
@@ -686,7 +799,8 @@ Task criteria context:
                     pool_name, pools_list, cross_pool=cross_pool_escalation
                 )
             )
-            profile = self._select_model(task, attempt, attempt_pool)
+            role = "smart" if (attempt >= 2 or task.tier == "smart") else "fast"
+            profile = self.pool_manager.get_profile(attempt_pool, role)
             esc_note = " (capraz havuz onarim)" if (attempt >= 2 and attempt_pool != pool_name) else ""
             print(
                 f"[AutoDev]     Deneme {attempt}/{max_attempts} | "
@@ -703,16 +817,18 @@ Task criteria context:
             pre_files = self.git.changed_files(base_ref=self.cfg.git.dev_branch)
             pre_snap = self._snapshot_file_mtimes(pre_files)
 
-            agent_res = self.runner.run_prompt(
+            agent_res, attempt_pool, profile = self._run_prompt_with_model_fallback(
                 prompt=prompt,
-                profile=profile,
+                initial_pool=attempt_pool,
+                role=role,
                 schema=TASK_AGENT_SCHEMA,
                 tag=f"{task.id}_{attempt_pool}_a{attempt}",
                 run_dir=run_dir,
                 read_only=False,
+                candidate_pools=pools_list,
+                record_pool_usage=True,
             )
             last_agent_summary = agent_res.summary
-            self.pool_manager.record_usage(attempt_pool, agent_res.usage.total_tokens)
             task_usage = task_usage.add(agent_res.usage)
 
             model_calls: list[ModelCallMetric] = [
@@ -815,7 +931,7 @@ Task criteria context:
                                 fallback_pool=attempt_pool,
                                 prefer_gemini=prefer_gemini_for_visual,
                             )
-                            g_vis = self._run_visual_gate(task, run_dir, vis_pool)
+                            g_vis = self._run_visual_gate(task, run_dir, vis_pool, active_pools=pools_list)
                             if g_vis.model_metric is not None:
                                 model_calls.append(g_vis.model_metric)
                                 task_usage = task_usage.add(g_vis.model_metric.usage)
@@ -827,7 +943,7 @@ Task criteria context:
                             ):
                                 self.pool_manager.mark_quota_exhausted(vis_pool, g_vis.quota_reset_hint_sec)
                                 vis_pool = attempt_pool
-                                g_vis = self._run_visual_gate(task, run_dir, vis_pool)
+                                g_vis = self._run_visual_gate(task, run_dir, vis_pool, active_pools=pools_list)
                                 if g_vis.model_metric is not None:
                                     model_calls.append(g_vis.model_metric)
                                     task_usage = task_usage.add(g_vis.model_metric.usage)

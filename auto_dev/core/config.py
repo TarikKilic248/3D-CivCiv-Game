@@ -11,6 +11,7 @@ class ModelProfile:
     model: str
     effort: str = "medium"
     timeout_sec: int = 300
+    fallback_models: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -142,6 +143,11 @@ class AutoDevConfig:
                 model=str(m.get("model", default_prof.model)),
                 effort=str(m.get("effort", default_prof.effort)),
                 timeout_sec=int(m.get("timeout_sec", default_prof.timeout_sec)),
+                fallback_models=[
+                    str(x).strip()
+                    for x in (m.get("fallback_models") or default_prof.fallback_models)
+                    if str(x).strip()
+                ],
             )
         return out
 
@@ -203,16 +209,56 @@ class AutoDevConfig:
         )
 
         default_gemini = {
-            "planner": ModelProfile("gemini-4-neon-medium", "medium", 300),
-            "fast": ModelProfile("gemini-3.8-flash-medium", "medium", 420),
-            "smart": ModelProfile("gemini-4-neon-medium", "medium", 420),
-            "visual": ModelProfile("gemini-3.8-flash-low", "low", 90),
+            "planner": ModelProfile(
+                "gemini-4-hydrogen-medium",
+                "medium",
+                300,
+                fallback_models=["gemini-4-hydrogen-high", "gemini-3.8-flash-high", "gemini-3.8-flash-medium"],
+            ),
+            "fast": ModelProfile(
+                "gemini-3.8-flash-medium",
+                "medium",
+                420,
+                fallback_models=["gemini-3.8-flash-high", "gemini-4-hydrogen-low", "gemini-4-hydrogen-medium"],
+            ),
+            "smart": ModelProfile(
+                "gemini-4-hydrogen-medium",
+                "medium",
+                420,
+                fallback_models=["gemini-4-hydrogen-high", "gemini-4-hydrogen-xhigh", "gemini-3.8-flash-high"],
+            ),
+            "visual": ModelProfile(
+                "gemini-3.8-flash-low",
+                "low",
+                90,
+                fallback_models=["gemini-3.8-flash-medium", "gemini-4-hydrogen-low"],
+            ),
         }
         default_claude = {
-            "planner": ModelProfile("claude-opus-5-5-medium", "medium", 360),
-            "fast": ModelProfile("claude-sonnet-5-5-low", "low", 300),
-            "smart": ModelProfile("claude-sonnet-5-5-medium", "medium", 420),
-            "visual": ModelProfile("claude-sonnet-5-5-low", "low", 90),
+            "planner": ModelProfile(
+                "claude-opus-4-6-thinking",
+                "medium",
+                360,
+                fallback_models=["claude-sonnet-4-6", "gpt-oss-120b-medium"],
+            ),
+            "fast": ModelProfile(
+                "claude-sonnet-4-6",
+                "low",
+                300,
+                fallback_models=["claude-opus-4-6-thinking", "gpt-oss-120b-medium"],
+            ),
+            "smart": ModelProfile(
+                "claude-sonnet-4-6",
+                "medium",
+                420,
+                fallback_models=["claude-opus-4-6-thinking", "gpt-oss-120b-medium"],
+            ),
+            "visual": ModelProfile(
+                "claude-sonnet-4-6",
+                "low",
+                90,
+                fallback_models=["claude-opus-4-6-thinking"],
+            ),
         }
 
         models_map = cls._parse_model_map(raw.get("models", {}), default_gemini)

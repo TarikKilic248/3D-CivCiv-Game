@@ -242,6 +242,10 @@ def run_night_session(
     if claude_pct is not None:
         pool_mgr.set_initial_remaining_pct("claude", claude_pct, refresh_in_minutes=claude_refresh_min)
 
+    adapter = load_adapter(cfg)
+    orch = Orchestrator(cfg, adapter, pool_manager=pool_mgr)
+    orch._sync_pool_models()
+
     print("============================================================")
     print(f" AutoDev Gece Vardiya Yoneticisi — {cfg.project_name}")
     print("============================================================")
@@ -268,9 +272,6 @@ def run_night_session(
             smart_m = profs.get("smart").model if "smart" in profs else "?"
             plan_m = profs.get("planner").model if "planner" in profs else "?"
             print(f"       - {p}: fast={fast_m}, smart={smart_m}, planner={plan_m}")
-
-    adapter = load_adapter(cfg)
-    orch = Orchestrator(cfg, adapter, pool_manager=pool_mgr)
 
     if dry_run:
         preview = orch.run(

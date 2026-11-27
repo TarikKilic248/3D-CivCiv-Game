@@ -248,14 +248,15 @@ class TestAutoDevCore(unittest.TestCase):
                     changed_files=["src/app.py"],
                 )
 
+            orch.runner.list_available_models = lambda force_refresh=False: []  # type: ignore[method-assign]
             orch.runner.run_prompt = fake_run_prompt  # type: ignore[method-assign]
             res = orch.run(max_tasks=3, keep_awake=False)
 
-            # Verify escalation occurred: T001_a1 used Flash, T001_a2 used Neon
+            # Verify escalation occurred: T001_a1 used Flash, T001_a2 used Hydrogen
             self.assertEqual(calls[0], ("T001_gemini_a1", "gemini-3.8-flash-medium"))
-            self.assertEqual(calls[1], ("T001_gemini_a2", "gemini-4-neon-medium"))
+            self.assertEqual(calls[1], ("T001_gemini_a2", "gemini-4-hydrogen-medium"))
             self.assertEqual(calls[2], ("T002_gemini_a1", "gemini-3.8-flash-medium"))
-            self.assertEqual(calls[3], ("T002_gemini_a2", "gemini-4-neon-medium"))
+            self.assertEqual(calls[3], ("T002_gemini_a2", "gemini-4-hydrogen-medium"))
 
             final_tasks = {t.id: t for t in store.load()}
             self.assertEqual(final_tasks["T001"].status, "done")
@@ -376,6 +377,7 @@ class TestAutoDevCore(unittest.TestCase):
                     usage=TokenUsage(input_tokens=60000, output_tokens=8000, total_tokens=68000),
                 )
 
+            orch.runner.list_available_models = lambda force_refresh=False: []  # type: ignore[method-assign]
             orch.runner.run_prompt = fake_run_prompt  # type: ignore[method-assign]
             res = orch.run(
                 max_tasks=3,
@@ -387,7 +389,7 @@ class TestAutoDevCore(unittest.TestCase):
 
             # First attempt ran on Gemini (quota hit -> rolled back), second ran on Claude and passed!
             self.assertEqual(seen[0][1], "gemini-3.8-flash-medium")
-            self.assertEqual(seen[1][1], "claude-sonnet-5-5-low")
+            self.assertEqual(seen[1][1], "claude-sonnet-4-6")
             final_tasks = {t.id: t for t in store.load()}
             self.assertEqual(final_tasks["T001"].status, "done")
             self.assertEqual(orch.pool_manager.get_remaining_pct("gemini"), 0.0)
@@ -395,7 +397,7 @@ class TestAutoDevCore(unittest.TestCase):
 
             brief = (root / "auto_dev" / "MORNING_BRIEF.md").read_text(encoding="utf-8")
             self.assertIn("Shift1_Gemini", brief)
-            self.assertIn("claude-sonnet-5-5-low", brief)
+            self.assertIn("claude-sonnet-4-6", brief)
             self.assertIn("Kalan Kota (%)", brief)
             self.assertEqual(res["stop_reason"], "queue_drained")
 
@@ -421,6 +423,7 @@ class TestAutoDevCore(unittest.TestCase):
                     quota_reset_hint_sec=3600,
                 )
 
+            orch.runner.list_available_models = lambda force_refresh=False: []  # type: ignore[method-assign]
             orch.runner.run_prompt = always_quota  # type: ignore[method-assign]
             res = orch.run(max_tasks=0, pool_name="gemini", failover_on_quota=True, keep_awake=False)
             self.assertEqual(res["stop_reason"], "all_pools_exhausted")
@@ -562,6 +565,7 @@ class TestAutoDevCore(unittest.TestCase):
                     usage=TokenUsage(total_tokens=40_000),
                 )
 
+            orch.runner.list_available_models = lambda force_refresh=False: []  # type: ignore[method-assign]
             orch.runner.run_prompt = fake_run_prompt  # type: ignore[method-assign]
             res = orch.run(
                 max_tasks=2,
@@ -577,7 +581,7 @@ class TestAutoDevCore(unittest.TestCase):
                 calls,
                 [
                     ("T001_gemini_a1", "gemini-3.8-flash-medium"),
-                    ("T001_claude_a2", "claude-sonnet-5-5-medium"),
+                    ("T001_claude_a2", "claude-sonnet-4-6"),
                     ("T001_visual", "gemini-3.8-flash-low"),
                 ],
             )
@@ -631,6 +635,163 @@ class TestAutoDevCore(unittest.TestCase):
         s_single = parse_shift_specs("22:00-03:00:gemini,03:00-08:00:claude")
         self.assertEqual((s_single[0].mode, s_single[0].pools), ("single", ["gemini"]))
         self.assertEqual((s_single[1].mode, s_single[1].pools), ("single", ["claude"]))
+
+    def test_startup_model_resolution_remaps_obsolete_models(self) -> None:
+        from auto_dev.core.agent_runner import detect_model_unavailable_error, parse_agy_models_output
+        from auto_dev.core.config import ModelProfile
+        from auto_dev.core.pool_manager import PoolManager
+
+        raw = (
+            "Fetching available models...\n"
+            "gemini-4-hydrogen-high\tGemini 4 Hydrogen (High)\n"
+            "gemini-4-hydrogen-xhigh\tGemini 4 Hydrogen (XHigh)\n"
+            "gemini-4-hydrogen-medium\tGemini 4 Hydrogen (Medium)\n"
+            "gemini-4-hydrogen-low\tGemini 4 Hydrogen (Low)\n"
+            "gemini-3.8-flash-high\tGemini 3.8 Flash (High)\n"
+            "gemini-3.8-flash-medium\tGemini 3.8 Flash (Medium)\n"
+            "gemini-3.8-flash-low\tGemini 3.8 Flash (Low)\n"
+            "claude-sonnet-4-6\tClaude Sonnet 4.6 (Thinking)\n"
+            "claude-opus-4-6-thinking\tClaude Opus 4.6 (Thinking)\n"
+            "gpt-oss-120b-medium\tGPT-OSS 120B (Medium)\n"
+        )
+        avail = parse_agy_models_output(raw)
+        self.assertIn("gemini-4-hydrogen-xhigh", avail)
+        self.assertIn("claude-opus-4-6-thinking", avail)
+        self.assertTrue(
+            detect_model_unavailable_error(
+                'invalid model selection (--model "gemini-4-neon-xhigh"): model gemini-4-neon-xhigh is not recognized as a known model'
+            )
+        )
+
+        with tempfile.TemporaryDirectory() as td:
+            pools = {
+                "gemini": {
+                    "planner": ModelProfile("gemini-4-neon-medium", "medium", 300),
+                    "fast": ModelProfile("gemini-3.8-flash-medium", "medium", 420),
+                    "smart": ModelProfile("gemini-4-neon-xhigh", "xhigh", 420),
+                    "visual": ModelProfile("gemini-3.8-flash-low", "low", 90),
+                },
+                "claude": {
+                    "planner": ModelProfile("claude-opus-5-5-medium", "medium", 360),
+                    "fast": ModelProfile("claude-sonnet-5-5-low", "low", 300),
+                    "smart": ModelProfile("claude-sonnet-5-5-medium", "medium", 420),
+                    "visual": ModelProfile("claude-sonnet-5-5-low", "low", 90),
+                },
+            }
+            pm = PoolManager(pools=pools, state_file=Path(td) / "pool_state.json")
+            remapped = pm.set_available_models(avail)
+            self.assertTrue(len(remapped) >= 5)
+            self.assertEqual(pm.get_profile("gemini", "smart").model, "gemini-4-hydrogen-xhigh")
+            self.assertEqual(pm.get_profile("gemini", "planner").model, "gemini-4-hydrogen-medium")
+            self.assertEqual(pm.get_profile("gemini", "fast").model, "gemini-3.8-flash-medium")
+            self.assertEqual(pm.get_profile("claude", "planner").model, "claude-opus-4-6-thinking")
+            self.assertEqual(pm.get_profile("claude", "fast").model, "claude-sonnet-4-6")
+
+    def test_runtime_unavailable_model_falls_back_within_and_across_pools(self) -> None:
+        from auto_dev.core.config import ModelProfile
+        from auto_dev.core.models import TokenUsage
+
+        with tempfile.TemporaryDirectory() as td:
+            root = _init_temp_git_repo(Path(td))
+            cfg = AutoDevConfig.load(repo_root=root)
+            cfg.model_pools["gemini"]["smart"] = ModelProfile(
+                "gemini-4-neon-xhigh",
+                "xhigh",
+                420,
+                fallback_models=["gemini-4-hydrogen-high", "gemini-3.8-flash-high"],
+            )
+            store = TaskStore(cfg.tasks_file, cfg.board_file)
+            store.add_task(
+                title="Smart task with obsolete primary model",
+                description="Add sub() cleanly",
+                target_files=["src/app.py"],
+                tier="smart",
+                status="pending",
+            )
+            store.add_task(
+                title="Fast task when entire Gemini pool models fail",
+                description="Add div() safely",
+                target_files=["src/app.py"],
+                tier="fast",
+                status="pending",
+            )
+
+            orch = Orchestrator(cfg, GenericAdapter(cfg))
+            orch.runner.list_available_models = lambda force_refresh=False: []  # type: ignore[method-assign]
+            calls: list[tuple[str, str]] = []
+
+            def fake_run_prompt(prompt, profile, schema=None, tag="task", run_dir=None, read_only=False):
+                calls.append((tag, profile.model))
+                # T001: only obsolete neon-xhigh fails -> intra-pool fallback to gemini-4-hydrogen-high
+                if tag.startswith("T001"):
+                    if profile.model == "gemini-4-neon-xhigh":
+                        return AgentResult(
+                            ok=False,
+                            model=profile.model,
+                            effort=profile.effort,
+                            summary="",
+                            exit_code=1,
+                            error="invalid model selection: model gemini-4-neon-xhigh is not recognized as a known model",
+                            is_model_unavailable=True,
+                        )
+                    (root / "src" / "app.py").write_text(
+                        "def add(a: int, b: int) -> int:\n    return a + b\n\ndef sub(a: int, b: int) -> int:\n    return a - b\n",
+                        encoding="utf-8",
+                    )
+                    return AgentResult(
+                        ok=True,
+                        model=profile.model,
+                        effort=profile.effort,
+                        summary="T001 done via intra-pool fallback",
+                        changed_files=["src/app.py"],
+                        usage=TokenUsage(total_tokens=22_000),
+                    )
+
+                # T002: ALL gemini models report unavailable -> must cross over to claude pool!
+                if profile.model.startswith("gemini"):
+                    return AgentResult(
+                        ok=False,
+                        model=profile.model,
+                        effort=profile.effort,
+                        summary="",
+                        exit_code=1,
+                        error=f"model {profile.model} is not available right now",
+                        is_model_unavailable=True,
+                    )
+                (root / "src" / "app.py").write_text(
+                    "def add(a: int, b: int) -> int:\n    return a + b\n\n"
+                    "def sub(a: int, b: int) -> int:\n    return a - b\n\n"
+                    "def div(a: int, b: int) -> float:\n    return a / b\n",
+                    encoding="utf-8",
+                )
+                return AgentResult(
+                    ok=True,
+                    model=profile.model,
+                    effort=profile.effort,
+                    summary="T002 done via cross-pool fallback",
+                    changed_files=["src/app.py"],
+                    usage=TokenUsage(total_tokens=20_000),
+                )
+
+            orch.runner.run_prompt = fake_run_prompt  # type: ignore[method-assign]
+            res = orch.run(
+                max_tasks=4,
+                pool_name="gemini",
+                pool_strategy="single",
+                active_pools=["gemini", "claude"],
+                keep_awake=False,
+            )
+
+            t1_models = [m for t, m in calls if t.startswith("T001")]
+            t2_models = [m for t, m in calls if t.startswith("T002")]
+            self.assertEqual(t1_models, ["gemini-4-neon-xhigh", "gemini-4-hydrogen-high"])
+            self.assertTrue(any(m.startswith("gemini") for m in t2_models))
+            self.assertEqual(t2_models[-1], "claude-sonnet-4-6")
+            final_tasks = {t.id: t for t in store.load()}
+            self.assertEqual(final_tasks["T001"].status, "done")
+            self.assertEqual(final_tasks["T002"].status, "done")
+            self.assertEqual((final_tasks["T001"].retries, final_tasks["T002"].retries), (0, 0))
+            self.assertEqual(res["stop_reason"], "queue_drained")
 
 
 if __name__ == "__main__":

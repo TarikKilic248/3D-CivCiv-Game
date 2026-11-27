@@ -162,6 +162,7 @@ class AgentResult:
     usage: TokenUsage = field(default_factory=TokenUsage)
     is_quota_error: bool = False
     quota_reset_hint_sec: int | None = None
+    is_model_unavailable: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         data = asdict(self)

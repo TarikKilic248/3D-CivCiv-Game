@@ -66,14 +66,22 @@ def _cmd_index(cfg: AutoDevConfig, args: argparse.Namespace) -> int:
 
 
 def _cmd_plan(cfg: AutoDevConfig, args: argparse.Namespace) -> int:
+    from auto_dev.core.pool_manager import PoolManager
+
     adapter = load_adapter(cfg)
     store = TaskStore(cfg.tasks_file, cfg.board_file)
     indexer = CodeIndexer(cfg.repo_root, cfg.scope, cfg.limits.max_index_chars)
     runner = AgentRunner(cfg.repo_root, cfg.agent_cli, cfg.runtime_dir)
+    pool_mgr = PoolManager(
+        pools=cfg.model_pools,
+        state_file=cfg.runtime_dir / "pool_state.json",
+        available_models=runner.list_available_models(),
+    )
+    planner_profile = pool_mgr.get_profile("gemini", "planner")
     planner = TaskPlanner(cfg, store, runner, indexer, adapter)
 
-    print(f"[AutoDev] Planlayici baslatiliyor (Model: {cfg.models['planner'].model})...")
-    created = planner.plan_goal(args.goal, max_tasks=args.max_tasks)
+    print(f"[AutoDev] Planlayici baslatiliyor (Model: {planner_profile.model})...")
+    created = planner.plan_goal(args.goal, max_tasks=args.max_tasks, profile=planner_profile)
     print(f"\n[AutoDev] {len(created)} yeni taslak gorev olusturuldu (`draft`):")
     for t in created:
         deps = f" (bagimli: {', '.join(t.depends_on)})" if t.depends_on else ""
@@ -244,10 +252,10 @@ def _cmd_init_generic(cfg: AutoDevConfig, args: argparse.Namespace) -> int:
             "state_commit_enabled": True,
         },
         "models": {
-            "planner": {"model": "gemini-4-high", "effort": "medium", "timeout_sec": 300},
-            "fast": {"model": "gemini-3.8-flash-high", "effort": "medium", "timeout_sec": 300},
-            "smart": {"model": "gemini-4-neon-xhigh", "effort": "medium", "timeout_sec": 420},
-            "visual": {"model": "gemini-3.8-flash-medium", "effort": "low", "timeout_sec": 180},
+            "planner": {"model": "gemini-4-hydrogen-medium", "effort": "medium", "timeout_sec": 300},
+            "fast": {"model": "gemini-3.8-flash-medium", "effort": "medium", "timeout_sec": 300},
+            "smart": {"model": "gemini-4-hydrogen-medium", "effort": "medium", "timeout_sec": 420},
+            "visual": {"model": "gemini-3.8-flash-low", "effort": "low", "timeout_sec": 180},
         },
         "limits": {
             "max_tasks_per_run": 3,

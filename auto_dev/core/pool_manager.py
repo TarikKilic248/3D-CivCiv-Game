@@ -36,6 +36,7 @@ class PoolManager:
         state_file: Path,
         default_cooldown_min: int = 305,
         pool_budgets: dict[str, int] | None = None,
+        available_models: list[str] | None = None,
     ) -> None:
         self.pools = pools
         self.state_file = state_file
@@ -45,8 +46,187 @@ class PoolManager:
             "claude": 1_500_000,
             **(pool_budgets or {}),
         }
+        self._available_models: list[str] = list(available_models or [])
+        self._unavailable_models: set[str] = set()
         self._state: dict[str, dict[str, Any]] = {}
         self._load()
+        if self._available_models:
+            self.set_available_models(self._available_models)
+
+    @staticmethod
+    def _belongs_to_pool(pool_name: str, model_id: str) -> bool:
+        m = model_id.lower()
+        p = pool_name.lower()
+        if p.startswith("gemini"):
+            return m.startswith("gemini")
+        if p.startswith("claude"):
+            return m.startswith("claude") or m.startswith("gpt-")
+        return True
+
+    @staticmethod
+    def _extract_effort_hint(model_id: str, default_effort: str = "medium") -> str:
+        low = model_id.lower()
+        for eff in ("xhigh", "high", "medium", "low"):
+            if low.endswith(f"-{eff}"):
+                return eff
+        return (default_effort or "medium").lower()
+
+    @classmethod
+    def _score_candidate(
+        cls,
+        pool_name: str,
+        role: str,
+        candidate: str,
+        requested_model: str,
+        effort_hint: str,
+    ) -> float:
+        """Score how well a live model matches the target pool, role, and effort."""
+        c = candidate.lower()
+        score = 0.0
+        if not cls._belongs_to_pool(pool_name, c):
+            return -10_000.0
+
+        is_flash = "flash" in c
+        is_gemini4 = c.startswith("gemini-4")
+        is_opus = "opus" in c
+        is_sonnet = "sonnet" in c
+        is_haiku = "haiku" in c
+        is_gpt = c.startswith("gpt-")
+
+        if pool_name.lower().startswith("gemini"):
+            if role in ("fast", "visual"):
+                score += 100.0 if is_flash else 45.0
+                if role == "visual" and c.endswith("-low"):
+                    score += 30.0
+                elif role == "fast" and c.endswith("-medium"):
+                    score += 25.0
+                elif c.endswith("-high"):
+                    score += 15.0
+            else:  # smart / planner
+                score += 100.0 if is_gemini4 else (65.0 if not is_flash else 40.0)
+                if "pro" in c or "ultra" in c or "hydrogen" in c or "neon" in c:
+                    score += 15.0
+        elif pool_name.lower().startswith("claude"):
+            if role == "planner":
+                score += 110.0 if is_opus else (85.0 if is_sonnet else 35.0)
+            elif role == "smart":
+                score += 105.0 if is_sonnet else (95.0 if is_opus else 35.0)
+            else:  # fast / visual
+                score += 105.0 if is_sonnet else (90.0 if is_haiku else (65.0 if is_opus else 40.0))
+                if is_gpt and role == "visual":
+                    score -= 30.0
+
+        # Effort affinity bonus
+        desired_eff = cls._extract_effort_hint(requested_model, effort_hint)
+        cand_eff = cls._extract_effort_hint(c, "")
+        if cand_eff == desired_eff:
+            score += 22.0
+        elif desired_eff == "xhigh" and cand_eff == "high":
+            score += 18.0
+        elif desired_eff == "high" and cand_eff in ("medium", "xhigh"):
+            score += 12.0
+        elif desired_eff == "medium" and cand_eff in ("high", "low"):
+            score += 10.0
+        elif desired_eff == "low" and cand_eff == "medium":
+            score += 10.0
+        elif not cand_eff and desired_eff in c:
+            score += 8.0
+
+        # Small bonus if candidate shares the family prefix (e.g., gemini-3.8-flash vs gemini-4)
+        req_prefix = "-".join(requested_model.lower().split("-")[:2])
+        if req_prefix and c.startswith(req_prefix):
+            score += 15.0
+        return score
+
+    def _ordered_candidates(
+        self,
+        pool_name: str,
+        role: str,
+        profile: ModelProfile,
+        excluded: set[str] | None = None,
+    ) -> list[str]:
+        blocked = self._unavailable_models | (excluded or set())
+        pool = self.pools.get(pool_name, {})
+
+        # Build deduplicated candidate universe: configured fallback_models + other roles in pool + live models
+        raw_pool: list[str] = []
+        if self._available_models:
+            raw_pool.extend(self._available_models)
+        raw_pool.extend(profile.fallback_models)
+        for rp in pool.values():
+            raw_pool.append(rp.model)
+            raw_pool.extend(rp.fallback_models)
+
+        # Deduplicate while preserving order, filtering pool compatibility & non-blocked
+        seen: set[str] = set()
+        candidates: list[str] = []
+        avail_set = set(self._available_models)
+        for m in raw_pool:
+            if not m or m in seen or m in blocked:
+                continue
+            if not self._belongs_to_pool(pool_name, m):
+                continue
+            # When live model list is known, skip candidates absent from it
+            if avail_set and m not in avail_set:
+                continue
+            seen.add(m)
+            candidates.append(m)
+
+        # Priority 1: explicit fallback_models on this profile in declared order
+        explicit = [m for m in profile.fallback_models if m in seen]
+        explicit_set = set(explicit)
+        remaining = [m for m in candidates if m not in explicit_set]
+        remaining.sort(
+            key=lambda m: self._score_candidate(pool_name, role, m, profile.model, profile.effort),
+            reverse=True,
+        )
+        return explicit + remaining
+
+    def set_available_models(self, available_models: list[str]) -> list[tuple[str, str, str, str]]:
+        """Sync configured pool models against live `agy models` output (0 tokens).
+        Returns [(pool, role, old_model, new_model), ...] for any remapped roles.
+        """
+        self._available_models = list(available_models or [])
+        if not self._available_models:
+            return []
+
+        avail_set = set(self._available_models)
+        remapped: list[tuple[str, str, str, str]] = []
+        for pname, roles in self.pools.items():
+            for role, prof in roles.items():
+                if prof.model in avail_set and prof.model not in self._unavailable_models:
+                    continue
+                alts = self._ordered_candidates(pname, role, prof, excluded={prof.model})
+                if alts and alts[0] != prof.model:
+                    old_m = prof.model
+                    prof.model = alts[0]
+                    remapped.append((pname, role, old_m, alts[0]))
+        return remapped
+
+    def mark_model_unavailable(self, model_name: str) -> None:
+        if model_name:
+            self._unavailable_models.add(model_name)
+
+    def next_fallback_profile(
+        self,
+        pool_name: str,
+        role: str,
+        failed_model: str,
+        excluded: set[str] | None = None,
+    ) -> ModelProfile | None:
+        """Pick next healthy alternative ModelProfile in `pool_name` after `failed_model` failed."""
+        base = self.get_profile(pool_name, role)
+        skip = set(excluded or set()) | {failed_model}
+        alts = self._ordered_candidates(pool_name, role, base, excluded=skip)
+        if not alts:
+            return None
+        chosen = alts[0]
+        return ModelProfile(
+            model=chosen,
+            effort=base.effort,
+            timeout_sec=base.timeout_sec,
+            fallback_models=[m for m in alts[1:]],
+        )
 
     def pool_names(self) -> list[str]:
         return list(self.pools.keys())
