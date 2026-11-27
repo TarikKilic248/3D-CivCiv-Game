@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-27T11:38:31+00:00",
+  "updated_at": "2026-11-27T11:41:33+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -426,7 +426,7 @@
         "Check_T011 her üç mekaniği adım adım simüle ederek pozisyon/hız ve durum geçişlerini sayısal doğrular.",
         "Mekanik tetiklendiğinde görsel/prosedürel geri bildirim veya ParticleSystem efekti ve SFX kancası çalışır."
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [
         "T007"
       ],
@@ -445,9 +445,9 @@
       "verify_check": "T011",
       "retries": 0,
       "last_error": "",
-      "commit_sha": "",
+      "commit_sha": "e49c39f",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-27T11:31:57+00:00"
+      "updated_at": "2026-11-27T11:41:33+00:00"
     },
     {
       "id": "T012",

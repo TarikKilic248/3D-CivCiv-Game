@@ -1,5 +1,5 @@
 # Compact Project Code Index (Auto-Generated, 0 Tokens)
-Indexed files: `81`
+Indexed files: `85`
 
 - `Assets/_GameAssets/Scripts/AI/PatrolEnemyAI.cs` (725L): types: class PatrolEnemyAI: MonoBehaviour, IDamageable, enum EnemyState | events: OnStateChanged, OnHealthChanged, OnHit, OnDefeated | api: ResolveDependencies(), ApplyStats(), RefreshWaypoints(), SetState(EnemyState newState), Step(float deltaTime), StepFeedback(float deltaTime), ResetVisualPoseImmediate(), TakeDamage(int damage), TakeDamage(int damage, Vector3 hitDirection), Heal(int amount) | fields: _stats, _waypoints, _rigidbody, _collider, _visualRoot, _hitVFX, _defeatedVFX, _aggroVFX, _hitSfx, _defeatSfx
 - `Assets/_GameAssets/Scripts/Collectables/CoinMagnet.cs` (273L): types: class CoinMagnet: MonoBehaviour | events: OnSuperMagnetChanged, OnCoinPulled | api: ActivateSuperMagnet(float duration, float radiusMultiplie...), DeactivateSuperMagnet(), RefreshCoinCache(), StepMagnet(float deltaTime), EnsureVFXSetup() | fields: _magnetRadius, _pullSpeed, _targetHeightOffset, _autoCollectDistance, _defaultSuperRadiusMultiplier, _defaultSuperSpeedMultiplier, _magnetAuraParticles, _superMagnetSound, _magnetPullSound
@@ -33,6 +33,7 @@ Indexed files: `81`
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T008.cs` (171L): types: class Check_T008 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T009.cs` (196L): types: class Check_T009 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T010.cs` (230L): types: class Check_T010 | api: Run()
+- `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T011.cs` (109L): types: class Check_T011 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T012.cs` (150L): types: class Check_T012, class DummyDamageable: MonoBehaviour, IDamageable | api: TakeDamage(int damage), TakeDamage(int damage, Vector3 hitDirection), Heal(int amount), Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T013.cs` (193L): types: class Check_T013 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T014.cs` (209L): types: class Check_T014 | api: Run()
@@ -54,5 +55,4 @@ Indexed files: `81`
 - `Assets/_GameAssets/Scripts/Gameplay/ChickEggThrower.cs` (502L): types: class ChickEggThrower: MonoBehaviour | events: OnEggThrown, OnAmmoChanged, OnCooldownReset | api: ResolveDependencies(), Step(float deltaTime), StepFeedback(float deltaTime), TryThrowEgg(), RefillAmmo(int amount = -1), SetAmmo(int ammo), EnsureVFXSetup() | fields: _playerController, _visualRoot, _throwOrigin, _eggPrefab, _throwForce, _upwardArcForce, _throwCooldown, _eggDamage, _eggKnockback, _maxAmmo
 - `Assets/_GameAssets/Scripts/Gameplay/DayNightCycleController.cs` (224L): types: class DayNightCycleController: MonoBehaviour | events: OnTimeOfDayChanged, OnDayStateChanged | api: ResolveSun(), Step(float deltaTime), SetTimeOfDay(float normalizedTime, bool triggerFee...), ApplyLighting(bool triggerFeedback), EnsureVFXSetup() | fields: _sun, _sunYaw, _autoAdvance, _dayIntensity, _nightIntensity, _dayColor, _sunsetColor, _nightColor, _driveAmbient, _dayAmbient
 - `Assets/_GameAssets/Scripts/Gameplay/EggProjectile.cs` (539L): types: class EggProjectile: MonoBehaviour | events: OnEggHit, OnEggDestroyed | api: ResolveDependencies(), Step(float deltaTime), StepFeedback(float deltaTime), Launch(Vector3 initialVelocity, Collider sho...), HitTarget(Collider targetCollider, Vector3 hitP...), HitTarget(GameObject targetObj), EnsureVFXSetup() | fields: _damage, _knockbackForce, _maxLifetime, _targetLayers, _visualRoot, _spinSpeed, _flightStretchScale, _poseLerpSpeed, _trailRenderer, _breakVFX
-- `Assets/_GameAssets/Scripts/Gameplay/HazardZone.cs` (136L): types: class HazardZone: MonoBehaviour | events: OnPlayerHazardTriggered, OnHazardEntered | api: OnTriggerEnter(Collider other), RespawnPlayer(PlayerController player), GetRespawnPosition(PlayerController player) | fields: _overrideRespawnTransform, _hazardSound, _hazardVFX
 - _... (index truncated by max_index_chars limit)_
