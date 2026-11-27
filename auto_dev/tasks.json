@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-27T02:35:19+00:00",
+  "updated_at": "2026-11-27T02:39:54+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -884,7 +884,7 @@
         "Tetiklenme aninda prosedurel halka squash-stretch/nabiz animasyonu (StepFeedback), ParticleSystem patlamasi, TrailRenderer izi ve SettingsUI.PlaySFX ses kancasi calisir.",
         "Editor AutoDevCheck dogrulamasi (Check_<ID>.cs) fiziksel hiz artisi, cooldown ve VFX/event davranislarini sayisal olarak kanitlar."
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [
         "T010",
         "T021"
@@ -903,9 +903,9 @@
       "verify_check": "TriggerBoost ile Rigidbody ileri hizinin belirgin sekilde arttigini, cooldown suresince tekrar tetiklenmedigini, OnRingPassed olayinin ve StepFeedback/VFX kurulumunun calistigini dogrula.",
       "retries": 0,
       "last_error": "",
-      "commit_sha": "",
+      "commit_sha": "d5ddca2",
       "created_at": "2026-11-27T02:35:19+00:00",
-      "updated_at": "2026-11-27T02:35:19+00:00"
+      "updated_at": "2026-11-27T02:39:54+00:00"
     },
     {
       "id": "T025",

@@ -1,5 +1,5 @@
 # Compact Project Code Index (Auto-Generated, 0 Tokens)
-Indexed files: `74`
+Indexed files: `76`
 
 - `Assets/_GameAssets/Scripts/AI/PatrolEnemyAI.cs` (725L): types: class PatrolEnemyAI: MonoBehaviour, IDamageable, enum EnemyState | events: OnStateChanged, OnHealthChanged, OnHit, OnDefeated | api: ResolveDependencies(), ApplyStats(), RefreshWaypoints(), SetState(EnemyState newState), Step(float deltaTime), StepFeedback(float deltaTime), ResetVisualPoseImmediate(), TakeDamage(int damage), TakeDamage(int damage, Vector3 hitDirection), Heal(int amount) | fields: _stats, _waypoints, _rigidbody, _collider, _visualRoot, _hitVFX, _defeatedVFX, _aggroVFX, _hitSfx, _defeatSfx
 - `Assets/_GameAssets/Scripts/Collectables/CoinMagnet.cs` (273L): types: class CoinMagnet: MonoBehaviour | events: OnSuperMagnetChanged, OnCoinPulled | api: ActivateSuperMagnet(float duration, float radiusMultiplie...), DeactivateSuperMagnet(), RefreshCoinCache(), StepMagnet(float deltaTime), EnsureVFXSetup() | fields: _magnetRadius, _pullSpeed, _targetHeightOffset, _autoCollectDistance, _defaultSuperRadiusMultiplier, _defaultSuperSpeedMultiplier, _magnetAuraParticles, _superMagnetSound, _magnetPullSound
@@ -42,6 +42,7 @@ Indexed files: `74`
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T021.cs` (87L): types: class Check_T021 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T022.cs` (96L): types: class Check_T022, class DummyDamageable: MonoBehaviour, IDamageable | api: TakeDamage(int damage), TakeDamage(int damage, Vector3 dir), Heal(int amount), Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T023.cs` (127L): types: class Check_T023 | api: Run()
+- `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T024.cs` (170L): types: class Check_T024 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/CivCivAutoSetup.cs` (265L): types: class CivCivAutoSetup | api: SetupAll(), SetupSettingsUI()
 - `Assets/_GameAssets/Scripts/Enums/GameState.cs` (8L): types: enum GameState
 - `Assets/_GameAssets/Scripts/Enums/PlayerState.cs` (19L): types: enum PlayerState
