@@ -26,6 +26,11 @@ public class ThirdPersonCameraController : MonoBehaviour
     [Tooltip("1. Şahıs (FPS) Cinemachine Kamerası")]
     [SerializeField] private CinemachineCamera _fpsCamera;
 
+    public CinemachineCamera TPSCamera => _tpsCamera;
+    public CinemachineCamera FPSCamera => _fpsCamera;
+    public CinemachineCamera ActiveCamera => _currentPerspective == CameraPerspective.FirstPerson ? _fpsCamera : _tpsCamera;
+    public CameraPerspective CurrentPerspective => _currentPerspective;
+
     [Header("--- Mouse Rotation (Fare ile Dönüş) ---")]
     [Tooltip("Karakter fare / kamera yönüne doğru dönsün mü? (TPS ve FPS modlarında aktif)")]
     [SerializeField] private bool _rotateWithMouse = true;
