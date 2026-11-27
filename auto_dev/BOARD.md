@@ -1,6 +1,6 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 28** | Taslak (Onay Bekleyen): `0` | Sirada: `3` (Calismaya Hazir: `3`) | Tamamlanan: `25` | Bloklanan: `0`
+- Ozet: **Toplam 28** | Taslak (Onay Bekleyen): `0` | Sirada: `2` (Calismaya Hazir: `2`) | Tamamlanan: `26` | Bloklanan: `0`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 _Yok._
@@ -8,7 +8,6 @@ _Yok._
 ## Siradaki Gorevler (`pending`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
 | --- | --- | --- | --- | --- | --- |
-| `T018` | Nesne Havuzu ve Karakter Hareket Efektleri (ObjectPoolManager & PlayerVFXController) | T003, T007 | `fast` | - | Hazir |
 | `T019` | Kamera Hissiyatı ve 3D Ses Mimarisi (CameraJuiceController & SpatialAudioManager) | T003, T008 | `fast` | - | Hazir |
 | `T026` | Kurtarilan CivCiv Ilerleme HUD Bileseni (RescueProgressUI) | T007A, T016 | `fast` | Evet | Hazir |
 
@@ -37,6 +36,7 @@ _Yok._
 | `T015` | Etkileşim Sistemi ve Basınç Plakası Bulmacası (IInteractable, PlayerInteractor & PressurePlateSwitch) | T001 | `fast` | - | Commit `40a468d` |
 | `T016` | Kayıp CivCiv Kurtarma Görevi ve Hedef Pusulası (LostChickNPC, ChickRescueManager & WaypointIndicatorUI) | T015, T007A | `fast` | Evet | Commit `0751228` |
 | `T017` | JSON Kalıcı Kayıt ve Yıldız Puanlama Sistemi (SaveManager, LevelDataSO & LevelProgressionManager) | T002, T016 | `fast` | - | Commit `a8181ff` |
+| `T018` | Nesne Havuzu ve Karakter Hareket Efektleri (ObjectPoolManager & PlayerVFXController) | T003, T007 | `fast` | - | Commit `58053e0` |
 | `T020` | Dinamik Gece/Gündüz Döngüsü, Başarım Sistemi ve Bütünlük Doğrulayıcı | T017, T007A | `smart` | Evet | Commit `471e650` |
 | `T021` | Zıplatma Mantarı / Trambolin Platformu (BouncePad) | - | `fast` | - | Commit `2185d36` |
 | `T022` | Sallanan Sarkaç Tuzağı ve Geri Tepme (SwingingHazard) | - | `fast` | - | Commit `6644979` |
