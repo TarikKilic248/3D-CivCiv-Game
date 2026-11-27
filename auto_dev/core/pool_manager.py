@@ -172,15 +172,21 @@ class PoolManager:
             seen.add(m)
             candidates.append(m)
 
-        # Priority 1: explicit fallback_models on this profile in declared order
-        explicit = [m for m in profile.fallback_models if m in seen]
-        explicit_set = set(explicit)
-        remaining = [m for m in candidates if m not in explicit_set]
-        remaining.sort(
-            key=lambda m: self._score_candidate(pool_name, role, m, profile.model, profile.effort),
-            reverse=True,
-        )
-        return explicit + remaining
+        # Sort candidates strictly by pool/role/effort fitness; explicit `fallback_models` acts as a
+        # small tie-breaker so weaker models like `gpt-oss` never outrank `claude-sonnet`/`claude-opus`.
+        explicit_rank = {m: idx for idx, m in enumerate(profile.fallback_models)}
+
+        def _rank_key(m: str) -> tuple[float, int]:
+            base_score = self._score_candidate(pool_name, role, m, profile.model, profile.effort)
+            if m in explicit_rank:
+                # Only give preference boost within similar-tier models (e.g. skip outranking opus/sonnet with gpt-oss)
+                if not m.lower().startswith("gpt-"):
+                    base_score += max(1.0, 8.0 - explicit_rank[m])
+                return (base_score, -explicit_rank[m])
+            return (base_score, -999)
+
+        candidates.sort(key=_rank_key, reverse=True)
+        return candidates
 
     def set_available_models(self, available_models: list[str]) -> list[tuple[str, str, str, str]]:
         """Sync configured pool models against live `agy models` output (0 tokens).

@@ -687,6 +687,27 @@ class TestAutoDevCore(unittest.TestCase):
             self.assertEqual(pm.get_profile("claude", "planner").model, "claude-opus-4-6-thinking")
             self.assertEqual(pm.get_profile("claude", "fast").model, "claude-sonnet-4-6")
 
+            # Also verify 4.6 -> 5.5 remapping prefers Claude Sonnet/Opus over gpt-oss-120b-medium
+            pools2 = {
+                "claude": {
+                    "planner": ModelProfile("claude-opus-4-6-thinking", "medium", 360),
+                    "fast": ModelProfile("claude-sonnet-4-6", "low", 300, fallback_models=["gpt-oss-120b-medium"]),
+                    "smart": ModelProfile("claude-sonnet-4-6", "medium", 420, fallback_models=["gpt-oss-120b-medium"]),
+                }
+            }
+            pm2 = PoolManager(pools=pools2, state_file=Path(td) / "pool_state2.json")
+            pm2.set_available_models(
+                [
+                    "claude-opus-5-5-medium",
+                    "claude-sonnet-5-5-low",
+                    "claude-sonnet-5-5-medium",
+                    "gpt-oss-120b-medium",
+                ]
+            )
+            self.assertEqual(pm2.get_profile("claude", "planner").model, "claude-opus-5-5-medium")
+            self.assertEqual(pm2.get_profile("claude", "fast").model, "claude-sonnet-5-5-low")
+            self.assertEqual(pm2.get_profile("claude", "smart").model, "claude-sonnet-5-5-medium")
+
     def test_runtime_unavailable_model_falls_back_within_and_across_pools(self) -> None:
         from auto_dev.core.config import ModelProfile
         from auto_dev.core.models import TokenUsage

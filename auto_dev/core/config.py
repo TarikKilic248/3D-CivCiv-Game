@@ -239,19 +239,19 @@ class AutoDevConfig:
                 "claude-opus-4-6-thinking",
                 "medium",
                 360,
-                fallback_models=["claude-sonnet-4-6", "gpt-oss-120b-medium"],
+                fallback_models=["claude-sonnet-4-6"],
             ),
             "fast": ModelProfile(
                 "claude-sonnet-4-6",
                 "low",
                 300,
-                fallback_models=["claude-opus-4-6-thinking", "gpt-oss-120b-medium"],
+                fallback_models=["claude-opus-4-6-thinking"],
             ),
             "smart": ModelProfile(
                 "claude-sonnet-4-6",
                 "medium",
                 420,
-                fallback_models=["claude-opus-4-6-thinking", "gpt-oss-120b-medium"],
+                fallback_models=["claude-opus-4-6-thinking"],
             ),
             "visual": ModelProfile(
                 "claude-sonnet-4-6",

@@ -63,28 +63,28 @@
     },
     "claude": {
       "planner": {
-        "model": "claude-opus-4-6-thinking",
+        "model": "claude-opus-5-5-medium",
         "effort": "medium",
         "timeout_sec": 360,
-        "fallback_models": ["claude-sonnet-4-6", "gpt-oss-120b-medium"]
+        "fallback_models": ["claude-opus-4-6-thinking", "claude-sonnet-5-5-medium", "claude-sonnet-4-6"]
       },
       "fast": {
-        "model": "claude-sonnet-4-6",
+        "model": "claude-sonnet-5-5-low",
         "effort": "low",
         "timeout_sec": 300,
-        "fallback_models": ["claude-opus-4-6-thinking", "gpt-oss-120b-medium"]
+        "fallback_models": ["claude-sonnet-4-6", "claude-sonnet-5-5-medium", "claude-opus-5-5-medium"]
       },
       "smart": {
-        "model": "claude-sonnet-4-6",
+        "model": "claude-sonnet-5-5-medium",
         "effort": "medium",
         "timeout_sec": 420,
-        "fallback_models": ["claude-opus-4-6-thinking", "gpt-oss-120b-medium"]
+        "fallback_models": ["claude-sonnet-4-6", "claude-opus-5-5-medium", "claude-opus-4-6-thinking"]
       },
       "visual": {
-        "model": "claude-sonnet-4-6",
+        "model": "claude-sonnet-5-5-low",
         "effort": "low",
         "timeout_sec": 90,
-        "fallback_models": ["claude-opus-4-6-thinking"]
+        "fallback_models": ["claude-sonnet-4-6", "claude-opus-5-5-low"]
       }
     }
   },
