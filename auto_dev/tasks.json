@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-27T11:47:48+00:00",
+  "updated_at": "2026-11-27T11:54:32+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -694,7 +694,7 @@
         "SpatialAudioManager SettingsUI.IsSoundEnabled kapalıyken ses çalmaz, açıkken pitch varyasyonuyla oynatır.",
         "Check_T019 FOV değişimini, sarsıntı sönümlemesini ve ses yöneticisinin mute/unmute davranışını sayısal doğrular."
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [
         "T003",
         "T008"
@@ -717,9 +717,9 @@
       "verify_check": "T019",
       "retries": 0,
       "last_error": "",
-      "commit_sha": "",
+      "commit_sha": "1f6b80d",
       "created_at": "2026-11-26T16:00:00+00:00",
-      "updated_at": "2026-11-27T05:54:21+00:00"
+      "updated_at": "2026-11-27T11:54:32+00:00"
     },
     {
       "id": "T020",
