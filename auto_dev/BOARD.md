@@ -1,14 +1,12 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `0` | Sirada: `1` (Calismaya Hazir: `1`) | Tamamlanan: `17` | Bloklanan: `4`
+- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `0` | Sirada: `0` (Calismaya Hazir: `0`) | Tamamlanan: `18` | Bloklanan: `4`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 _Yok._
 
 ## Siradaki Gorevler (`pending`)
-| ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
-| --- | --- | --- | --- | --- | --- |
-| `T020` | Dinamik Gece/Gündüz Döngüsü, Başarım Sistemi ve Bütünlük Doğrulayıcı | T017, T007A | `smart` | Evet | Hazir |
+_Yok._
 
 ## Bloklanan Gorevler (`blocked`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
@@ -38,3 +36,4 @@ _Yok._
 | `T015` | Etkileşim Sistemi ve Basınç Plakası Bulmacası (IInteractable, PlayerInteractor & PressurePlateSwitch) | T001 | `fast` | - | Commit `40a468d` |
 | `T016` | Kayıp CivCiv Kurtarma Görevi ve Hedef Pusulası (LostChickNPC, ChickRescueManager & WaypointIndicatorUI) | T015, T007A | `fast` | Evet | Commit `0751228` |
 | `T017` | JSON Kalıcı Kayıt ve Yıldız Puanlama Sistemi (SaveManager, LevelDataSO & LevelProgressionManager) | T002, T016 | `fast` | - | Commit `a8181ff` |
+| `T020` | Dinamik Gece/Gündüz Döngüsü, Başarım Sistemi ve Bütünlük Doğrulayıcı | T017, T007A | `smart` | Evet | Commit `471e650` |
