@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-27T02:21:50+00:00",
+  "updated_at": "2026-11-27T02:23:28+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -773,7 +773,7 @@
         "Tetiklemede ParticleSystem Play çağrılır, TrailRenderer emitting=true olur ve SettingsUI.PlaySFX kancası çağrılır (clip null ise hata vermez).",
         "Check_T021.cs [AutoDevCheck(\"T021\")] geçici sahne nesneleriyle Rigidbody'yi aşağı hızla pad'e gönderip ApplyBounce/Physics.Simulate sonrası hız, cooldown ve squash değerlerini sayısal doğrular (<=150 satır)."
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [],
       "target_files": [
         "Assets/_GameAssets/Scripts/Gameplay/BouncePad.cs",
@@ -793,9 +793,9 @@
       "verify_check": "T021",
       "retries": 0,
       "last_error": "",
-      "commit_sha": "",
+      "commit_sha": "2185d36",
       "created_at": "2026-11-27T02:21:50+00:00",
-      "updated_at": "2026-11-27T02:21:50+00:00"
+      "updated_at": "2026-11-27T02:23:28+00:00"
     },
     {
       "id": "T022",
