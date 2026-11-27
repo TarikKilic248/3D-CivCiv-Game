@@ -1,14 +1,12 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 25** | Taslak (Onay Bekleyen): `0` | Sirada: `1` (Calismaya Hazir: `1`) | Tamamlanan: `20` | Bloklanan: `4`
+- Ozet: **Toplam 25** | Taslak (Onay Bekleyen): `0` | Sirada: `0` (Calismaya Hazir: `0`) | Tamamlanan: `21` | Bloklanan: `4`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 _Yok._
 
 ## Siradaki Gorevler (`pending`)
-| ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
-| --- | --- | --- | --- | --- | --- |
-| `T023` | Uçan Geri Bildirim Yazıları (FloatingTextSpawner: Altın/Hasar/Kombo) | - | `fast` | Evet | Hazir |
+_Yok._
 
 ## Bloklanan Gorevler (`blocked`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
@@ -41,3 +39,4 @@ _Yok._
 | `T020` | Dinamik Gece/Gündüz Döngüsü, Başarım Sistemi ve Bütünlük Doğrulayıcı | T017, T007A | `smart` | Evet | Commit `471e650` |
 | `T021` | Zıplatma Mantarı / Trambolin Platformu (BouncePad) | - | `fast` | - | Commit `2185d36` |
 | `T022` | Sallanan Sarkaç Tuzağı ve Geri Tepme (SwingingHazard) | - | `fast` | - | Commit `6644979` |
+| `T023` | Uçan Geri Bildirim Yazıları (FloatingTextSpawner: Altın/Hasar/Kombo) | - | `fast` | Evet | Commit `cf29843` |

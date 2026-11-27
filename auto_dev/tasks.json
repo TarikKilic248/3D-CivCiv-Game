@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-27T02:25:00+00:00",
+  "updated_at": "2026-11-27T02:34:09+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -847,7 +847,7 @@
         "Kombo yazısında ParticleSystem Play ve SettingsUI.PlaySFX kancası çağrılır (null clip güvenli).",
         "Check_T023.cs [AutoDevCheck(\"T023\")] Spawn/Step ile hareket, alfa sönümü, yeniden kullanım ve event aboneliğini sayısal doğrular (<=150 satır)."
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [],
       "target_files": [
         "Assets/_GameAssets/Scripts/UI/FloatingTextSpawner.cs",
@@ -868,11 +868,11 @@
       "tier": "fast",
       "visual_check": true,
       "verify_check": "T023",
-      "retries": 0,
+      "retries": 1,
       "last_error": "",
-      "commit_sha": "",
+      "commit_sha": "cf29843",
       "created_at": "2026-11-27T02:21:50+00:00",
-      "updated_at": "2026-11-27T02:21:50+00:00"
+      "updated_at": "2026-11-27T02:34:09+00:00"
     }
   ]
 }
