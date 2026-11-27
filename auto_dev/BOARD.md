@@ -1,12 +1,16 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 25** | Taslak (Onay Bekleyen): `0` | Sirada: `0` (Calismaya Hazir: `0`) | Tamamlanan: `21` | Bloklanan: `4`
+- Ozet: **Toplam 28** | Taslak (Onay Bekleyen): `0` | Sirada: `3` (Calismaya Hazir: `3`) | Tamamlanan: `21` | Bloklanan: `4`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 _Yok._
 
 ## Siradaki Gorevler (`pending`)
-_Yok._
+| ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
+| --- | --- | --- | --- | --- | --- |
+| `T024` | Hizlandirma Halkasi (SpeedBoostRing) | T010, T021 | `fast` | - | Hazir |
+| `T025` | Yumurta Firlatma Yetenegi (EggProjectile & ChickEggThrower) | T008, T013 | `fast` | - | Hazir |
+| `T026` | Kurtarilan CivCiv Ilerleme HUD Bileseni (RescueProgressUI) | T007A, T016 | `fast` | Evet | Hazir |
 
 ## Bloklanan Gorevler (`blocked`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
