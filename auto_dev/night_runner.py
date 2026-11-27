@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import sys
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import TextIO
@@ -26,6 +26,8 @@ class ResolvedShift:
     pool: str
     start_dt: datetime
     end_dt: datetime
+    pools: list[str] = field(default_factory=lambda: ["gemini", "claude"])
+    mode: str = "balanced"
 
 
 class _TeeStream:
@@ -54,34 +56,56 @@ def _parse_hhmm(hhmm: str) -> tuple[int, int]:
     return h, m
 
 
-def parse_shift_specs(spec_str: str) -> list[ShiftWindowConfig]:
-    """Parse CLI `--shifts` string like '22:00-03:00:gemini,03:00-08:00:claude'."""
+def parse_shift_specs(spec_str: str, default_pools: list[str] | None = None) -> list[ShiftWindowConfig]:
+    """Parse CLI `--shifts` string.
+    Examples:
+      - '00:00-05:15:balanced,05:15-10:15:balanced'
+      - '00:00-05:15:gemini+claude,05:15-10:15:gemini+claude'
+      - '22:00-03:00:gemini,03:00-08:00:claude'
+      - '00:00-05:15,05:15-10:15'  (defaults to balanced across both pools!)
+    """
+    all_pools = list(default_pools or ["gemini", "claude"])
     shifts: list[ShiftWindowConfig] = []
     for idx, chunk in enumerate(spec_str.split(","), start=1):
         chunk = chunk.strip()
         if not chunk:
             continue
         if "-" not in chunk:
-            raise ValueError(f"Gecersiz vardiya tanimi: '{chunk}' (ornek: 22:00-03:00:gemini)")
+            raise ValueError(f"Gecersiz vardiya tanimi: '{chunk}' (ornek: 00:00-05:15:balanced)")
         start_part, rest = chunk.split("-", 1)
-        # rest is either "03:00:gemini" or "03:00"
         rest_parts = rest.split(":")
         if len(rest_parts) == 3:
             end_str = f"{rest_parts[0]}:{rest_parts[1]}"
-            pool = rest_parts[2].strip()
+            pool_token = rest_parts[2].strip()
         elif len(rest_parts) == 2:
             end_str = rest
-            pool = "gemini" if idx % 2 == 1 else "claude"
+            pool_token = "balanced"
         else:
             raise ValueError(f"Gecersiz vardiya bitis/havuz tanimi: '{chunk}'")
         _parse_hhmm(start_part)
         _parse_hhmm(end_str)
+
+        if pool_token.lower() == "balanced":
+            sh_pools = list(all_pools)
+            sh_mode = "balanced"
+            label = "Balanced"
+        elif "+" in pool_token:
+            sh_pools = [p.strip() for p in pool_token.split("+") if p.strip()]
+            sh_mode = "balanced"
+            label = "Balanced"
+        else:
+            sh_pools = [pool_token]
+            sh_mode = "single"
+            label = pool_token.capitalize()
+
         shifts.append(
             ShiftWindowConfig(
-                name=f"Shift{idx}_{pool.capitalize()}",
+                name=f"Shift{idx}_{label}",
                 start=start_part.strip(),
                 end=end_str.strip(),
-                pool=pool,
+                pool=pool_token,
+                pools=sh_pools,
+                mode=sh_mode,
             )
         )
     if not shifts:
@@ -111,12 +135,20 @@ def resolve_shift_schedule(
             end_dt = datetime(start_dt.year, start_dt.month, start_dt.day, eh, em, tzinfo=tz)
             if end_dt <= start_dt:
                 end_dt += timedelta(days=1)
-            cycle.append(ResolvedShift(name=spec.name, pool=spec.pool, start_dt=start_dt, end_dt=end_dt))
+            cycle.append(
+                ResolvedShift(
+                    name=spec.name,
+                    pool=spec.pool,
+                    start_dt=start_dt,
+                    end_dt=end_dt,
+                    pools=list(spec.pools),
+                    mode=spec.mode,
+                )
+            )
             prev_end = end_dt
             cursor_day = end_dt.date()
         return cycle
 
-    # Try yesterday's overnight cycle first (handles e.g. 03:20 AM inside yesterday's 22:00->08:00 schedule!)
     for day_offset in (-1, 0, 1):
         base = local_now + timedelta(days=day_offset)
         cycle = build_cycle(base)
@@ -169,6 +201,7 @@ def run_night_session(
 ) -> int:
     ns = cfg.night_shift
     now_local = datetime.now().astimezone()
+    all_pools = list(cfg.model_pools.keys())
 
     if start_now:
         end_str = until_hhmm or (ns.shifts[-1].end if ns.shifts else "08:00")
@@ -176,13 +209,22 @@ def run_night_session(
         end_dt = now_local.replace(hour=eh, minute=em, second=0, microsecond=0)
         if end_dt <= now_local:
             end_dt += timedelta(days=1)
-        pool0 = initial_pool or (ns.shifts[0].pool if ns.shifts else "gemini")
+        if initial_pool and initial_pool != "balanced" and "+" not in initial_pool:
+            sh_mode = "single"
+            sh_pools = [initial_pool]
+            sh_name = f"Immediate_{initial_pool.capitalize()}"
+        else:
+            sh_mode = "balanced"
+            sh_pools = all_pools
+            sh_name = "Immediate_Balanced"
         schedule = [
             ResolvedShift(
-                name=f"Immediate_{pool0.capitalize()}",
-                pool=pool0,
+                name=sh_name,
+                pool=initial_pool or "balanced",
                 start_dt=now_local,
                 end_dt=end_dt,
+                pools=sh_pools,
+                mode=sh_mode,
             )
         ]
     else:
@@ -204,26 +246,40 @@ def run_night_session(
     print(f" AutoDev Gece Vardiya Yoneticisi — {cfg.project_name}")
     print("============================================================")
     print(f" Simdiki Saat : {now_local.strftime('%Y-%m-%d %H:%M:%S %z')}")
+    print(f" Strateji     : {'Senkronize Cift Havuz Dengeleme (balanced)' if ns.pool_strategy == 'balanced' else 'Tek Havuz'}")
+    print(f" Capraz Onarim: {'Acik (Gemini <-> Claude)' if ns.cross_pool_escalation else 'Kapali'}")
     print(f" Failover     : {'Acik (kota dolunca diger havuza gec)' if (ns.failover_on_quota and not no_failover) else 'Kapali'}")
+    print(f" Blok Limiti  : Ust uste max {ns.max_consecutive_blocks_night} blok")
     print(f" Auto-Push    : {'Acik (origin/' + cfg.git.dev_branch + ')' if cfg.git.auto_push else 'Kapali'}")
     print(f" Auto-Draft   : {'Acik' if (ns.auto_promote_drafts and not no_auto_promote) else 'Kapali'}")
     print(f" Auto-Plan    : {'Acik (max ' + str(ns.max_auto_plan_batches_per_night) + ' parti)' if (ns.auto_plan_when_empty and not no_auto_plan) else 'Kapali'}")
     print("\nPlanlanan Vardiyalar:")
     for idx, sh in enumerate(schedule, start=1):
-        profs = cfg.model_pools.get(sh.pool, {})
-        fast_m = profs.get("fast").model if "fast" in profs else "?"
-        smart_m = profs.get("smart").model if "smart" in profs else "?"
-        rem_pct = pool_mgr.get_remaining_pct(sh.pool)
-        print(
-            f"  {idx}. {sh.name}: {sh.start_dt.strftime('%d.%m %H:%M')} -> {sh.end_dt.strftime('%d.%m %H:%M')} "
-            f"| Havuz: {sh.pool} (Kalan: %{rem_pct}) | fast={fast_m}, smart={smart_m}"
+        pool_desc = " + ".join(
+            f"{p} (%{pool_mgr.get_remaining_pct(p)})" for p in sh.pools
         )
+        print(
+            f"  {idx}. {sh.name} [{sh.mode}]: {sh.start_dt.strftime('%d.%m %H:%M')} -> {sh.end_dt.strftime('%d.%m %H:%M')} "
+            f"| Havuzlar: {pool_desc}"
+        )
+        for p in sh.pools:
+            profs = cfg.model_pools.get(p, {})
+            fast_m = profs.get("fast").model if "fast" in profs else "?"
+            smart_m = profs.get("smart").model if "smart" in profs else "?"
+            plan_m = profs.get("planner").model if "planner" in profs else "?"
+            print(f"       - {p}: fast={fast_m}, smart={smart_m}, planner={plan_m}")
 
     adapter = load_adapter(cfg)
     orch = Orchestrator(cfg, adapter, pool_manager=pool_mgr)
 
     if dry_run:
-        preview = orch.run(max_tasks=0, dry_run=True, pool_name=schedule[0].pool)
+        preview = orch.run(
+            max_tasks=0,
+            dry_run=True,
+            pool_name=schedule[0].pools[0],
+            pool_strategy=schedule[0].mode,
+            active_pools=schedule[0].pools,
+        )
         ready = preview.get("ready_tasks", [])
         print(f"\n[DRY-RUN] Su an calismaya hazir {len(ready)} onayli gorev:")
         for t in ready[:10]:
@@ -250,15 +306,15 @@ def run_night_session(
                         continue
 
                     if now_check < sh.start_dt:
-                        _sleep_until(sh.start_dt, f"{sh.name} ({sh.pool}) baslangici")
+                        _sleep_until(sh.start_dt, f"{sh.name} ({sh.mode}) baslangici")
 
                     print(
                         f"\n[NightRunner] === {sh.name} BASLADI "
-                        f"({sh.start_dt.strftime('%H:%M')} -> {sh.end_dt.strftime('%H:%M')} | Havuz: {sh.pool}) ===",
+                        f"({sh.start_dt.strftime('%H:%M')} -> {sh.end_dt.strftime('%H:%M')} "
+                        f"| Mod: {sh.mode} | Havuzlar: {'+'.join(sh.pools)}) ===",
                         flush=True,
                     )
 
-                    # Loop within shift if all pools cool down before shift end
                     while True:
                         now_loop = datetime.now(sh.end_dt.tzinfo)
                         if (sh.end_dt - now_loop).total_seconds() < ns.cutoff_buffer_minutes * 60:
@@ -268,7 +324,12 @@ def run_night_session(
                         res = orch.run(
                             max_tasks=max_tasks_per_shift,
                             dry_run=False,
-                            pool_name=sh.pool,
+                            pool_name=sh.pools[0],
+                            pool_strategy=sh.mode,
+                            active_pools=sh.pools,
+                            cross_pool_escalation=ns.cross_pool_escalation,
+                            prefer_gemini_for_visual=ns.prefer_gemini_for_visual,
+                            max_consecutive_blocks=ns.max_consecutive_blocks_night,
                             shift_name=sh.name,
                             deadline=sh.end_dt,
                             cutoff_buffer_min=ns.cutoff_buffer_minutes,
@@ -279,7 +340,7 @@ def run_night_session(
                             auto_plan_batch_size=ns.auto_plan_batch_size,
                             max_auto_plan_batches=ns.max_auto_plan_batches_per_night,
                             wait_lock_sec=300,
-                            keep_awake=False,  # Outer KeepAwake holds execution state across entire night
+                            keep_awake=False,
                         )
                         stop = res.get("stop_reason", "")
                         print(f"[NightRunner] {sh.name} tur sonucu: {stop}", flush=True)
@@ -307,17 +368,17 @@ def run_night_session(
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="night_runner",
-        description="AutoDev saf Python gece vardiya yoneticisi (cift kota havuzlu, zaman ayarli).",
+        description="AutoDev saf Python gece vardiya yoneticisi (senkronize cift kota havuzlu).",
     )
     p.add_argument("--config", type=Path, default=None, help="Ozel config.json yolu")
     p.add_argument(
         "--shifts",
         default="",
-        help="Vardiya listesi (or. '22:00-03:00:gemini,03:00-08:00:claude'). Bos ise config.json kullanilir.",
+        help="Vardiya listesi (or. '00:00-05:15:balanced,05:15-10:15:balanced'). Bos ise config.json kullanilir.",
     )
     p.add_argument("--start-now", action="store_true", help="Beklemeden hemen simdi basla")
     p.add_argument("--until", default="", help="--start-now ile bitis saati (HH:MM, varsayilan 08:00)")
-    p.add_argument("--pool", default="", help="--start-now ile baslangic havuzu (gemini|claude)")
+    p.add_argument("--pool", default="", help="--start-now ile havuz modu (balanced|gemini|claude)")
     p.add_argument(
         "--max-tasks-per-shift",
         type=int,
@@ -338,7 +399,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     cfg = AutoDevConfig.load(config_path=args.config, repo_root=REPO_ROOT)
-    specs = parse_shift_specs(args.shifts) if args.shifts else None
+    specs = parse_shift_specs(args.shifts, default_pools=list(cfg.model_pools.keys())) if args.shifts else None
     return run_night_session(
         cfg=cfg,
         shifts_spec=specs,

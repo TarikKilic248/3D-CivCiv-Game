@@ -18,17 +18,23 @@ class ShiftWindowConfig:
     name: str
     start: str  # "HH:MM"
     end: str    # "HH:MM"
-    pool: str   # "gemini" | "claude"
+    pool: str = "balanced"  # "balanced" | "gemini" | "claude" | "gemini+claude"
+    pools: list[str] = field(default_factory=lambda: ["gemini", "claude"])
+    mode: str = "balanced"  # "balanced" | "single"
 
 
 @dataclass
 class NightShiftConfig:
     shifts: list[ShiftWindowConfig] = field(
         default_factory=lambda: [
-            ShiftWindowConfig("Shift1_Gemini", "22:00", "03:00", "gemini"),
-            ShiftWindowConfig("Shift2_Claude", "03:00", "08:00", "claude"),
+            ShiftWindowConfig("Shift1_Balanced", "00:00", "05:15", "balanced", ["gemini", "claude"], "balanced"),
+            ShiftWindowConfig("Shift2_Balanced", "05:15", "10:15", "balanced", ["gemini", "claude"], "balanced"),
         ]
     )
+    pool_strategy: str = "balanced"  # "balanced" | "single"
+    cross_pool_escalation: bool = True
+    prefer_gemini_for_visual: bool = True
+    max_consecutive_blocks_night: int = 4
     failover_on_quota: bool = True
     quota_cooldown_minutes: int = 305
     cutoff_buffer_minutes: int = 10
@@ -39,7 +45,7 @@ class NightShiftConfig:
     max_auto_plan_batches_per_night: int = 2
     keep_awake: bool = True
     pool_5h_budgets: dict[str, int] = field(
-        default_factory=lambda: {"gemini": 2_500_000, "claude": 1_500_000}
+        default_factory=lambda: {"gemini": 2_500_000, "claude": 550_000}
     )
 
 
@@ -168,7 +174,7 @@ class AutoDevConfig:
             max_retries_per_task=int(lim_raw.get("max_retries_per_task", 2)),
             max_consecutive_blocks=int(lim_raw.get("max_consecutive_blocks", 2)),
             max_changed_files=int(lim_raw.get("max_changed_files", 25)),
-            max_diff_lines=int(lim_raw.get("max_diff_lines", 1500)),
+            max_diff_lines=int(lim_raw.get("max_diff_lines", 2200)),
             max_context_file_chars=int(lim_raw.get("max_context_file_chars", 8000)),
             max_index_chars=int(lim_raw.get("max_index_chars", 14000)),
         )
@@ -198,14 +204,14 @@ class AutoDevConfig:
 
         default_gemini = {
             "planner": ModelProfile("gemini-4-neon-medium", "medium", 300),
-            "fast": ModelProfile("gemini-3.8-flash-medium", "medium", 300),
+            "fast": ModelProfile("gemini-3.8-flash-medium", "medium", 420),
             "smart": ModelProfile("gemini-4-neon-medium", "medium", 420),
             "visual": ModelProfile("gemini-3.8-flash-low", "low", 90),
         }
         default_claude = {
             "planner": ModelProfile("claude-opus-5-5-medium", "medium", 360),
             "fast": ModelProfile("claude-sonnet-5-5-low", "low", 300),
-            "smart": ModelProfile("claude-opus-5-5-medium", "medium", 420),
+            "smart": ModelProfile("claude-sonnet-5-5-medium", "medium", 420),
             "visual": ModelProfile("claude-sonnet-5-5-low", "low", 90),
         }
 
@@ -222,29 +228,50 @@ class AutoDevConfig:
             model_pools["claude"] = dict(default_claude)
 
         ns_raw = raw.get("night_shift", {})
+        all_pool_names = list(model_pools.keys())
         shifts_raw = ns_raw.get("shifts", [])
         shifts: list[ShiftWindowConfig] = []
         if isinstance(shifts_raw, list) and shifts_raw:
             for item in shifts_raw:
+                raw_pool = str(item.get("pool", "balanced")).strip()
+                raw_pools = item.get("pools")
+                if isinstance(raw_pools, list) and raw_pools:
+                    sh_pools = [str(p).strip() for p in raw_pools if str(p).strip()]
+                    sh_mode = str(item.get("mode", "balanced" if len(sh_pools) > 1 else "single"))
+                elif raw_pool.lower() == "balanced":
+                    sh_pools = list(all_pool_names)
+                    sh_mode = "balanced"
+                elif "+" in raw_pool:
+                    sh_pools = [p.strip() for p in raw_pool.split("+") if p.strip()]
+                    sh_mode = "balanced"
+                else:
+                    sh_pools = [raw_pool]
+                    sh_mode = str(item.get("mode", "single"))
                 shifts.append(
                     ShiftWindowConfig(
                         name=str(item.get("name", "Shift")),
-                        start=str(item.get("start", "22:00")),
-                        end=str(item.get("end", "03:00")),
-                        pool=str(item.get("pool", "gemini")),
+                        start=str(item.get("start", "00:00")),
+                        end=str(item.get("end", "05:15")),
+                        pool=raw_pool,
+                        pools=sh_pools,
+                        mode=sh_mode,
                     )
                 )
         else:
             shifts = NightShiftConfig().shifts
 
         budgets_raw = ns_raw.get("pool_5h_budgets", {})
-        budgets = {"gemini": 2_500_000, "claude": 1_500_000}
+        budgets = {"gemini": 2_500_000, "claude": 550_000}
         if isinstance(budgets_raw, dict):
             for k, v in budgets_raw.items():
                 budgets[str(k)] = int(v)
 
         night_cfg = NightShiftConfig(
             shifts=shifts,
+            pool_strategy=str(ns_raw.get("pool_strategy", "balanced")),
+            cross_pool_escalation=bool(ns_raw.get("cross_pool_escalation", True)),
+            prefer_gemini_for_visual=bool(ns_raw.get("prefer_gemini_for_visual", True)),
+            max_consecutive_blocks_night=int(ns_raw.get("max_consecutive_blocks_night", 4)),
             failover_on_quota=bool(ns_raw.get("failover_on_quota", True)),
             quota_cooldown_minutes=int(ns_raw.get("quota_cooldown_minutes", 305)),
             cutoff_buffer_minutes=int(ns_raw.get("cutoff_buffer_minutes", 10)),

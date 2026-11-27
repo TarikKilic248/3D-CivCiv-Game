@@ -106,7 +106,12 @@ class GitOps:
                 files.add(line.strip().replace("\\", "/"))
         return sorted(files)
 
-    def diff_line_count(self, base_ref: str | None = None) -> int:
+    def diff_line_count(
+        self,
+        base_ref: str | None = None,
+        exclude_extensions: Iterable[str] | None = None,
+    ) -> int:
+        excluded = {e.lower() for e in (exclude_extensions or []) if e}
         args = ["diff", "--numstat"]
         if base_ref:
             args.append(base_ref)
@@ -114,15 +119,20 @@ class GitOps:
         total = 0
         for line in out.splitlines():
             parts = line.split("\t")
-            if len(parts) >= 2:
+            if len(parts) >= 3:
+                rel_path = parts[2].strip().replace("\\", "/")
+                if excluded and os.path.splitext(rel_path)[1].lower() in excluded:
+                    continue
                 for val in parts[:2]:
                     if val.isdigit():
                         total += int(val)
-        # Include untracked text files roughly
+        # Include untracked source files roughly (excluding generated scene/asset/meta files)
         untracked = self.run(["ls-files", "--others", "--exclude-standard"], check=False).stdout
         for rel in untracked.splitlines():
-            rel = rel.strip()
+            rel = rel.strip().replace("\\", "/")
             if not rel:
+                continue
+            if excluded and os.path.splitext(rel)[1].lower() in excluded:
                 continue
             path = self.repo_root / rel
             if path.is_file() and path.stat().st_size < 512_000:
@@ -183,10 +193,14 @@ class GitOps:
                 f"Degisen dosya sayisi limiti asildi: {len(files)} > {max_files}"
             )
 
-        line_count = self.diff_line_count(base_ref=base_ref)
+        # Exclude Unity/adapter-generated YAML/meta files from source code line budget
+        line_count = self.diff_line_count(
+            base_ref=base_ref,
+            exclude_extensions=forbidden | {".meta"},
+        )
         if line_count > max_lines:
             violations.append(
-                f"Degisen satir sayisi limiti asildi: {line_count} > {max_lines}"
+                f"Degisen kaynak kod satir sayisi limiti asildi: {line_count} > {max_lines}"
             )
 
         if violations:

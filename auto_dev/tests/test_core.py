@@ -467,6 +467,171 @@ class TestAutoDevCore(unittest.TestCase):
             self.assertEqual(promoted, ["T001", "T002"])
             self.assertEqual([t.status for t in store.load()], ["pending", "pending"])
 
+    def test_balanced_pool_warm_start_and_proportional_selection(self) -> None:
+        from auto_dev.core.config import AutoDevConfig
+        from auto_dev.core.pool_manager import PoolManager
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            cfg = AutoDevConfig.load(repo_root=root)
+            pm = PoolManager(
+                pools=cfg.model_pools,
+                state_file=root / "pool_state.json",
+                pool_budgets={"gemini": 2_500_000, "claude": 550_000},
+            )
+            counts = {"gemini": 0, "claude": 0}
+
+            # Task 1: both at 100%, fast affinity selects gemini
+            p1, _ = pm.select_balanced_pool(["gemini", "claude"], task_tier="fast", shift_pool_counts=counts)
+            self.assertEqual(p1, "gemini")
+            pm.record_usage("gemini", 150_000)  # gemini -> 94.0%
+            counts["gemini"] += 1
+
+            # Task 2: warm-start ignites claude so both 5h rolling timers start together!
+            p2, _ = pm.select_balanced_pool(["gemini", "claude"], task_tier="fast", shift_pool_counts=counts)
+            self.assertEqual(p2, "claude")
+            pm.record_usage("claude", 150_000)  # claude -> 72.7%
+            counts["claude"] += 1
+
+            # Subsequent tasks pick highest remaining % (~4 Gemini : 1 Claude ratio)
+            picks: list[str] = []
+            for _ in range(5):
+                p, _ = pm.select_balanced_pool(["gemini", "claude"], task_tier="fast", shift_pool_counts=counts)
+                assert p is not None
+                picks.append(p)
+                pm.record_usage(p, 150_000)
+                counts[p] += 1
+
+            # First 4 picks are gemini (94->88->82->76->70%), then 5th switches back to claude (72.7% > 70% + 1.5%)
+            self.assertEqual(picks[:4], ["gemini", "gemini", "gemini", "gemini"])
+            self.assertEqual(picks[4], "claude")
+
+    def test_cross_pool_escalation_and_cheap_visual_pool(self) -> None:
+        from auto_dev.core.models import GateResult, TokenUsage
+
+        with tempfile.TemporaryDirectory() as td:
+            root = _init_temp_git_repo(Path(td))
+            cfg = AutoDevConfig.load(repo_root=root)
+            store = TaskStore(cfg.tasks_file, cfg.board_file)
+            store.add_task(
+                title="Cross-pool fix and cheap visual QA",
+                description="Add mul() with UI check",
+                target_files=["src/app.py"],
+                visual_check=True,
+                status="pending",
+            )
+
+            adapter = GenericAdapter(cfg)
+            fake_png = root / ".autodev" / "screen.png"
+            fake_png.parent.mkdir(parents=True, exist_ok=True)
+            fake_png.write_bytes(b"PNG")
+            adapter.capture_visual = lambda task, run_dir: GateResult(  # type: ignore[method-assign]
+                name="visual_capture", passed=True, summary="ok", artifacts=[str(fake_png)]
+            )
+
+            orch = Orchestrator(cfg, adapter)
+            calls: list[tuple[str, str]] = []
+
+            def fake_run_prompt(prompt, profile, schema=None, tag="task", run_dir=None, read_only=False):
+                calls.append((tag, profile.model))
+                app_py = root / "src" / "app.py"
+                if tag == "T001_visual":
+                    return AgentResult(
+                        ok=True,
+                        model=profile.model,
+                        effort=profile.effort,
+                        summary="Visual OK",
+                        structured={"passed": True, "summary": "Theme matches", "issues": []},
+                        usage=TokenUsage(total_tokens=17_000),
+                    )
+                if tag.endswith("_a1"):
+                    # Attempt 1 on Gemini introduces a test failure
+                    app_py.write_text("def add(a: int, b: int) -> int:\n    return a - b\n", encoding="utf-8")
+                else:
+                    # Attempt 2 cross-pool repair on Claude fixes it!
+                    app_py.write_text(
+                        "def add(a: int, b: int) -> int:\n    return a + b\n\ndef mul(a: int, b: int) -> int:\n    return a * b\n",
+                        encoding="utf-8",
+                    )
+                return AgentResult(
+                    ok=True,
+                    model=profile.model,
+                    effort=profile.effort,
+                    summary=f"Edited in {tag}",
+                    changed_files=["src/app.py"],
+                    usage=TokenUsage(total_tokens=40_000),
+                )
+
+            orch.runner.run_prompt = fake_run_prompt  # type: ignore[method-assign]
+            res = orch.run(
+                max_tasks=2,
+                pool_name="gemini",
+                pool_strategy="balanced",
+                active_pools=["gemini", "claude"],
+                cross_pool_escalation=True,
+                prefer_gemini_for_visual=True,
+                keep_awake=False,
+            )
+
+            self.assertEqual(
+                calls,
+                [
+                    ("T001_gemini_a1", "gemini-3.8-flash-medium"),
+                    ("T001_claude_a2", "claude-sonnet-5-5-medium"),
+                    ("T001_visual", "gemini-3.8-flash-low"),
+                ],
+            )
+            self.assertEqual(store.load()[0].status, "done")
+            self.assertEqual(res["stop_reason"], "queue_drained")
+
+    def test_diff_line_count_excludes_unity_scene_and_meta(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = _init_temp_git_repo(Path(td))
+            cfg = AutoDevConfig.load(repo_root=root)
+            git = GitOps(root, cfg.git)
+
+            git.start_task_branch("T001")
+            # Agent edits small source file, while Unity Editor writes huge .unity YAML + .meta file
+            (root / "src" / "app.py").write_text(
+                "def add(a: int, b: int) -> int:\n    return a + b\n\ndef sub(a: int, b: int) -> int:\n    return a - b\n",
+                encoding="utf-8",
+            )
+            (root / "src" / "Demo.unity").write_text("line\n" * 3000, encoding="utf-8")
+            (root / "src" / "app.py.meta").write_text("meta\n" * 80, encoding="utf-8")
+
+            raw_lines = git.diff_line_count(base_ref="auto-dev")
+            code_lines = git.diff_line_count(base_ref="auto-dev", exclude_extensions={".unity", ".asset", ".meta"})
+            self.assertGreater(raw_lines, 3000)
+            self.assertLess(code_lines, 20)
+
+            gate = git.validate_agent_diff(
+                allowed_prefixes=["src/"],
+                forbidden_extensions=[".unity", ".asset"],
+                max_files=10,
+                max_lines=200,
+                base_ref="auto-dev",
+                forbidden_check_files=["src/app.py"],
+            )
+            self.assertTrue(gate.passed, gate.error_excerpt)
+
+    def test_parse_shift_specs_balanced_and_single(self) -> None:
+        from auto_dev.night_runner import parse_shift_specs
+
+        s_bal = parse_shift_specs("00:00-05:15:balanced,05:15-10:15:balanced")
+        self.assertEqual(len(s_bal), 2)
+        self.assertEqual((s_bal[0].mode, s_bal[0].pools), ("balanced", ["gemini", "claude"]))
+        self.assertEqual((s_bal[1].mode, s_bal[1].pools), ("balanced", ["gemini", "claude"]))
+
+        s_plus = parse_shift_specs("00:00-05:15:gemini+claude")
+        self.assertEqual((s_plus[0].mode, s_plus[0].pools), ("balanced", ["gemini", "claude"]))
+
+        s_omit = parse_shift_specs("00:00-05:15,05:15-10:15")
+        self.assertEqual((s_omit[0].mode, s_omit[0].pools), ("balanced", ["gemini", "claude"]))
+
+        s_single = parse_shift_specs("22:00-03:00:gemini,03:00-08:00:claude")
+        self.assertEqual((s_single[0].mode, s_single[0].pools), ("single", ["gemini"]))
+        self.assertEqual((s_single[1].mode, s_single[1].pools), ("single", ["claude"]))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -250,6 +250,105 @@ class PoolManager:
                 wake_times.append(cd)
         return None, (min(wake_times) if wake_times else None)
 
+    def select_balanced_pool(
+        self,
+        active_pools: list[str],
+        task_tier: str = "fast",
+        shift_pool_counts: dict[str, int] | None = None,
+        now: datetime | None = None,
+    ) -> tuple[str | None, datetime | None]:
+        """Select optimal pool for balanced dual-pool operation:
+        1) Warm-start both pools within the first 2 tasks of a shift so both 5h clocks start & refresh together.
+        2) After both clocks are running, pick the available pool with highest remaining quota % (auto-proportional to real budgets).
+        """
+        now = now or _now_utc()
+        self._refresh_expired_windows(now)
+
+        candidates = [p for p in active_pools if p in self.pools]
+        if not candidates:
+            candidates = list(self.pools.keys())
+
+        available = [p for p in candidates if self.is_available(p, now)]
+        if not available:
+            wake_times = [cd for p in candidates if (cd := self.cooldown_until(p)) is not None]
+            return None, (min(wake_times) if wake_times else None)
+
+        if len(available) == 1:
+            return available[0], None
+
+        counts = shift_pool_counts or {}
+        # 1. Warm-start: if some pool has already run in this shift and another available pool has not,
+        # ignite the unstarted pool right away so both 5h rolling timers stay synchronized.
+        started_any = any(counts.get(p, 0) > 0 for p in available)
+        unstarted = [p for p in available if counts.get(p, 0) == 0]
+        if started_any and unstarted:
+            best_unstarted = max(unstarted, key=lambda p: self.get_remaining_pct(p, now))
+            return best_unstarted, None
+
+        # 2. Highest remaining quota % wins (naturally balances ~4 Gemini : 1 Claude from calibrated budgets)
+        scored: list[tuple[float, str]] = []
+        for p in available:
+            pct = self.get_remaining_pct(p, now)
+            # Gentle task-affinity tie-breaker (only breaks close ties within 4%)
+            bonus = 0.0
+            if task_tier == "smart" and p.lower().startswith("claude"):
+                bonus = 4.0
+            elif task_tier == "fast" and p.lower().startswith("gemini"):
+                bonus = 1.5
+            scored.append((pct + bonus, p))
+
+        scored.sort(key=lambda item: item[0], reverse=True)
+        return scored[0][1], None
+
+    def select_escalation_pool(
+        self,
+        attempt1_pool: str,
+        active_pools: list[str],
+        cross_pool: bool = True,
+        min_other_pct: float = 15.0,
+        now: datetime | None = None,
+    ) -> str:
+        """Pick pool for Attempt 2 repair: switch to another healthy model family when cross_pool is enabled."""
+        now = now or _now_utc()
+        self._refresh_expired_windows(now)
+
+        candidates = [p for p in active_pools if p in self.pools] or list(self.pools.keys())
+        if cross_pool:
+            others = [
+                p
+                for p in candidates
+                if p != attempt1_pool
+                and self.is_available(p, now)
+                and self.get_remaining_pct(p, now) >= min_other_pct
+            ]
+            if others:
+                return max(others, key=lambda p: self.get_remaining_pct(p, now))
+
+        if self.is_available(attempt1_pool, now):
+            return attempt1_pool
+        avail = [p for p in candidates if self.is_available(p, now)]
+        return avail[0] if avail else attempt1_pool
+
+    def select_visual_pool(
+        self,
+        active_pools: list[str],
+        fallback_pool: str,
+        prefer_gemini: bool = True,
+        now: datetime | None = None,
+    ) -> str:
+        """Prefer cheap `gemini-3.8-flash-low` for visual QA whenever Gemini pool is available."""
+        now = now or _now_utc()
+        self._refresh_expired_windows(now)
+
+        if prefer_gemini and "gemini" in self.pools and self.is_available("gemini", now):
+            return "gemini"
+        if self.is_available(fallback_pool, now):
+            return fallback_pool
+        for p in active_pools:
+            if self.is_available(p, now):
+                return p
+        return fallback_pool
+
     def status_summary(self, now: datetime | None = None) -> dict[str, dict[str, Any]]:
         now = now or _now_utc()
         self._refresh_expired_windows(now)

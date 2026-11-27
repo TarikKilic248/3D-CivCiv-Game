@@ -320,6 +320,11 @@ Task criteria context:
         max_tasks: int | None = None,
         dry_run: bool = False,
         pool_name: str | None = None,
+        pool_strategy: str = "single",
+        active_pools: list[str] | None = None,
+        cross_pool_escalation: bool = False,
+        prefer_gemini_for_visual: bool = True,
+        max_consecutive_blocks: int | None = None,
         shift_name: str = "",
         deadline: datetime | None = None,
         cutoff_buffer_min: int | None = None,
@@ -334,11 +339,20 @@ Task criteria context:
     ) -> dict[str, Any]:
         task_limit = self.cfg.limits.max_tasks_per_run if max_tasks is None else int(max_tasks)
         unlimited_tasks = task_limit <= 0
-        preferred_pool = pool_name or next(iter(self.pool_manager.pool_names()))
+        pools_list = [p for p in (active_pools or self.pool_manager.pool_names()) if p in self.pool_manager.pools]
+        if not pools_list:
+            pools_list = self.pool_manager.pool_names()
+        preferred_pool = pool_name if (pool_name and pool_name in self.pool_manager.pools) else pools_list[0]
+        is_balanced = pool_strategy == "balanced" and len(pools_list) > 1
         allow_failover = (
             self.cfg.night_shift.failover_on_quota
             if failover_on_quota is None
             else bool(failover_on_quota)
+        )
+        max_blocks_limit = (
+            self.cfg.limits.max_consecutive_blocks
+            if max_consecutive_blocks is None
+            else max(1, int(max_consecutive_blocks))
         )
         buf_min = (
             self.cfg.night_shift.cutoff_buffer_minutes
@@ -378,7 +392,8 @@ Task criteria context:
                 return {
                     "run_id": run_id,
                     "dry_run": True,
-                    "pool": preferred_pool,
+                    "pool": "balanced" if is_balanced else preferred_pool,
+                    "active_pools": pools_list,
                     "pool_status": self.pool_manager.status_summary(),
                     "ready_tasks": [t.to_dict() for t in ready],
                 }
@@ -397,6 +412,7 @@ Task criteria context:
             executed_done_or_blocked = 0
             auto_plan_batches_used = 0
             active_pool: str | None = preferred_pool
+            shift_pool_counts: dict[str, int] = {p: 0 for p in pools_list}
 
             try:
                 while unlimited_tasks or executed_done_or_blocked < task_limit:
@@ -408,10 +424,65 @@ Task criteria context:
                             stop_reason = f"window_deadline ({remaining_min:.1f}m left)"
                             break
 
-                    # 2. Pick available quota pool (preferred or failover)
-                    selected_pool, wake_at = self.pool_manager.select_available_pool(
-                        preferred_pool, allow_failover=allow_failover
-                    )
+                    # 2. Pick next ready task, or auto-promote drafts, or auto-plan if empty
+                    tasks = self.store.load()
+                    task = self.store.next_ready_task(tasks)
+                    if task is None and auto_promote_drafts:
+                        if self._try_promote_drafts(promote_batch):
+                            tasks = self.store.load()
+                            task = self.store.next_ready_task(tasks)
+
+                    if task is None and auto_plan_when_empty and auto_plan_batches_used < max_plan_batches:
+                        enough_time = True
+                        if deadline is not None:
+                            rem_min = (deadline - datetime.now(deadline.tzinfo)).total_seconds() / 60.0
+                            enough_time = rem_min >= max(25, buf_min + 15)
+                        if enough_time:
+                            plan_pool, wake_at = (
+                                self.pool_manager.select_balanced_pool(
+                                    pools_list, task_tier="smart", shift_pool_counts=shift_pool_counts
+                                )
+                                if is_balanced
+                                else self.pool_manager.select_available_pool(
+                                    preferred_pool, allow_failover=allow_failover
+                                )
+                            )
+                            if plan_pool is None:
+                                stop_reason = "all_pools_exhausted"
+                                next_available_at = wake_at
+                                break
+                            new_ids, plan_quota, plan_hint = self._try_auto_plan(
+                                plan_pool, plan_batch, run_dir, extra_calls
+                            )
+                            if plan_quota:
+                                self.pool_manager.mark_quota_exhausted(plan_pool, plan_hint)
+                                continue
+                            if new_ids:
+                                auto_plan_batches_used += 1
+                                auto_planned_ids.extend(new_ids)
+                                tasks = self.store.load()
+                                task = self.store.next_ready_task(tasks)
+
+                    if task is None:
+                        stop_reason = "no_ready_tasks" if not records else "queue_drained"
+                        break
+
+                    if consecutive_blocks >= max_blocks_limit:
+                        stop_reason = f"max_consecutive_blocks ({consecutive_blocks})"
+                        break
+
+                    # 3. Select optimal quota pool (balanced dual-pool or single + failover)
+                    if is_balanced:
+                        selected_pool, wake_at = self.pool_manager.select_balanced_pool(
+                            pools_list,
+                            task_tier=task.tier,
+                            shift_pool_counts=shift_pool_counts,
+                        )
+                    else:
+                        selected_pool, wake_at = self.pool_manager.select_available_pool(
+                            preferred_pool, allow_failover=allow_failover
+                        )
+
                     if selected_pool is None:
                         stop_reason = "all_pools_exhausted"
                         next_available_at = wake_at
@@ -424,62 +495,37 @@ Task criteria context:
                         )
                     active_pool = selected_pool
 
-                    # 3. Pick next ready task, or auto-promote drafts, or auto-plan if empty
-                    tasks = self.store.load()
-                    task = self.store.next_ready_task(tasks)
-                    if task is None and auto_promote_drafts:
-                        if self._try_promote_drafts(promote_batch):
-                            tasks = self.store.load()
-                            task = self.store.next_ready_task(tasks)
-
-                    if task is None and auto_plan_when_empty and auto_plan_batches_used < max_plan_batches:
-                        # Only auto-plan if enough time left in shift (>= 25 min)
-                        enough_time = True
-                        if deadline is not None:
-                            rem_min = (deadline - datetime.now(deadline.tzinfo)).total_seconds() / 60.0
-                            enough_time = rem_min >= max(25, buf_min + 15)
-                        if enough_time:
-                            new_ids, plan_quota, plan_hint = self._try_auto_plan(
-                                active_pool, plan_batch, run_dir, extra_calls
-                            )
-                            if plan_quota:
-                                self.pool_manager.mark_quota_exhausted(active_pool, plan_hint)
-                                continue
-                            if new_ids:
-                                auto_plan_batches_used += 1
-                                auto_planned_ids.extend(new_ids)
-                                tasks = self.store.load()
-                                task = self.store.next_ready_task(tasks)
-
-                    if task is None:
-                        stop_reason = "no_ready_tasks" if not records else "queue_drained"
-                        break
-
-                    if consecutive_blocks >= self.cfg.limits.max_consecutive_blocks:
-                        stop_reason = f"max_consecutive_blocks ({consecutive_blocks})"
-                        break
-
                     print(
                         f"\n[AutoDev] >>> Baslatiliyor: {task.id} — {task.title} "
                         f"[Havuz: {active_pool} | Kalan: %{self.pool_manager.get_remaining_pct(active_pool)}]",
                         flush=True,
                     )
-                    record, quota_hint = self._execute_single_task(
-                        task, index_text, run_dir, pool_name=active_pool, shift_name=shift_name
+                    record, quota_pool, quota_hint = self._execute_single_task(
+                        task,
+                        index_text,
+                        run_dir,
+                        pool_name=active_pool,
+                        active_pools=pools_list,
+                        cross_pool_escalation=cross_pool_escalation,
+                        prefer_gemini_for_visual=prefer_gemini_for_visual,
+                        shift_name=shift_name,
                     )
                     records.append(record)
 
                     if record.outcome == "deferred_quota":
-                        # Task rolled back cleanly and kept `pending`; cooldown exhausted pool and retry via failover/next shift
-                        until = self.pool_manager.mark_quota_exhausted(active_pool, quota_hint)
+                        exhausted_p = quota_pool or active_pool
+                        until = self.pool_manager.mark_quota_exhausted(exhausted_p, quota_hint)
                         record.pool_remaining_pct_after = self.pool_manager.snapshot_remaining_pcts()
                         print(
-                            f"[AutoDev] !!! Kota doldu ({active_pool}). {task.id} geri alindi ve 'pending' korundu. "
+                            f"[AutoDev] !!! Kota doldu ({exhausted_p}). {task.id} geri alindi ve 'pending' korundu. "
                             f"Soguma bitisi: {until.isoformat()}",
                             flush=True,
                         )
                         continue
 
+                    used_pools = {att.pool for att in record.attempts if att.pool} or {active_pool}
+                    for p_used in used_pools:
+                        shift_pool_counts[p_used] = shift_pool_counts.get(p_used, 0) + 1
                     executed_done_or_blocked += 1
                     if record.outcome == "done":
                         consecutive_blocks = 0
@@ -494,7 +540,7 @@ Task criteria context:
                             [self.cfg.tasks_file, self.cfg.board_file],
                             f"chore(autodev): mark {task.id} blocked",
                         )
-                        if consecutive_blocks >= self.cfg.limits.max_consecutive_blocks:
+                        if consecutive_blocks >= max_blocks_limit:
                             stop_reason = f"max_consecutive_blocks ({consecutive_blocks})"
                             break
             except KeyboardInterrupt:
@@ -507,14 +553,15 @@ Task criteria context:
 
             finished_at = utc_now_iso()
             pool_status_after = self.pool_manager.status_summary()
+            display_pool = "balanced" if is_balanced else preferred_pool
             report_path = self.reporter.save_run(
                 run_id=run_id,
                 records=records,
                 stop_reason=stop_reason,
                 started_at=started_at,
                 finished_at=finished_at,
-                shift_name=shift_name or f"Run ({preferred_pool})",
-                initial_pool=preferred_pool,
+                shift_name=shift_name or f"Run ({display_pool})",
+                initial_pool=display_pool,
                 pool_status_after=pool_status_after,
                 extra_calls=extra_calls,
                 auto_planned_ids=auto_planned_ids,
@@ -537,8 +584,8 @@ Task criteria context:
                         stop_reason=stop_reason,
                         started_at=started_at,
                         finished_at=finished_at,
-                        shift_name=shift_name or f"Run ({preferred_pool})",
-                        initial_pool=preferred_pool,
+                        shift_name=shift_name or f"Run ({display_pool})",
+                        initial_pool=display_pool,
                         pool_status_after=pool_status_after,
                         extra_calls=extra_calls,
                         auto_planned_ids=auto_planned_ids,
@@ -602,9 +649,13 @@ Task criteria context:
         index_text: str,
         run_dir: Path,
         pool_name: str = "gemini",
+        active_pools: list[str] | None = None,
+        cross_pool_escalation: bool = False,
+        prefer_gemini_for_visual: bool = True,
         shift_name: str = "",
-    ) -> tuple[TaskRunRecord, int | None]:
+    ) -> tuple[TaskRunRecord, str | None, int | None]:
         t_start = time.monotonic()
+        pools_list = active_pools or self.pool_manager.pool_names()
         record = TaskRunRecord(
             task_id=task.id,
             title=task.title,
@@ -628,10 +679,18 @@ Task criteria context:
 
         for attempt in range(1, max_attempts + 1):
             a_start = time.monotonic()
-            profile = self._select_model(task, attempt, pool_name)
+            attempt_pool = (
+                pool_name
+                if attempt == 1
+                else self.pool_manager.select_escalation_pool(
+                    pool_name, pools_list, cross_pool=cross_pool_escalation
+                )
+            )
+            profile = self._select_model(task, attempt, attempt_pool)
+            esc_note = " (capraz havuz onarim)" if (attempt >= 2 and attempt_pool != pool_name) else ""
             print(
                 f"[AutoDev]     Deneme {attempt}/{max_attempts} | "
-                f"Havuz: {pool_name} | Model: {profile.model}",
+                f"Havuz: {attempt_pool}{esc_note} | Model: {profile.model}",
                 flush=True,
             )
 
@@ -648,18 +707,18 @@ Task criteria context:
                 prompt=prompt,
                 profile=profile,
                 schema=TASK_AGENT_SCHEMA,
-                tag=f"{task.id}_{pool_name}_a{attempt}",
+                tag=f"{task.id}_{attempt_pool}_a{attempt}",
                 run_dir=run_dir,
                 read_only=False,
             )
             last_agent_summary = agent_res.summary
-            self.pool_manager.record_usage(pool_name, agent_res.usage.total_tokens)
+            self.pool_manager.record_usage(attempt_pool, agent_res.usage.total_tokens)
             task_usage = task_usage.add(agent_res.usage)
 
             model_calls: list[ModelCallMetric] = [
                 ModelCallMetric(
                     role="code",
-                    pool=pool_name,
+                    pool=attempt_pool,
                     model=profile.model,
                     duration_sec=agent_res.duration_sec,
                     usage=agent_res.usage,
@@ -673,7 +732,7 @@ Task criteria context:
                 g_quota = GateResult(
                     name="quota_guard",
                     passed=False,
-                    summary=f"Havuz '{pool_name}' kotasi doldu; gorev geri aliniyor (pending korunacak).",
+                    summary=f"Havuz '{attempt_pool}' kotasi doldu; gorev geri aliniyor (pending korunacak).",
                     error_excerpt=agent_res.error,
                     is_quota_error=True,
                     quota_reset_hint_sec=agent_res.quota_reset_hint_sec,
@@ -681,7 +740,7 @@ Task criteria context:
                 record.attempts.append(
                     AttemptRecord(
                         attempt=attempt,
-                        pool=pool_name,
+                        pool=attempt_pool,
                         model=profile.model,
                         effort=profile.effort,
                         agent_ok=False,
@@ -709,7 +768,7 @@ Task criteria context:
                 record.duration_sec = time.monotonic() - t_start
                 record.finished_at = utc_now_iso()
                 record.pool_remaining_pct_after = self.pool_manager.snapshot_remaining_pcts()
-                return record, agent_res.quota_reset_hint_sec
+                return record, attempt_pool, agent_res.quota_reset_hint_sec
 
             post_files = self.git.changed_files(base_ref=self.cfg.git.dev_branch)
             post_snap = self._snapshot_file_mtimes(post_files)
@@ -719,6 +778,7 @@ Task criteria context:
 
             gates: list[GateResult] = []
             vis_quota_hint: int | None = None
+            vis_quota_pool: str | None = None
             vis_quota_hit = False
 
             if not agent_res.ok:
@@ -750,13 +810,31 @@ Task criteria context:
                         gates.append(g_behav)
 
                         if g_behav.passed and task.visual_check:
-                            g_vis = self._run_visual_gate(task, run_dir, pool_name)
-                            gates.append(g_vis)
+                            vis_pool = self.pool_manager.select_visual_pool(
+                                pools_list,
+                                fallback_pool=attempt_pool,
+                                prefer_gemini=prefer_gemini_for_visual,
+                            )
+                            g_vis = self._run_visual_gate(task, run_dir, vis_pool)
                             if g_vis.model_metric is not None:
                                 model_calls.append(g_vis.model_metric)
                                 task_usage = task_usage.add(g_vis.model_metric.usage)
+                            # If preferred visual pool hit quota while attempt_pool is still healthy, fail over visual QA in-place!
+                            if (
+                                g_vis.is_quota_error
+                                and vis_pool != attempt_pool
+                                and self.pool_manager.is_available(attempt_pool)
+                            ):
+                                self.pool_manager.mark_quota_exhausted(vis_pool, g_vis.quota_reset_hint_sec)
+                                vis_pool = attempt_pool
+                                g_vis = self._run_visual_gate(task, run_dir, vis_pool)
+                                if g_vis.model_metric is not None:
+                                    model_calls.append(g_vis.model_metric)
+                                    task_usage = task_usage.add(g_vis.model_metric.usage)
+                            gates.append(g_vis)
                             if g_vis.is_quota_error:
                                 vis_quota_hit = True
+                                vis_quota_pool = vis_pool
                                 vis_quota_hint = g_vis.quota_reset_hint_sec
 
             all_passed = all(g.passed for g in gates)
@@ -767,7 +845,7 @@ Task criteria context:
 
             att_rec = AttemptRecord(
                 attempt=attempt,
-                pool=pool_name,
+                pool=attempt_pool,
                 model=profile.model,
                 effort=profile.effort,
                 agent_ok=agent_res.ok,
@@ -794,14 +872,14 @@ Task criteria context:
                     self.store.update_task(task)
                     self.git.commit_state_files(
                         [self.cfg.tasks_file, self.cfg.board_file],
-                        f"chore(autodev): reset {task.id} pending after quota",
+                        f"chore(autodev): reset {task.id} pending after visual quota",
                     )
                 record.outcome = "deferred_quota"
                 record.total_usage = task_usage
                 record.duration_sec = time.monotonic() - t_start
                 record.finished_at = utc_now_iso()
                 record.pool_remaining_pct_after = self.pool_manager.snapshot_remaining_pcts()
-                return record, vis_quota_hint
+                return record, vis_quota_pool, vis_quota_hint
 
             if all_passed:
                 sha = self.git.commit_and_merge_task(task, detail_summary=last_agent_summary)
@@ -818,10 +896,10 @@ Task criteria context:
                 record.pool_remaining_pct_after = self.pool_manager.snapshot_remaining_pcts()
                 print(
                     f"[AutoDev] <<< TAMAMLANDI: {task.id} -> commit {sha} "
-                    f"(Kalan {pool_name}: %{record.pool_remaining_pct_after.get(pool_name, '?')})",
+                    f"(Kalan {attempt_pool}: %{record.pool_remaining_pct_after.get(attempt_pool, '?')})",
                     flush=True,
                 )
-                return record, None
+                return record, None, None
 
             last_failed_gates = failed
             task.retries = attempt
@@ -841,4 +919,4 @@ Task criteria context:
         record.duration_sec = time.monotonic() - t_start
         record.finished_at = utc_now_iso()
         record.pool_remaining_pct_after = self.pool_manager.snapshot_remaining_pcts()
-        return record, None
+        return record, None, None

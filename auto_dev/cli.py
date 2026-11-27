@@ -141,10 +141,30 @@ def _cmd_run(cfg: AutoDevConfig, args: argparse.Namespace) -> int:
         if deadline <= now:
             deadline += timedelta(days=1)
 
+    pool_arg = (args.pool or "").strip()
+    if pool_arg.lower() == "balanced":
+        pool_strategy = "balanced"
+        active_pools = list(cfg.model_pools.keys())
+        pool_name = active_pools[0] if active_pools else None
+    elif "+" in pool_arg:
+        pool_strategy = "balanced"
+        active_pools = [p.strip() for p in pool_arg.split("+") if p.strip()]
+        pool_name = active_pools[0] if active_pools else None
+    else:
+        pool_strategy = "single"
+        active_pools = [pool_arg] if pool_arg else None
+        pool_name = pool_arg or None
+
     result = orch.run(
         max_tasks=args.max_tasks,
         dry_run=args.dry_run,
-        pool_name=args.pool or None,
+        pool_name=pool_name,
+        pool_strategy=pool_strategy,
+        active_pools=active_pools,
+        cross_pool_escalation=(
+            cfg.night_shift.cross_pool_escalation if pool_strategy == "balanced" else False
+        ),
+        prefer_gemini_for_visual=cfg.night_shift.prefer_gemini_for_visual,
         deadline=deadline,
     )
     if args.dry_run:
@@ -168,7 +188,11 @@ def _cmd_run(cfg: AutoDevConfig, args: argparse.Namespace) -> int:
 def _cmd_night(cfg: AutoDevConfig, args: argparse.Namespace) -> int:
     from auto_dev.night_runner import parse_shift_specs, run_night_session
 
-    specs = parse_shift_specs(args.shifts) if args.shifts else None
+    specs = (
+        parse_shift_specs(args.shifts, default_pools=list(cfg.model_pools.keys()))
+        if args.shifts
+        else None
+    )
     return run_night_session(
         cfg=cfg,
         shifts_spec=specs,
@@ -305,13 +329,17 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_run = sub.add_parser("run", help="Onayli gorevleri otonom olarak calistir")
     p_run.add_argument("--max-tasks", type=int, default=None, help="Bu kosudaki maksimum gorev (0=sinirsiz)")
-    p_run.add_argument("--pool", default="", help="Kullanilacak kota havuzu (gemini|claude)")
+    p_run.add_argument("--pool", default="", help="Kullanilacak kota havuzu (gemini|claude|balanced)")
     p_run.add_argument("--until", default="", help="Bitis saati (HH:MM)")
     p_run.add_argument("--dry-run", action="store_true", help="Sadece calisacak gorevleri listele")
     p_run.set_defaults(func=_cmd_run)
 
-    p_night = sub.add_parser("night", help="Cift havuzlu zaman ayarli gece vardiyasini baslat")
-    p_night.add_argument("--shifts", default="", help="Vardiya listesi (or. 22:00-03:00:gemini,03:00-08:00:claude)")
+    p_night = sub.add_parser("night", help="Senkronize cift havuzlu zaman ayarli gece vardiyasini baslat")
+    p_night.add_argument(
+        "--shifts",
+        default="",
+        help="Vardiya listesi (or. 00:00-05:15:balanced,05:15-10:15:balanced)",
+    )
     p_night.add_argument("--start-now", action="store_true", help="Beklemeden hemen basla")
     p_night.add_argument("--until", default="", help="--start-now ile bitis saati (HH:MM)")
     p_night.add_argument("--pool", default="", help="--start-now ile baslangic havuzu")
