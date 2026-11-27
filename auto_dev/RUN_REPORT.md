@@ -2,6 +2,7 @@
 
 | Kosu ID | Vardiya | Tarih (UTC) | Biten | Ertelenen (Kota) | Blok | Sure | Token | Bitis Nedeni |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `run_20261127_110403` | `Run (balanced)` | `2026-11-27T11:04:03+00:00` | `0` | `0` | `2` | `13dk 36s` | `317.4K` | max_consecutive_blocks (2) |
 | `run_20261127_021500` | `Shift2_Claude` | `2026-11-27T02:15:00+00:00` | `6` | `1` | `1` | `35dk 12s` | `1.26M` | queue_drained |
 | `run_20261126_210000` | `Shift1_Gemini` | `2026-11-26T21:00:00+00:00` | `8` | `0` | `4` | `76dk 30s` | `2.09M` | max_consecutive_blocks (2) |
 | `run_20261126_193400` | `-` | `2026-11-26T19:34:00+00:00` | `2` | `0` | `0` | `15dk 60s` | `0` | completed |
@@ -11,6 +12,12 @@
 | `run_20261126_174353` | `-` | `2026-11-26T17:43:53+00:00` | `1` | `0` | `1` | `4dk 55s` | `0` | queue_drained |
 
 ## Son Kosu Detaylari
+
+### `run_20261127_110403` — Run (balanced) (2026-11-27T11:04:03+00:00)
+- **Oturum Model Dagilimi:** `gemini-3.8-flash-medium` (93.4% sure / 9dk 00s, 77.4% tok / 245.6K) + `claude-sonnet-5-5-medium` (6.6% sure / 37.9s, 22.6% tok / 71.7K)
+- **Oturum Sonu Havuz Kalan Kota (Tahmini):** `gemini`: **%90.2** kalan | `claude`: **%81.8** kalan
+- **T009** — Kalp ve Can Göstergesi HUD Bileşeni (HealthUI): **BLOCKED** [7dk 52s | `gemini-3.8-flash-medium` %93.1 (5dk 05s) + `claude-sonnet-5-5-medium` %6.9 (22.6s) | Havuz kalan: `gemini` %94.1, `claude` %88.1]
+- **T011** — Dinamik Parkur Öğeleri (MovingPlatform, FallingPlatform & WindCurrentZone): **BLOCKED** [5dk 44s | `gemini-3.8-flash-medium` %93.9 (3dk 56s) + `claude-sonnet-5-5-medium` %6.1 (15.3s) | Havuz kalan: `gemini` %90.2, `claude` %81.8]
 
 ### `run_20261127_021500` — Shift2_Claude (2026-11-27T02:15:00+00:00)
 - **Oturum Model Dagilimi:** `gemini-3.8-flash-medium` (54.3% sure / 18dk 23s, 44.4% tok / 557.7K) + `gemini-4-neon-medium` (20.5% sure / 6dk 56s, 12.7% tok / 159.4K) + `claude-opus-5-5-medium` (17.0% sure / 5dk 44s, 15.7% tok / 197.0K) + `claude-sonnet-5-5-low` (7.1% sure / 2dk 25s, 24.5% tok / 307.6K) + `gemini-3.8-flash-low` (1.2% sure / 24.0s, 2.7% tok / 34.2K)
@@ -51,8 +58,3 @@
 
 ### `run_20261126_185001` —  (2026-11-26T18:50:01+00:00)
 - **T004** — Oyun İçi Enerji Çubuğu ve Oyun Sonu Ekranı (GameplayHUD): **DONE** (`ee6f253`) [5dk 10s | gemini-3.8-flash-medium, gemini-4-neon-medium]
-
-### `run_20261126_175609` —  (2026-11-26T17:56:09+00:00)
-- **T001** — Veri Mimarisi (PlayerStatsSO) ve PlayerController Temel Düzeltmeleri: **DONE** (`2305e43`) [12dk 02s | gemini-4-neon-xhigh, gemini-4-neon-xhigh]
-- **T003** — Stamina Tabanlı İleri Atılma Yeteneği (DashController): **DONE** (`94cd240`) [8dk 23s | gemini-3.8-flash-medium, gemini-4-neon-xhigh]
-- **T004** — Oyun İçi Enerji Çubuğu ve Oyun Sonu Ekranı (GameplayHUD): **BLOCKED** [14dk 57s | gemini-3.8-flash-medium, gemini-4-neon-xhigh]

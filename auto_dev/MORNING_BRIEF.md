@@ -1,28 +1,16 @@
 # AutoDev Sabah Ozet Raporu (MORNING_BRIEF) — 3D CivCiv Game
 
-- Guncelleme (UTC): `2026-11-27T02:53:28+00:00`
-- Son 16 Saat Ozeti: **Tamamlanan `23`** | Kota Ertelenen (`pending` korundu): `1` | Bloklanan: `7` | Otomatik Push (`origin/auto-dev`): `Evet`
+- Guncelleme (UTC): `2026-11-27T11:18:07+00:00`
+- Son 16 Saat Ozeti: **Tamamlanan `16`** | Kota Ertelenen (`pending` korundu): `1` | Bloklanan: `7` | Otomatik Push (`origin/auto-dev`): `Evet`
 - Otomatik Uretilen Yeni Gorevler: `T021, T022, T023, T024, T025, T026`
 
 ## 1. Kota Havuzlari Son Durumu (5 Saatlik Pencere — Tahmini)
 | Havuz | Durum | Kalan Kota (%) | Bu Pencerede Harcanan Token | Soguma / Yenilenme |
 | --- | --- | --- | --- | --- |
-| `gemini` | Musait | **%69.9** | `751.3K` | `-` |
-| `claude` | Kota Doldu (Sogumada) | **%0.0** | `504.6K` | `2026-11-27T07:17:30+00:00` |
+| `gemini` | Musait | **%90.2** | `245.6K` | `-` |
+| `claude` | Musait | **%81.8** | `91.9K` | `-` |
 
 ## 2. Oturum / Vardiya Bazli Model Kullanim Yuzdeleri ve Sureleri
-### run_20261126_174353 (`run_20261126_174353` — Bitis: `queue_drained`)
-_Bu oturumda model cagrisi yapilmadi._
-
-### run_20261126_175609 (`run_20261126_175609` — Bitis: `completed`)
-_Bu oturumda model cagrisi yapilmadi._
-
-### run_20261126_185001 (`run_20261126_185001` — Bitis: `completed`)
-_Bu oturumda model cagrisi yapilmadi._
-
-### run_20261126_185640 (`run_20261126_185640` — Bitis: `completed`)
-_Bu oturumda model cagrisi yapilmadi._
-
 ### run_20261126_193400 (`run_20261126_193400` — Bitis: `completed`)
 _Bu oturumda model cagrisi yapilmadi._
 
@@ -46,18 +34,17 @@ _Bu oturumda model cagrisi yapilmadi._
 
 > Oturum sonu havuz kalan tahmini kota: `gemini`: **%69.9** | `claude`: **%0.0**
 
+### Run (balanced) (`run_20261127_110403` — Bitis: `max_consecutive_blocks (2)`)
+| Havuz | Model | Cagri | Sure | Sure Payi (%) | Token | Token Payi (%) |
+| --- | --- | --- | --- | --- | --- | --- |
+| `gemini` | `gemini-3.8-flash-medium` | `2` | `9dk 00s` | **%93.4** | `245.6K` | **%77.4** |
+| `claude` | `claude-sonnet-5-5-medium` | `2` | `37.9s` | **%6.6** | `71.7K` | **%22.6** |
+
+> Oturum sonu havuz kalan tahmini kota: `gemini`: **%90.2** | `claude`: **%81.8**
+
 ## 3. Gorev Bazli Model Dagilimi, Sure ve Gorev Sonu Kalan Kota
 | Gorev | Vardiya | Sonuc | Commit | Kullanilan Modeller (% Sure & Sure) | Toplam Sure | Token | Gorev Sonu Havuz Kalan (%) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `T001` Veri Mimarisi (PlayerStatsSO) ve PlayerCon | `run_20261126_174353` | **BLOCKED** | - | - | `8.2s` | `0` | - |
-| `T002` Merkezi Oyun Döngüsü (GameState, GameManag | `run_20261126_174353` | **DONE** | `f141f27` | - | `4dk 46s` | `0` | - |
-| `T001` Veri Mimarisi (PlayerStatsSO) ve PlayerCon | `run_20261126_175609` | **DONE** | `2305e43` | - | `12dk 02s` | `0` | - |
-| `T003` Stamina Tabanlı İleri Atılma Yeteneği (Das | `run_20261126_175609` | **DONE** | `94cd240` | - | `8dk 23s` | `0` | - |
-| `T004` Oyun İçi Enerji Çubuğu ve Oyun Sonu Ekranı | `run_20261126_175609` | **BLOCKED** | - | - | `14dk 57s` | `0` | - |
-| `T004` Oyun İçi Enerji Çubuğu ve Oyun Sonu Ekranı | `run_20261126_185001` | **DONE** | `ee6f253` | - | `5dk 10s` | `0` | - |
-| `T005` Gelişmiş Altın Geri Bildirimi ve Güçlendir | `run_20261126_185640` | **DONE** | `cef8f19` | - | `5dk 18s` | `0` | - |
-| `T006` Kontrol Noktası ve Tehlike/Düşme Alanları  | `run_20261126_185640` | **DONE** | `1e11fcd` | - | `3dk 42s` | `0` | - |
-| `T007` Çift Zıplama ve Kanatla Süzülme (ChickGlid | `run_20261126_185640` | **DONE** | `fb739cd` | - | `5dk 47s` | `0` | - |
 | `T007A` Merkezi UI Tasarım Sistemi (UIThemeSO & UI | `run_20261126_193400` | **DONE** | `dfbebdc` | - | `7dk 59s` | `0` | - |
 | `T007B` Karakter Yetenek Cilası: Süzülme, Çift Zıp | `run_20261126_193400` | **DONE** | `ea0f0e4` | - | `8dk 01s` | `0` | - |
 | `T008` Hasar Arayüzü ve Oyuncu Can Sistemi (IDama | `Shift1_Gemini` | **DONE** | `0915a10` | `gemini-3.8-flash-medium`: **%100.0** (4dk 11s, 121.0K) | `4dk 39s` | `121.0K` | `gemini`: %69.2 / `claude`: %100.0 |
@@ -80,3 +67,5 @@ _Bu oturumda model cagrisi yapilmadi._
 | `T024` Hizlandirma Halkasi (SpeedBoostRing) | `Shift2_Claude` | **DONE** | `d5ddca2` | `gemini-3.8-flash-medium`: **%100.0** (3dk 59s, 115.4K) | `4dk 34s` | `115.4K` | `gemini`: %84.8 / `claude`: %0.0 |
 | `T025` Yumurta Firlatma Yetenegi (EggProjectile & | `Shift2_Claude` | **DONE** | `9c4ede2` | `gemini-3.8-flash-medium`: **%100.0** (4dk 44s, 137.2K) | `5dk 18s` | `137.2K` | `gemini`: %79.3 / `claude`: %0.0 |
 | `T026` Kurtarilan CivCiv Ilerleme HUD Bileseni (R | `Shift2_Claude` | **BLOCKED** | - | `gemini-3.8-flash-medium`: **%61.0** (4dk 36s, 146.4K)<br>`gemini-4-neon-medium`: **%36.2** (2dk 44s, 70.3K)<br>`gemini-3.8-flash-low`: **%2.8** (12.7s, 17.1K) | `8dk 05s` | `233.8K` | `gemini`: %69.9 / `claude`: %0.0 |
+| `T009` Kalp ve Can Göstergesi HUD Bileşeni (Healt | `Run (balanced)` | **BLOCKED** | - | `gemini-3.8-flash-medium`: **%93.1** (5dk 05s, 148.2K)<br>`claude-sonnet-5-5-medium`: **%6.9** (22.6s, 39.7K) | `7dk 52s` | `187.9K` | `gemini`: %94.1 / `claude`: %88.1 |
+| `T011` Dinamik Parkur Öğeleri (MovingPlatform, Fa | `Run (balanced)` | **BLOCKED** | - | `gemini-3.8-flash-medium`: **%93.9** (3dk 56s, 97.5K)<br>`claude-sonnet-5-5-medium`: **%6.1** (15.3s, 32.0K) | `5dk 44s` | `129.5K` | `gemini`: %90.2 / `claude`: %81.8 |
