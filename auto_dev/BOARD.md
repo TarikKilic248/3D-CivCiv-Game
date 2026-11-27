@@ -1,12 +1,16 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 22** | Taslak (Onay Bekleyen): `0` | Sirada: `0` (Calismaya Hazir: `0`) | Tamamlanan: `18` | Bloklanan: `4`
+- Ozet: **Toplam 25** | Taslak (Onay Bekleyen): `0` | Sirada: `3` (Calismaya Hazir: `3`) | Tamamlanan: `18` | Bloklanan: `4`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 _Yok._
 
 ## Siradaki Gorevler (`pending`)
-_Yok._
+| ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
+| --- | --- | --- | --- | --- | --- |
+| `T021` | Zıplatma Mantarı / Trambolin Platformu (BouncePad) | - | `fast` | - | Hazir |
+| `T022` | Sallanan Sarkaç Tuzağı ve Geri Tepme (SwingingHazard) | - | `fast` | - | Hazir |
+| `T023` | Uçan Geri Bildirim Yazıları (FloatingTextSpawner: Altın/Hasar/Kombo) | - | `fast` | Evet | Hazir |
 
 ## Bloklanan Gorevler (`blocked`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |

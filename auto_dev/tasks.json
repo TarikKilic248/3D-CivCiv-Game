@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-27T02:20:21+00:00",
+  "updated_at": "2026-11-27T02:21:50+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -758,6 +758,121 @@
       "commit_sha": "471e650",
       "created_at": "2026-11-26T16:00:00+00:00",
       "updated_at": "2026-11-27T02:20:21+00:00"
+    },
+    {
+      "id": "T021",
+      "title": "Zıplatma Mantarı / Trambolin Platformu (BouncePad)",
+      "description": "Oyuncu üstüne bastığında (veya ground pound ile çarptığında) yukarı doğru güçlü itiş uygulayan BouncePad bileşeni ekle. Dikey hız sıfırlanıp sabit bir BounceForce (ground pound ise çarpanlı) uygulanır, ChickGlideController.ResetAirJumps() çağrılarak hava zıplamaları yenilenir. Mantar görseli procedural squash-stretch (basılınca yassılma, sonra elastik geri yaylanma) yapar, çarpmada ParticleSystem patlaması (sarı/turuncu tüy-toz) ve oyuncuya kısa süreli TrailRenderer iz eklenir, SettingsUI.PlaySFX ile 'boing' sesi çalınır. Cooldown ile çoklu tetiklenme önlenir. OnBounced event'i yayınlanır. EnsureVFXSetup ile eksik VFX çalışma zamanında oluşturulur.",
+      "acceptance_criteria": [
+        "BouncePad.cs Assets/_GameAssets/Scripts/Gameplay/ altında global namespace'te, ApplyBounce(Rigidbody) / OnCollisionEnter-OnTriggerEnter ile tetiklenir.",
+        "Tetiklemeden sonra oyuncu Rigidbody'sinin dikey hızı >= BounceForce * 0.9 olur; aşağı yönlü hız tamamen sıfırlanır.",
+        "Ground pound sırasında tetiklenirse dikey hız normal zıplamadan en az %30 fazladır.",
+        "Tetiklemede ChickGlideController hava zıplama sayısı sıfırlanır (ResetAirJumps).",
+        "Cooldown süresi içinde ikinci tetikleme hızı değiştirmez ve OnBounced tekrar yayınlanmaz.",
+        "Tetiklemede görsel kök scale.y < 1 olur (squash) ve süre sonunda Vector3.one'a ±0.05 toleransla geri döner.",
+        "Tetiklemede ParticleSystem Play çağrılır, TrailRenderer emitting=true olur ve SettingsUI.PlaySFX kancası çağrılır (clip null ise hata vermez).",
+        "Check_T021.cs [AutoDevCheck(\"T021\")] geçici sahne nesneleriyle Rigidbody'yi aşağı hızla pad'e gönderip ApplyBounce/Physics.Simulate sonrası hız, cooldown ve squash değerlerini sayısal doğrular (<=150 satır)."
+      ],
+      "status": "pending",
+      "depends_on": [],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Gameplay/BouncePad.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T021.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/PlayerController.cs",
+        "Assets/_GameAssets/Scripts/Player/ChickGlideController.cs",
+        "Assets/_GameAssets/Scripts/Player/ChickPeckAttack.cs",
+        "Assets/_GameAssets/Scripts/Player/PlayerAbilityFeedback.cs",
+        "Assets/_GameAssets/Scripts/UI/SettingsUI.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/AutoDevVerifier.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T012.cs"
+      ],
+      "tier": "fast",
+      "visual_check": false,
+      "verify_check": "T021",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-27T02:21:50+00:00",
+      "updated_at": "2026-11-27T02:21:50+00:00"
+    },
+    {
+      "id": "T022",
+      "title": "Sallanan Sarkaç Tuzağı ve Geri Tepme (SwingingHazard)",
+      "description": "Sinüs tabanlı açısal salınım yapan (balyoz/kütük) bir sarkaç tuzağı ekle. Oyuncuya temas ettiğinde IDamageable (PlayerHealth) üzerinden hasar verir ve sarkacın anlık teğetsel hız yönünde yatay + yukarı geri tepme kuvveti uygular. Hasar sonrası kısa bir isabet bekleme süresi (hitCooldown) vardır. Görsel: salınım uç noktalarında hafif squash, isabet anında kısa sarsıntı (shake) ve TrailRenderer ile salınım izi; isabette ParticleSystem kıvılcım/talaş patlaması; SettingsUI.PlaySFX ile 'whoosh' (uç noktalarda) ve 'thud' (isabet) sesleri. HazardZone'dan farklı olarak respawn yapmaz, sadece hasar + knockback uygular. OnPlayerHit event'i yayınlanır.",
+      "acceptance_criteria": [
+        "SwingingHazard.cs Assets/_GameAssets/Scripts/Gameplay/ altında; Step(float deltaTime) ile açı = maxAngle * sin(t * speed + phase) hesaplanır ve test edilebilir.",
+        "Step çağrıları sonrası pivot yerel Z açısı [-maxAngle, +maxAngle] aralığında kalır ve en az bir kez işaret değiştirir.",
+        "HitTarget(Collider/GameObject) çağrısında IDamageable.TakeDamage(damage, dir) tam bir kez çağrılır; PlayerHealth mevcut canı damage kadar azalır.",
+        "Geri tepme sonrası oyuncu Rigidbody yatay hız büyüklüğü >= knockbackForce * 0.8 ve dikey hız > 0 olur.",
+        "hitCooldown süresi içinde ikinci temas hasar vermez; süre geçince tekrar hasar verir.",
+        "İsabette ParticleSystem Play, TrailRenderer mevcut ve SettingsUI.PlaySFX kancası çağrılır (null clip güvenli).",
+        "Check_T022.cs [AutoDevCheck(\"T022\")] Step ile salınımı, DummyDamageable/PlayerHealth ile hasar sayısını, cooldown'u ve knockback hızını sayısal doğrular (<=150 satır)."
+      ],
+      "status": "pending",
+      "depends_on": [],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/Gameplay/SwingingHazard.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T022.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/Core/IDamageable.cs",
+        "Assets/_GameAssets/Scripts/Player/PlayerHealth.cs",
+        "Assets/_GameAssets/Scripts/Gameplay/HazardZone.cs",
+        "Assets/_GameAssets/Scripts/PlayerController.cs",
+        "Assets/_GameAssets/Scripts/UI/SettingsUI.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/AutoDevVerifier.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T012.cs"
+      ],
+      "tier": "fast",
+      "visual_check": false,
+      "verify_check": "T022",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-27T02:21:50+00:00",
+      "updated_at": "2026-11-27T02:21:50+00:00"
+    },
+    {
+      "id": "T023",
+      "title": "Uçan Geri Bildirim Yazıları (FloatingTextSpawner: Altın/Hasar/Kombo)",
+      "description": "Dünya uzayında belirip yukarı süzülerek kaybolan '+1', '-1', 'x3 KOMBO!' gibi yazılar üreten FloatingTextSpawner ve FloatingText bileşenlerini ekle. Spawner; CoinManager altın artışına, PlayerHealth.OnHealthChanged (hasar) ve PatrolEnemyAI/BreakableCrate OnHit olaylarına, ComboManager.OnComboUpdated'a abone olur. Yazılar TextMeshPro ile oluşturulur ve renk/font/outline UIThemeSO + UIStyleHelper.ApplyTextStyle üzerinden sıcak altın-sarı/turuncu/koyu kehribar temasına göre ayarlanır (altın=altın sarısı, hasar=koyu kırmızı-turuncu, kombo=parlak turuncu). Animasyon: pop-in scale (overshoot), yukarı süzülme, kameraya billboard, alfa sönümlenme; kombo yazısında küçük ParticleSystem kıvılcım ve SettingsUI.PlaySFX ile hafif 'pop' sesi. Basit dahili liste ile yeniden kullanım (genel ObjectPoolManager'a bağımlı değil).",
+      "acceptance_criteria": [
+        "FloatingTextSpawner.cs ve FloatingText.cs Assets/_GameAssets/Scripts/UI/ altında global namespace'te.",
+        "Spawn(string text, Vector3 worldPos, FloatingTextKind kind) çağrısı aktif bir FloatingText döndürür; metin ve renk UIThemeSO'dan gelir (tema null ise varsayılan altın/turuncu paletine düşer, düz beyaz/gri değil).",
+        "FloatingText.Step(deltaTime) ile ömür boyunca pozisyon Y artar, alfa monoton azalır; ömür sonunda nesne deaktif olur ve tekrar Spawn'da yeniden kullanılır (yeni GameObject sayısı artmaz).",
+        "Pop-in sırasında scale en az bir kez 1.0'ı aşar (overshoot) ve sonra 1.0'a yakınsar.",
+        "PlayerHealth hasar aldığında ve ComboManager OnComboUpdated tetiklendiğinde otomatik olarak ilgili türde yazı oluşturulur.",
+        "Kombo yazısında ParticleSystem Play ve SettingsUI.PlaySFX kancası çağrılır (null clip güvenli).",
+        "Check_T023.cs [AutoDevCheck(\"T023\")] Spawn/Step ile hareket, alfa sönümü, yeniden kullanım ve event aboneliğini sayısal doğrular (<=150 satır)."
+      ],
+      "status": "pending",
+      "depends_on": [],
+      "target_files": [
+        "Assets/_GameAssets/Scripts/UI/FloatingTextSpawner.cs",
+        "Assets/_GameAssets/Scripts/UI/FloatingText.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T023.cs"
+      ],
+      "context_files": [
+        "Assets/_GameAssets/Scripts/Data/UIThemeSO.cs",
+        "Assets/_GameAssets/Scripts/UI/UIStyleHelper.cs",
+        "Assets/_GameAssets/Scripts/UI/CoinManager.cs",
+        "Assets/_GameAssets/Scripts/Core/ComboManager.cs",
+        "Assets/_GameAssets/Scripts/UI/ComboUI.cs",
+        "Assets/_GameAssets/Scripts/Player/PlayerHealth.cs",
+        "Assets/_GameAssets/Scripts/AI/PatrolEnemyAI.cs",
+        "Assets/_GameAssets/Scripts/UI/SettingsUI.cs",
+        "Assets/_GameAssets/Scripts/Editor/AutoDev/AutoDevVerifier.cs"
+      ],
+      "tier": "fast",
+      "visual_check": true,
+      "verify_check": "T023",
+      "retries": 0,
+      "last_error": "",
+      "commit_sha": "",
+      "created_at": "2026-11-27T02:21:50+00:00",
+      "updated_at": "2026-11-27T02:21:50+00:00"
     }
   ]
 }
