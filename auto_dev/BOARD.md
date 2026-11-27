@@ -1,14 +1,12 @@
 # AutoDev Gorev Panosu (BOARD)
 
-- Ozet: **Toplam 28** | Taslak (Onay Bekleyen): `0` | Sirada: `1` (Calismaya Hazir: `1`) | Tamamlanan: `23` | Bloklanan: `4`
+- Ozet: **Toplam 28** | Taslak (Onay Bekleyen): `0` | Sirada: `0` (Calismaya Hazir: `0`) | Tamamlanan: `23` | Bloklanan: `5`
 
 ## Onay Bekleyen Taslaklar (`draft`)
 _Yok._
 
 ## Siradaki Gorevler (`pending`)
-| ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
-| --- | --- | --- | --- | --- | --- |
-| `T026` | Kurtarilan CivCiv Ilerleme HUD Bileseni (RescueProgressUI) | T007A, T016 | `fast` | Evet | Hazir |
+_Yok._
 
 ## Bloklanan Gorevler (`blocked`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |
@@ -17,6 +15,7 @@ _Yok._
 | `T011` | Dinamik Parkur Öğeleri (MovingPlatform, FallingPlatform & WindCurrentZone) | T007 | `fast` | - | Deneme: 2 — unity_verify:T011: Dogrulama istisnasi (T011): Do not create your own module instances, ge |
 | `T018` | Nesne Havuzu ve Karakter Hareket Efektleri (ObjectPoolManager & PlayerVFXController) | T003, T007 | `fast` | - | Deneme: 2 — unity_compile: C# derleme hatasi (12 hata). |
 | `T019` | Kamera Hissiyatı ve 3D Ses Mimarisi (CameraJuiceController & SpatialAudioManager) | T003, T008 | `fast` | - | Deneme: 2 — scope_diff_guard: Kapsam/diff korumasi basarisiz (1 ihlal). |
+| `T026` | Kurtarilan CivCiv Ilerleme HUD Bileseni (RescueProgressUI) | T007A, T016 | `fast` | Evet | Deneme: 2 — scope_diff_guard: Kapsam/diff korumasi basarisiz (1 ihlal). |
 
 ## Tamamlanan Gorevler (`done`)
 | ID | Baslik | Bagimlilik | Model | Gorsel | Durum / Not |

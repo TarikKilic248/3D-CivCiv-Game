@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-27T02:45:13+00:00",
+  "updated_at": "2026-11-27T02:53:19+00:00",
   "tasks": [
     {
       "id": "T001",
@@ -951,7 +951,7 @@
         "Civciv kurtarildiginda prosedurel olcek sicramasi/parlama animasyonu (StepAnimation), kutlama ParticleSystem efekti ve SettingsUI.PlaySFX ses kancasi tetiklenir.",
         "Editor AutoDevCheck dogrulamasi (Check_<ID>.cs) kurtarma olayi tetiklendiginde HUD metninin, tema stillerinin ve animasyon durumunun guncellendigini kanitlar."
       ],
-      "status": "pending",
+      "status": "blocked",
       "depends_on": [
         "T007A",
         "T016"
@@ -969,11 +969,11 @@
       "tier": "fast",
       "visual_check": true,
       "verify_check": "ChickRescueManager uzerinden civciv kurtarma tetiklendiginde RescueProgressUI metninin guncellendigini, UIThemeSO/UIStyleHelper stilinin uygulandigini ve StepAnimation olcek sicramasinin calistigini dogrula.",
-      "retries": 0,
-      "last_error": "",
+      "retries": 2,
+      "last_error": "scope_diff_guard: Kapsam/diff korumasi basarisiz (1 ihlal).\nDegisen satir sayisi limiti asildi: 3819 > 1500",
       "commit_sha": "",
       "created_at": "2026-11-27T02:35:19+00:00",
-      "updated_at": "2026-11-27T02:35:19+00:00"
+      "updated_at": "2026-11-27T02:53:19+00:00"
     }
   ]
 }
