@@ -38,6 +38,7 @@ public class GameSaveData
     public int highScore = 0;
     public int totalRescuedChicks = 0;
     public List<LevelSaveEntry> levels = new List<LevelSaveEntry>();
+    public List<string> unlockedAchievements = new List<string>();
 
     public int GetLevelStars(string levelId)
     {
