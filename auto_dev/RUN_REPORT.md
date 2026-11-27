@@ -2,6 +2,7 @@
 
 | Kosu ID | Vardiya | Tarih (UTC) | Biten | Ertelenen (Kota) | Blok | Sure | Token | Bitis Nedeni |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `run_20261127_113159` | `Immediate_Balanced` | `2026-11-27T11:31:59+00:00` | `5` | `0` | `0` | `29dk 44s` | `773.7K` | completed |
 | `run_20261127_110403` | `Run (balanced)` | `2026-11-27T11:04:03+00:00` | `0` | `0` | `2` | `13dk 36s` | `317.4K` | max_consecutive_blocks (2) |
 | `run_20261127_021500` | `Shift2_Claude` | `2026-11-27T02:15:00+00:00` | `6` | `1` | `1` | `35dk 12s` | `1.26M` | queue_drained |
 | `run_20261126_210000` | `Shift1_Gemini` | `2026-11-26T21:00:00+00:00` | `8` | `0` | `4` | `76dk 30s` | `2.09M` | max_consecutive_blocks (2) |
@@ -12,6 +13,15 @@
 | `run_20261126_174353` | `-` | `2026-11-26T17:43:53+00:00` | `1` | `0` | `1` | `4dk 55s` | `0` | queue_drained |
 
 ## Son Kosu Detaylari
+
+### `run_20261127_113159` — Immediate_Balanced (2026-11-27T11:31:59+00:00)
+- **Oturum Model Dagilimi:** `gemini-3.8-flash-medium` (90.1% sure / 21dk 28s, 81.4% tok / 629.7K) + `claude-sonnet-5-5-low` (5.9% sure / 1dk 24s, 11.1% tok / 85.9K) + `gemini-3.8-flash-low` (2.4% sure / 34.6s, 4.4% tok / 34.2K) + `claude-sonnet-5-5-medium` (1.5% sure / 22.0s, 3.1% tok / 23.9K)
+- **Oturum Sonu Havuz Kalan Kota (Tahmini):** `gemini`: **%63.6** kalan | `claude`: **%60.0** kalan
+- **T009** — Kalp ve Can Göstergesi HUD Bileşeni (HealthUI): **DONE** (`6b92335`) [6dk 00s | `gemini-3.8-flash-medium` %94.5 (4dk 29s) + `gemini-3.8-flash-low` %5.5 (15.8s) | Havuz kalan: `gemini` %84.2, `claude` %81.8]
+- **T011** — Dinamik Parkur Öğeleri (MovingPlatform, FallingPlatform & WindCurrentZone): **DONE** (`e49c39f`) [3dk 01s | `claude-sonnet-5-5-low` %100.0 (1dk 24s) | Havuz kalan: `gemini` %84.2, `claude` %64.8]
+- **T018** — Nesne Havuzu ve Karakter Hareket Efektleri (ObjectPoolManager & PlayerVFXController): **DONE** (`58053e0`) [6dk 13s | `gemini-3.8-flash-medium` %100.0 (5dk 21s) | Havuz kalan: `gemini` %77.4, `claude` %64.8]
+- **T019** — Kamera Hissiyatı ve 3D Ses Mimarisi (CameraJuiceController & SpatialAudioManager): **DONE** (`1f6b80d`) [6dk 43s | `gemini-3.8-flash-medium` %100.0 (5dk 46s) | Havuz kalan: `gemini` %71.7, `claude` %64.8]
+- **T026** — Kurtarilan CivCiv Ilerleme HUD Bileseni (RescueProgressUI): **DONE** (`38465e5`) [7dk 46s | `gemini-3.8-flash-medium` %89.6 (5dk 52s) + `claude-sonnet-5-5-medium` %5.6 (22.0s) + `gemini-3.8-flash-low` %4.8 (18.8s) | Havuz kalan: `gemini` %63.6, `claude` %60.0]
 
 ### `run_20261127_110403` — Run (balanced) (2026-11-27T11:04:03+00:00)
 - **Oturum Model Dagilimi:** `gemini-3.8-flash-medium` (93.4% sure / 9dk 00s, 77.4% tok / 245.6K) + `claude-sonnet-5-5-medium` (6.6% sure / 37.9s, 22.6% tok / 71.7K)
@@ -55,6 +65,3 @@
 - **T005** — Gelişmiş Altın Geri Bildirimi ve Güçlendirici Sistemi (CoinCollect & PowerUpCollectable): **DONE** (`cef8f19`) [5dk 18s | gemini-3.8-flash-medium, gemini-4-neon-medium]
 - **T006** — Kontrol Noktası ve Tehlike/Düşme Alanları (Checkpoint & HazardZone): **DONE** (`1e11fcd`) [3dk 42s | gemini-3.8-flash-medium]
 - **T007** — Çift Zıplama ve Kanatla Süzülme (ChickGlideController): **DONE** (`fb739cd`) [5dk 47s | gemini-3.8-flash-medium, gemini-4-neon-medium]
-
-### `run_20261126_185001` —  (2026-11-26T18:50:01+00:00)
-- **T004** — Oyun İçi Enerji Çubuğu ve Oyun Sonu Ekranı (GameplayHUD): **DONE** (`ee6f253`) [5dk 10s | gemini-3.8-flash-medium, gemini-4-neon-medium]
