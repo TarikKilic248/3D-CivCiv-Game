@@ -1,5 +1,5 @@
 # Compact Project Code Index (Auto-Generated, 0 Tokens)
-Indexed files: `69`
+Indexed files: `71`
 
 - `Assets/_GameAssets/Scripts/AI/PatrolEnemyAI.cs` (725L): types: class PatrolEnemyAI: MonoBehaviour, IDamageable, enum EnemyState | events: OnStateChanged, OnHealthChanged, OnHit, OnDefeated | api: ResolveDependencies(), ApplyStats(), RefreshWaypoints(), SetState(EnemyState newState), Step(float deltaTime), StepFeedback(float deltaTime), ResetVisualPoseImmediate(), TakeDamage(int damage), TakeDamage(int damage, Vector3 hitDirection), Heal(int amount) | fields: _stats, _waypoints, _rigidbody, _collider, _visualRoot, _hitVFX, _defeatedVFX, _aggroVFX, _hitSfx, _defeatSfx
 - `Assets/_GameAssets/Scripts/Collectables/CoinMagnet.cs` (273L): types: class CoinMagnet: MonoBehaviour | events: OnSuperMagnetChanged, OnCoinPulled | api: ActivateSuperMagnet(float duration, float radiusMultiplie...), DeactivateSuperMagnet(), RefreshCoinCache(), StepMagnet(float deltaTime), EnsureVFXSetup() | fields: _magnetRadius, _pullSpeed, _targetHeightOffset, _autoCollectDistance, _defaultSuperRadiusMultiplier, _defaultSuperSpeedMultiplier, _magnetAuraParticles, _superMagnetSound, _magnetPullSound
@@ -40,6 +40,7 @@ Indexed files: `69`
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T017.cs` (197L): types: class Check_T017 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T020.cs` (172L): types: class Check_T020 | api: Run()
 - `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T021.cs` (87L): types: class Check_T021 | api: Run()
+- `Assets/_GameAssets/Scripts/Editor/AutoDev/Checks/Check_T022.cs` (96L): types: class Check_T022, class DummyDamageable: MonoBehaviour, IDamageable | api: TakeDamage(int damage), TakeDamage(int damage, Vector3 dir), Heal(int amount), Run()
 - `Assets/_GameAssets/Scripts/Editor/CivCivAutoSetup.cs` (265L): types: class CivCivAutoSetup | api: SetupAll(), SetupSettingsUI()
 - `Assets/_GameAssets/Scripts/Enums/GameState.cs` (8L): types: enum GameState
 - `Assets/_GameAssets/Scripts/Enums/PlayerState.cs` (19L): types: enum PlayerState
@@ -50,6 +51,4 @@ Indexed files: `69`
 - `Assets/_GameAssets/Scripts/Gameplay/HazardZone.cs` (136L): types: class HazardZone: MonoBehaviour | events: OnPlayerHazardTriggered, OnHazardEntered | api: OnTriggerEnter(Collider other), RespawnPlayer(PlayerController player), GetRespawnPosition(PlayerController player) | fields: _overrideRespawnTransform, _hazardSound, _hazardVFX
 - `Assets/_GameAssets/Scripts/Gameplay/LostChickNPC.cs` (448L): types: class LostChickNPC: MonoBehaviour, IInteractable | events: OnRescued | api: ResolveDependencies(), ResetVisualPoseImmediate(), Step(float deltaTime), Rescue(Transform targetOverride = null), CanInteract(PlayerInteractor interactor), GetPromptText(PlayerInteractor interactor), Interact(PlayerInteractor interactor), EnsureVFXSetup() | fields: _visualRoot, _rescueVFX, _rescueSfx, _rescueOnInteract, _rescueOnTriggerEnter, _promptText, _followTarget, _followDistance, _followSpeed, _turnSpeed
 - `Assets/_GameAssets/Scripts/Gameplay/PressurePlateSwitch.cs` (445L): types: class PressurePlateSwitch: MonoBehaviour, IInteractable | events: OnActivated, OnDeactivated, OnStateChanged | api: ResolveDependencies(), CanInteract(PlayerInteractor interactor), GetPromptText(PlayerInteractor interactor), Interact(PlayerInteractor interactor), SetPressedState(bool pressed, bool triggerFeedback = ...), TriggerManualPress(), TriggerManualRelease(), Step(float deltaTime), RegisterPresser(Collider presser), UnregisterPresser(Collider presser) | fields: _targetTransform, _targetActiveOffset, _moveSpeed, _stayPressedPermanently, _allowManualInteraction, _plateVisual, _depressionDepth, _plateLerpSpeed, _plateRenderer, _activeColor
-- `Assets/_GameAssets/Scripts/ICollectable.cs` (5L): types: interface ICollectable
-- `Assets/_GameAssets/Scripts/Player/ChickGlideController.cs` (308L): types: class ChickGlideController: MonoBehaviour | events: OnAirJumpExecuted, OnGlideStateChanged | api: ResolveDependencies(), Step(float deltaTime), ExecuteAirJump(), StartGlide(), StopGlide(), ResetAirJumps() | fields: _playerStats, _maxAirJumps, _airJumpForce, _maxGlideFallSpeed, _glideKey
 - _... (index truncated by max_index_chars limit)_
