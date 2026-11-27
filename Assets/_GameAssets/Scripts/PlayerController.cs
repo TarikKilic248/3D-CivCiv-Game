@@ -111,6 +111,17 @@ public class PlayerController : MonoBehaviour
     public float VerticalInput => _verticalInput;
     public Transform OrientationTransform => _playerOrientationTransform != null ? _playerOrientationTransform : transform;
 
+    // Olaylar (Events)
+    public event System.Action OnJump;
+    public event System.Action OnLanded;
+    public event System.Action OnSlideStarted;
+    public event System.Action OnSlideEnded;
+
+    public void TriggerJumpEvent() => OnJump?.Invoke();
+    public void TriggerLandedEvent() => OnLanded?.Invoke();
+    public void TriggerSlideStartedEvent() => OnSlideStarted?.Invoke();
+    public void TriggerSlideEndedEvent() => OnSlideEnded?.Invoke();
+
     // Collider orijinal boyutları
     private CapsuleCollider _capsuleCollider;
     private BoxCollider _boxCollider;
@@ -320,13 +331,23 @@ public class PlayerController : MonoBehaviour
 
     public bool RefreshGroundState()
     {
+        bool wasGrounded = _isGrounded;
         _isGrounded = CheckGround();
+        if (!wasGrounded && _isGrounded)
+        {
+            OnLanded?.Invoke();
+        }
         return _isGrounded;
     }
 
     public void StepTimers(float deltaTime)
     {
+        bool wasGrounded = _isGrounded;
         _isGrounded = CheckGround();
+        if (!wasGrounded && _isGrounded)
+        {
+            OnLanded?.Invoke();
+        }
 
         if (IsInputBlocked())
         {
@@ -371,7 +392,12 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         float dt = Time.deltaTime;
+        bool wasGrounded = _isGrounded;
         _isGrounded = CheckGround();
+        if (!wasGrounded && _isGrounded)
+        {
+            OnLanded?.Invoke();
+        }
 
         bool blocked = IsInputBlocked();
         if (!blocked)
@@ -643,6 +669,7 @@ public class PlayerController : MonoBehaviour
         _playerRigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
 
         SetAnimTrigger(_hashJump);
+        OnJump?.Invoke();
     }
 
     private void ResetJump()
@@ -684,6 +711,8 @@ public class PlayerController : MonoBehaviour
         {
             ShrinkCollider();
         }
+
+        OnSlideStarted?.Invoke();
     }
 
     private void StopSlide()
@@ -695,6 +724,8 @@ public class PlayerController : MonoBehaviour
         {
             RestoreCollider();
         }
+
+        OnSlideEnded?.Invoke();
     }
 
     private void ShrinkCollider()
