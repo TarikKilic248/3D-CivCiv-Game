@@ -167,7 +167,7 @@ public static class UIStyleHelper
     /// <summary>
     /// TMP metnine oyunun sıcak krem-beyaz / altın başlık stili, yazı tipi ve okunaklı gradient uygular.
     /// </summary>
-    public static void ApplyTextStyle(TextMeshProUGUI text, UIThemeSO theme, bool isTitle = false, float fontSizeOverride = -1f)
+    public static void ApplyTextStyle(TMP_Text text, UIThemeSO theme, bool isTitle = false, float fontSizeOverride = -1f)
     {
         if (text == null) return;
         UIThemeSO t = ResolveTheme(theme);
@@ -211,6 +211,11 @@ public static class UIStyleHelper
             text.outlineColor = t.darkAmberBorder;
             text.outlineWidth = isTitle ? 0.24f : 0.16f;
         }
+    }
+
+    public static void ApplyTextStyle(TextMeshProUGUI text, UIThemeSO theme, bool isTitle = false, float fontSizeOverride = -1f)
+    {
+        ApplyTextStyle((TMP_Text)text, theme, isTitle, fontSizeOverride);
     }
 
     private static void ApplyBorderAndShadow(GameObject target, Color borderColor, Vector2 borderDistance, Color shadowColor, Vector2 shadowDistance)
